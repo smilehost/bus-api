@@ -1,6 +1,6 @@
 import { TimeRepository } from "../repository/timeRepository";
 import { RouteTime } from "../../cmd/models";
-import { Util } from "../util";
+import { Util } from "../utils/util";
 
 export class TimeService {
   constructor(private readonly timeRepo: TimeRepository) {}

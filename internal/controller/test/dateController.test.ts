@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { DateController } from "../../internal/controller/dateController";
-import { DateService } from "../../internal/service/dateService";
-import { RouteDate } from "../../cmd/models";
+import { DateController } from "../dateController";
+import { DateService } from "../../service/dateService";
+import { RouteDate } from "../../../cmd/models";
 
 describe("DateController", () => {
   let controller: DateController;
