@@ -1,18 +1,14 @@
-import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import express from 'express';
+import { Routes } from './routes';
 
 const app = express();
-const port = 3000;
-
+const port = process.env.PORT || 3000;
 const prisma = new PrismaClient();
 
 app.use(express.json());
-
-app.get('/', async (req, res) => {
-  const priceTypes = await prisma.price_type.findMany();
-    res.json(priceTypes);
-});
+app.use('/api', Routes(prisma));
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`🚀 Server running at http://localhost:${port}`);
 });
