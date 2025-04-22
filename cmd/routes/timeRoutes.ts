@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { TimeRepository } from '../../internal/repository/timeRepository';
-import { TimeService } from '../../internal/service/timeService';
-import { TimeController } from '../../internal/controller/timeController';
+import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
+import { TimeRepository } from "../../internal/repository/timeRepository";
+import { TimeService } from "../../internal/service/timeService";
+import { TimeController } from "../../internal/controller/timeController";
 
 export const TimeRoutes = (prisma: PrismaClient) => {
   const router = Router();
@@ -11,12 +11,11 @@ export const TimeRoutes = (prisma: PrismaClient) => {
   const service = new TimeService(repo);
   const controller = new TimeController(service);
 
-    router.get('/', controller.getByPagination);
-    router.get('/:route_time_id', controller.getById);
-    router.post('/', controller.create);
-    router.put('/:route_time_id', controller.update);
-    router.delete('/:route_time_id', controller.delete);
-
+  router.get("/", controller.getByPagination);
+  router.get("/:route_time_id", controller.getById);
+  router.post("/", controller.create);
+  router.put("/:route_time_id", controller.update);
+  router.delete("/:route_time_id", controller.delete);
 
   return router;
 };
