@@ -1,4 +1,3 @@
-// internal/modules/date/routes.ts
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { DateRepository } from '../../internal/repository/dateRepository';
@@ -13,6 +12,10 @@ export const DateRoutes = (prisma: PrismaClient) => {
   const controller = new DateController(service);
 
   router.get('/', controller.getAll);
+  router.get('/:id', controller.getById);
+  router.post('/', controller.create);
+  router.put('/:id', controller.update);
+  router.delete('/:id', controller.delete);
 
   return router;
 };

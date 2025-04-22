@@ -1,0 +1,6 @@
+{
+  "watch": ["cmd", "internal"],
+  "ext": "ts,json",
+  "ignore": ["node_modules"],
+  "exec": "ts-node cmd/server/main.ts"
+}
