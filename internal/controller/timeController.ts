@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { TimeService } from "../service/timeService";
 import { RouteTime } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
+import { Util } from "../utils/util";
 
 interface CreateRouteTimeInput {
   routeTimeName: string;
@@ -37,20 +38,19 @@ export class TimeController {
 
   getById = async (req: Request, res: Response) => {
     try {
-      const comId = parseInt(
-        (req.headers["com_id"] || req.headers["com-id"]) as string,
-        10
+      const comId = Util.parseId(
+        req.headers["com-id"] || req.headers["com_id"]
       );
-      const routeTimeId = parseInt(req.params.route_time_id, 10);
+      const routeTimeId = Util.parseId(req.params.route_time_id);
 
-      if (isNaN(comId)) {
+      if (comId === null) {
         return ExceptionHandler.badRequest(
           res,
           "Invalid or missing com_id in headers"
         );
       }
 
-      if (isNaN(routeTimeId)) {
+      if (routeTimeId === null) {
         return ExceptionHandler.badRequest(res, "Invalid route_time_id");
       }
 
