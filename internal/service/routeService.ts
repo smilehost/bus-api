@@ -3,6 +3,7 @@ import { RouteRepository } from "../repository/routeRepository";
 import { DateRepository } from "../repository/dateRepository";
 import { TimeRepository } from "../repository/timeRepository";
 import { Util } from "../utils/util";
+import { AppError } from "../utils/appError";
 
 export class RouteService {
   constructor(
@@ -12,24 +13,27 @@ export class RouteService {
   ) {}
 
   async create(comId: number, data: Route) {
-    console.log("---------------3");
-    
+    if (!Util.ValidCompany(comId, data.route_com_id)) {
+      throw AppError.Forbidden("Route: Company ID does not match");
+    }
+
     const date = await this.dateRepository.getById(data.date_id);
     if (!date) {
-      throw new Error("Date not found");
+      throw AppError.NotFound("Date not found");
     }
-    if (Util.ValidCompany(comId, date.route_date_com_id) === false) {
-      throw new Error("Company ID does not match");
+
+    if (!Util.ValidCompany(comId, date.route_date_com_id)) {
+      throw AppError.Forbidden("Date: Company ID does not match");
     }
+
     const time = await this.timeRepository.getById(data.time_id);
     if (!time) {
-      throw new Error("Time not found");
+      throw AppError.NotFound("Time not found");
     }
-    if (Util.ValidCompany(comId, time.route_time_com_id) === false) {
-      throw new Error("Company ID does not match");
+
+    if (!Util.ValidCompany(comId, time.route_time_com_id)) {
+      throw AppError.Forbidden("Time: Company ID does not match");
     }
-    console.log("---------------1");
-    
 
     return this.routeRepository.create(data);
   }

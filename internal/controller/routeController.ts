@@ -3,6 +3,7 @@ import { RouteService } from "../service/routeService";
 import { Route } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
+import { AppError } from "../utils/appError";
 
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
@@ -19,7 +20,6 @@ export class RouteController {
           "Invalid or missing com_id in headers"
         );
       }
-      console.log("---------------4");
 
       const {
         route_name_th,
@@ -44,8 +44,6 @@ export class RouteController {
         route_array,
       };
 
-      console.log("---------------5");
-
       // ✅ ตรวจว่า field ไหนขาด
       const check = Util.checkObjectHasMissingFields(route);
 
@@ -55,7 +53,6 @@ export class RouteController {
           `Missing required fields: ${check.missing.join(", ")}`
         );
       }
-      console.log("---------------6");
 
       const createdRoute = await this.routeService.create(comId, route);
 
@@ -64,7 +61,14 @@ export class RouteController {
         result: createdRoute,
       });
     } catch (error) {
-      ExceptionHandler.internalServerError(res, error);
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+
+      ExceptionHandler.internalServerError(res, error); // fallback error
     }
   }
 }
