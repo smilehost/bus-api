@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { DateService } from "../service/dateService";
 import { RouteDate } from "../../cmd/models";
 
@@ -13,6 +13,7 @@ export class DateController {
         return;
       }
       res.json(data);
+
     } catch (error) {
       console.error("Error in getAll:", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -43,12 +44,9 @@ export class DateController {
   create = async (req: Request, res: Response) => {
     try {
       const body = req.body as RouteDate;
-
-      // Basic validation
+      
       if (
-        !body.route_date_name ||
-        !body.route_date_start ||
-        !body.route_date_end
+        true
       ) {
         res.status(400).json({ error: "Missing required fields" });
         return;
