@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { TimeService } from "../service/timeService";
 import { RouteTime } from "../../cmd/models";
+import { ExceptionHandler } from "../utils/exception";
 
 interface CreateRouteTimeInput {
   routeTimeName: string;
@@ -21,53 +22,47 @@ export class TimeController {
       const search = (req.query.search as string) || "";
 
       if (page < 1 || size < 1) {
-        res.status(400).json({ error: "Invalid pagination parameters" });
-        return;
+        return ExceptionHandler.badRequest(
+          res,
+          "Invalid pagination parameters"
+        );
       }
 
       const result = await this.timeService.getByPagination(page, size, search);
-
       res.status(200).json(result);
-      return;
     } catch (error) {
-      console.error("Error in getByPagination:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
   getById = async (req: Request, res: Response) => {
     try {
-      const comIdHeader = req.headers["com_id"] || req.headers["com-id"];
-      const comId = parseInt(comIdHeader as string, 10);
-
-      // ✅ ตรวจสอบ com_id ก่อนใช้งาน
-      if (isNaN(comId)) {
-        res.status(400).json({ error: "Invalid or missing com_id in headers" });
-        return;
-      }
-
+      const comId = parseInt(
+        (req.headers["com_id"] || req.headers["com-id"]) as string,
+        10
+      );
       const routeTimeId = parseInt(req.params.route_time_id, 10);
 
-      // ✅ ตรวจสอบ route_time_id
-      if (isNaN(routeTimeId)) {
-        res.status(400).json({ error: "Invalid route_time_id" });
-        return;
+      if (isNaN(comId)) {
+        return ExceptionHandler.badRequest(
+          res,
+          "Invalid or missing com_id in headers"
+        );
       }
 
-      // ✅ เรียกใช้งาน service พร้อม com_id
+      if (isNaN(routeTimeId)) {
+        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
+      }
+
       const result = await this.timeService.getById(routeTimeId, comId);
 
       if (!result) {
-        res.status(404).json({ error: "Route time not found" });
-        return;
+        return ExceptionHandler.notFound(res, "Route time not found");
       }
 
       res.status(200).json(result);
-      return;
     } catch (error) {
-      console.error("Error in get:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
@@ -76,35 +71,30 @@ export class TimeController {
       const { routeTimeName, routeTimeArray, routeTimeComIdd } =
         req.body as CreateRouteTimeInput;
 
-      // ✅ ตรวจว่าเป็น string[]
       if (
         !Array.isArray(routeTimeArray) ||
         !routeTimeArray.every(
           (t) => typeof t === "string" && isValidTimeFormat(t)
         )
       ) {
-        res.status(400).json({
-          error:
-            'Invalid input: routeTimeArray must be an array of strings in HH:mm format (e.g., "08:30")',
-        });
-        return;
+        return ExceptionHandler.badRequest(
+          res,
+          'routeTimeArray must be an array of strings in HH:mm format (e.g., "08:30")'
+        );
       }
 
-      // ✅ ตรวจชื่อและบริษัท ID
       if (
         typeof routeTimeName !== "string" ||
         typeof routeTimeComIdd !== "number"
       ) {
-        res
-          .status(400)
-          .json({ error: "Invalid routeTimeName or routeTimeComIdd" });
-        return;
+        return ExceptionHandler.badRequest(
+          res,
+          "Invalid routeTimeName or routeTimeComIdd"
+        );
       }
 
-      // ✅ แปลง array เป็น string เช่น '"08:00","09:30"'
-      const routeTimeString = routeTimeArray.map((t) => `${t}`).join(",");
+      const routeTimeString = routeTimeArray.join(",");
 
-      // ✅ ส่งเข้า service
       const result = await this.timeService.create({
         route_time_id: 0,
         route_time_name: routeTimeName,
@@ -112,78 +102,68 @@ export class TimeController {
         route_time_com_id: routeTimeComIdd,
       });
 
-      res.status(201).json({
-        message: "Created successfully",
-        result,
-      });
-      return;
+      res.status(201).json({ message: "Created successfully", result });
     } catch (error) {
-      console.error("Error in create:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
   update = async (req: Request, res: Response) => {
     try {
-      const comIdHeader = req.headers["com_id"] || req.headers["com-id"];
-      const comId = parseInt(comIdHeader as string, 10);
-
-      // ✅ ตรวจสอบ com_id ก่อนใช้งาน
-      if (isNaN(comId)) {
-        res.status(400).json({ error: "Invalid or missing com_id in headers" });
-        return;
-      }
-
+      const comId = parseInt(
+        (req.headers["com_id"] || req.headers["com-id"]) as string,
+        10
+      );
       const routeTimeId = parseInt(req.params.route_time_id, 10);
 
+      if (isNaN(comId)) {
+        return ExceptionHandler.badRequest(
+          res,
+          "Invalid or missing com_id in headers"
+        );
+      }
+
       if (isNaN(routeTimeId)) {
-        res.status(400).json({ error: "Invalid route_time_id" });
-        return;
+        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
       }
 
       const body = req.body as Partial<RouteTime>;
 
       const result = await this.timeService.update(comId, routeTimeId, body);
-
       res.json(result);
     } catch (error) {
-      console.error("Error in update:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
   delete = async (req: Request, res: Response) => {
     try {
-      const comIdHeader = req.headers["com_id"] || req.headers["com-id"];
-      const comId = parseInt(comIdHeader as string, 10);
-
-      // ✅ ตรวจสอบ com_id ก่อนใช้งาน
-      if (isNaN(comId)) {
-        res.status(400).json({ error: "Invalid or missing com_id in headers" });
-        return;
-      }
-
+      const comId = parseInt(
+        (req.headers["com_id"] || req.headers["com-id"]) as string,
+        10
+      );
       const routeTimeId = parseInt(req.params.route_time_id, 10);
 
+      if (isNaN(comId)) {
+        return ExceptionHandler.badRequest(
+          res,
+          "Invalid or missing com_id in headers"
+        );
+      }
+
       if (isNaN(routeTimeId)) {
-        res.status(400).json({ error: "Invalid route_time_id" });
-        return;
+        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
       }
 
       const result = await this.timeService.deleteById(comId, routeTimeId);
 
       if (!result) {
-        res.status(404).json({ error: "Route time not found" });
-        return;
+        return ExceptionHandler.notFound(res, "Route time not found");
       }
 
       res.status(200).json({ message: "Route time deleted successfully" });
-      return;
     } catch (error) {
-      console.error("Error in delete:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 }
