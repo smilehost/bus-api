@@ -11,11 +11,11 @@ export const TimeRoutes = (prisma: PrismaClient) => {
   const service = new TimeService(repo);
   const controller = new TimeController(service);
 
-  router.get("/", controller.getByPagination);
-  router.get("/:route_time_id", controller.getById);
-  router.post("/", controller.create);
-  router.put("/:route_time_id", controller.update);
-  router.delete("/:route_time_id", controller.delete);
+  router.get("/", controller.getByPagination.bind(controller));
+  router.get("/:route_time_id", controller.getById.bind(controller));
+  router.post("/", controller.create.bind(controller));
+  router.put("/:route_time_id", controller.update.bind(controller));
+  router.delete("/:route_time_id", controller.delete.bind(controller));
 
   return router;
 };

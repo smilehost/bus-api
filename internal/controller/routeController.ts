@@ -19,6 +19,7 @@ export class RouteController {
           "Invalid or missing com_id in headers"
         );
       }
+      console.log("---------------4");
 
       const {
         route_name_th,
@@ -30,7 +31,7 @@ export class RouteController {
         time_id,
         route_array,
       } = req.body as Route;
-      
+
       const route: Route = {
         route_id: 0,
         route_name_th,
@@ -43,6 +44,7 @@ export class RouteController {
         route_array,
       };
 
+      console.log("---------------5");
 
       // ✅ ตรวจว่า field ไหนขาด
       const check = Util.checkObjectHasMissingFields(route);
@@ -53,6 +55,7 @@ export class RouteController {
           `Missing required fields: ${check.missing.join(", ")}`
         );
       }
+      console.log("---------------6");
 
       const createdRoute = await this.routeService.create(comId, route);
 

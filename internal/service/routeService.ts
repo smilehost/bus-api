@@ -12,6 +12,8 @@ export class RouteService {
   ) {}
 
   async create(comId: number, data: Route) {
+    console.log("---------------3");
+    
     const date = await this.dateRepository.getById(data.date_id);
     if (!date) {
       throw new Error("Date not found");
@@ -26,6 +28,8 @@ export class RouteService {
     if (Util.ValidCompany(comId, time.route_time_com_id) === false) {
       throw new Error("Company ID does not match");
     }
+    console.log("---------------1");
+    
 
     return this.routeRepository.create(data);
   }

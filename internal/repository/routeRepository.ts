@@ -5,6 +5,9 @@ export class RouteRepository {
   constructor(private readonly prisma: PrismaClient) {}
   
   async create(data: Route) {
+
+    console.log("---------------2");
+    
     return this.prisma.route.create({
       data: {
         route_name_th: data.route_name_th,
