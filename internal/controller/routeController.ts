@@ -10,55 +10,19 @@ export class RouteController {
 
   async create(req: Request, res: Response) {
     try {
-      const comId = Util.parseId(
-        req.headers["com-id"] || req.headers["com_id"]
-      );
+      const { com_id, body } = Util.extractRequestContext<Route>(req, {
+        body: true,
+      });
 
-      if (comId === null) {
-        return ExceptionHandler.badRequest(
-          res,
-          "Invalid or missing com_id in headers"
-        );
-      }
-
-      const {
-        route_name_th,
-        route_name_en,
-        route_color,
-        route_status,
-        route_com_id,
-        date_id,
-        time_id,
-        route_array,
-      } = req.body as Route;
-
-      const route: Route = {
-        route_id: 0,
-        route_name_th,
-        route_name_en,
-        route_color,
-        route_status,
-        route_com_id,
-        date_id,
-        time_id,
-        route_array,
-      };
-
-      // ✅ ตรวจว่า field ไหนขาด
-      const check = Util.checkObjectHasMissingFields(route);
-
-      if (!check.valid) {
-        return ExceptionHandler.badRequest(
-          res,
-          `Missing required fields: ${check.missing.join(", ")}`
-        );
-      }
-
-      const createdRoute = await this.routeService.create(comId, route);
+      const createdRoute = await this.routeService.create(com_id, body);
 
       res.status(201).json({
         message: "Route created successfully",
         result: createdRoute,
+      });
+
+      res.status(201).json({
+        message: "Route created successfully",
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -67,8 +31,7 @@ export class RouteController {
           message: error.message,
         });
       }
-
-      ExceptionHandler.internalServerError(res, error); // fallback error
+      ExceptionHandler.internalServerError(res, error);
     }
   }
 }
