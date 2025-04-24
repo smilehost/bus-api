@@ -18,6 +18,8 @@ export class RouteService {
     size: number,
     search: string
   ) {
+    search = search.toString();
+
     const skip = (page - 1) * size;
     const take = size;
 

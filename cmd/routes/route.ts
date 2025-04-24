@@ -15,7 +15,7 @@ export const Route = (prisma: PrismaClient) => {
   const service = new RouteService(repo, dateRepo, timeRepo);
   const controller = new RouteController(service);
 
-  router.get("/", controller.getByPagination);
+  router.get("/", controller.getByPagination.bind(controller));
   router.get("/:route_id", controller.getById.bind(controller));
   router.post("/", controller.create.bind(controller));
   router.put("/:route_id", controller.update.bind(controller));

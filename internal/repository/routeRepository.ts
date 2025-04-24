@@ -17,8 +17,8 @@ export class RouteRepository {
         ...(search.trim()
           ? {
               OR: [
-                { route_name_th: { contains: search, mode: "insensitive" } },
-                { route_name_en: { contains: search, mode: "insensitive" } },
+                { route_name_th: { contains: search.toLowerCase() } },
+                { route_name_en: { contains: search.toLowerCase() } },
               ],
             }
           : {}),
