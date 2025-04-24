@@ -8,6 +8,32 @@ import { AppError } from "../utils/appError";
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
 
+  async getById(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        Route,
+        { route_id: number }
+      >(req, {
+        params: true,
+      });
+      
+      const route = await this.routeService.getById(com_id, params.route_id);
+
+      res.status(200).json({
+        message: "Route retrieved successfully",
+        result: route,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async create(req: Request, res: Response) {
     try {
       const { com_id, body } = Util.extractRequestContext<Route>(req, {
@@ -37,7 +63,6 @@ export class RouteController {
 
   async update(req: Request, res: Response) {
     try {
-      console.log("--------------------1");
       const { com_id, body, params } = Util.extractRequestContext<
         Route,
         { route_id: number }
@@ -45,18 +70,41 @@ export class RouteController {
         body: true,
         params: true,
       });
-      
-      console.log("--------------------2");
+
       const updatedRoute = await this.routeService.update(
         com_id,
         params.route_id,
         body
       );
-      console.log("--------------------3");
 
       res.status(200).json({
         message: "Route updated successfully",
         result: updatedRoute,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        Route,
+        { route_id: number }
+      >(req, {
+        params: true,
+      });
+
+      await this.routeService.delete(com_id, params.route_id);
+
+      res.status(200).json({
+        message: "Route deleted successfully",
       });
     } catch (error) {
       if (error instanceof AppError) {

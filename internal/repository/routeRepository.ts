@@ -7,17 +7,11 @@ export class RouteRepository {
 
   async getById(routeId: number) {
     try {
-      console.log("getById routeId", routeId);
-      console.log(typeof routeId);
-      
-      
       return await this.prisma.route.findUnique({
         where: { route_id: routeId },
       });
     } catch (error) {
-      console.log("Error in getById:", error);
-      
-      throw AppError.fromPrismaError(error); // แปลง Prisma error ให้ปลอดภัยก่อนโยนกลับ
+      throw AppError.fromPrismaError(error);
     }
   }
 
@@ -54,6 +48,16 @@ export class RouteRepository {
           time_id: data.time_id,
           route_array: data.route_array,
         },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async delete(routeId: number) {
+    try {
+      return await this.prisma.route.delete({
+        where: { route_id: routeId },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
