@@ -5,29 +5,35 @@ import { AppError } from "../utils/appError";
 export class RouteRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getPaginated(skip: number, take: number, search: string): Promise<[Route[], number]> {
+  async getPaginated(
+    comId: number,
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<[Route[], number]> {
     try {
+      const where = {
+        route_com_id: comId,
+        ...(search.trim()
+          ? {
+              OR: [
+                { route_name_th: { contains: search, mode: "insensitive" } },
+                { route_name_en: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      };
+
       const [data, total] = await this.prisma.$transaction([
         this.prisma.route.findMany({
           skip,
           take,
-          where: {
-            OR: [
-              { route_name_th: { contains: search } },
-              { route_name_en: { contains: search } },
-            ],
-          },
+          where,
           orderBy: { route_id: "desc" },
         }),
-        this.prisma.route.count({
-          where: {
-            OR: [
-              { route_name_th: { contains: search } },
-              { route_name_en: { contains: search } },
-            ],
-          },
-        }),
+        this.prisma.route.count({ where }),
       ]);
+
       return [data, total];
     } catch (error) {
       throw AppError.fromPrismaError(error);

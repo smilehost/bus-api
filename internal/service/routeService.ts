@@ -12,11 +12,17 @@ export class RouteService {
     private readonly timeRepository: TimeRepository
   ) {}
 
-  async getByPagination(page: number, size: number, search: string) {
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    search: string
+  ) {
     const skip = (page - 1) * size;
     const take = size;
 
     const [data, total] = await this.routeRepository.getPaginated(
+      comId,
       skip,
       take,
       search
