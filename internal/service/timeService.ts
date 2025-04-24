@@ -8,9 +8,9 @@ export class TimeService {
   async getByPagination(page: number, size: number, search: string) {
     const skip = (page - 1) * size;
     const take = size;
-  
+
     const [data, total] = await this.timeRepo.getPaginated(skip, take, search);
-  
+
     return {
       page,
       size,
