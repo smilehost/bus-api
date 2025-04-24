@@ -12,6 +12,25 @@ export class RouteService {
     private readonly timeRepository: TimeRepository
   ) {}
 
+  async getByPagination(page: number, size: number, search: string) {
+    const skip = (page - 1) * size;
+    const take = size;
+
+    const [data, total] = await this.routeRepository.getPaginated(
+      skip,
+      take,
+      search
+    );
+
+    return {
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      data,
+    };
+  }
+
   async getById(comId: number, routeId: number) {
     const route = await this.routeRepository.getById(routeId);
     if (!route) {
@@ -78,7 +97,7 @@ export class RouteService {
     if (!Util.ValidCompany(comId, time.route_time_com_id)) {
       throw AppError.Forbidden("Time: Company ID does not match");
     }
-    
+
     return this.routeRepository.update(routeId, data);
   }
 

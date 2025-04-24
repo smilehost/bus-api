@@ -8,6 +8,38 @@ import { AppError } from "../utils/appError";
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
 
+  async getByPagination(req: Request, res: Response) {
+    try {
+      const { com_id, query } = Util.extractRequestContext<
+        Route,
+        void,
+        { page: number; size: number; search: string }
+      >(req, {
+        query: true,
+      });
+
+      const result = await this.routeService.getByPagination(
+        com_id,
+        query.page,
+        query.size,
+        query.search
+      );
+
+      res.status(200).json({
+        message: "Routes retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async getById(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
@@ -16,7 +48,7 @@ export class RouteController {
       >(req, {
         params: true,
       });
-      
+
       const route = await this.routeService.getById(com_id, params.route_id);
 
       res.status(200).json({
