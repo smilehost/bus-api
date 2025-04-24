@@ -1,6 +1,8 @@
 import { Request, Response, Router } from "express";
 import { DateService } from "../service/dateService";
 import { RouteDate } from "../../cmd/models";
+import { Util } from "../utils/util";
+import { ExceptionHandler } from "../utils/exception";
 
 export class DateController {
   constructor(private readonly dateService: DateService) {}
@@ -43,16 +45,11 @@ export class DateController {
 
   create = async (req: Request, res: Response) => {
     try {
-      const body = req.body as RouteDate;
-      
-      if (
-        true
-      ) {
-        res.status(400).json({ error: "Missing required fields" });
-        return;
-      }
+      const { com_id, body } = Util.extractRequestContext<RouteDate>(req, {
+        body: true,
+      });
 
-      const data = await this.dateService.create(body);
+      const data = await this.dateService.create(com_id,body);
       res.status(201).json(data);
     } catch (error) {
       console.error("Error in create:", error);
