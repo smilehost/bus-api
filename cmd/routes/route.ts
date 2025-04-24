@@ -18,7 +18,7 @@ export const Route = (prisma: PrismaClient) => {
   //   router.get("/", controller.getByPagination);
   //   router.get("/:route_time_id", controller.getById);
   router.post("/", controller.create.bind(controller));
-  //   router.put("/:route_time_id", controller.update);
+  router.put("/:route_id", controller.update.bind(controller));
   //   router.delete("/:route_time_id", controller.delete);
 
   return router;

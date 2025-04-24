@@ -43,7 +43,6 @@ export class AppError extends Error {
 
   static fromPrismaError(error: unknown): AppError {
     if (error instanceof Prisma.PrismaClientValidationError) {
-      // ✅ ลองจับข้อความ field ที่หายจากข้อความ raw
       const fieldMatch = RegExp(/Argument `(\w+)` is missing/).exec(error.message);
 
       if (fieldMatch) {

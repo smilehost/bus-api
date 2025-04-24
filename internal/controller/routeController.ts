@@ -34,4 +34,38 @@ export class RouteController {
       ExceptionHandler.internalServerError(res, error);
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      console.log("--------------------1");
+      const { com_id, body, params } = Util.extractRequestContext<
+        Route,
+        { route_id: number }
+      >(req, {
+        body: true,
+        params: true,
+      });
+      
+      console.log("--------------------2");
+      const updatedRoute = await this.routeService.update(
+        com_id,
+        params.route_id,
+        body
+      );
+      console.log("--------------------3");
+
+      res.status(200).json({
+        message: "Route updated successfully",
+        result: updatedRoute,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
 }

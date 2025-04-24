@@ -5,9 +5,45 @@ import { AppError } from "../utils/appError";
 export class RouteRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
+  async getById(routeId: number) {
+    try {
+      console.log("getById routeId", routeId);
+      console.log(typeof routeId);
+      
+      
+      return await this.prisma.route.findUnique({
+        where: { route_id: routeId },
+      });
+    } catch (error) {
+      console.log("Error in getById:", error);
+      
+      throw AppError.fromPrismaError(error); // แปลง Prisma error ให้ปลอดภัยก่อนโยนกลับ
+    }
+  }
+
   async create(data: Route) {
     try {
       return await this.prisma.route.create({
+        data: {
+          route_name_th: data.route_name_th,
+          route_name_en: data.route_name_en,
+          route_color: data.route_color,
+          route_status: data.route_status,
+          route_com_id: data.route_com_id,
+          date_id: data.date_id,
+          time_id: data.time_id,
+          route_array: data.route_array,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async update(routeId: number, data: Route) {
+    try {
+      return await this.prisma.route.update({
+        where: { route_id: routeId },
         data: {
           route_name_th: data.route_name_th,
           route_name_en: data.route_name_en,

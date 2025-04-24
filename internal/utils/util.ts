@@ -47,6 +47,20 @@ export class Util {
     throw AppError.BadRequest(`Invalid ${label} format`);
   }
 
+  static parseIdFields(obj: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      try {
+        result[key] = Util.parseId(value, key); // ✅ ถ้า parse ได้ → แปลงเลย
+      } catch {
+        result[key] = value; // ❌ ถ้าแปลงไม่ได้ → คืนค่าดั้งเดิม
+      }
+    }
+
+    return result;
+  }
+
   static checkObjectHasMissingFields(obj: Record<string, any>): {
     valid: boolean;
     missing: string[];
@@ -100,7 +114,8 @@ export class Util {
           `Missing required fields in params: ${check.missing.join(", ")}`
         );
       }
-      result.params = req.params;
+
+      result.params = Util.parseIdFields(req.params);
     }
 
     if (require.query) {
@@ -113,7 +128,8 @@ export class Util {
           `Missing required fields in query: ${check.missing.join(", ")}`
         );
       }
-      result.query = req.query;
+
+      result.query = Util.parseIdFields(req.query);
     }
 
     return result;
