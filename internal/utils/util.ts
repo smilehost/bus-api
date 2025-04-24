@@ -52,9 +52,9 @@ export class Util {
 
     for (const [key, value] of Object.entries(obj)) {
       try {
-        result[key] = Util.parseId(value, key); // ✅ ถ้า parse ได้ → แปลงเลย
+        result[key] = Util.parseId(value, key);
       } catch {
-        result[key] = value; // ❌ ถ้าแปลงไม่ได้ → คืนค่าดั้งเดิม
+        result[key] = value;
       }
     }
 
@@ -67,7 +67,7 @@ export class Util {
   } {
     const missing = Object.keys(obj).filter((key) => {
       const value = obj[key];
-      return value === undefined || value === null || value === "";
+      return value === undefined || value === null;
     });
 
     return {
