@@ -1,94 +1,152 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import { DateService } from "../service/dateService";
 import { RouteDate } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
+import { AppError } from "../utils/appError";
 
 export class DateController {
   constructor(private readonly dateService: DateService) {}
 
-  getAll = async (req: Request, res: Response) => {
+  async getByPagination(req: Request, res: Response) {
     try {
-      const data = await this.dateService.getAll();
-      if (!data || data.length === 0) {
-        res.status(404).json({ error: "No data found" });
-        return;
-      }
-      res.json(data);
+      const {com_id, query} = Util.extractRequestContext<
+        void,
+        void,
+        {page:number; size: number; search:string}
+      >(req,{
+        query:true
+      })
 
+      const data = await this.dateService.getByPagination(
+        com_id,
+        query.page,
+        query.size,
+        query.search
+      );
+
+      res.status(200).json({
+        message: "Dates retrieved successfully",
+        result: data,
+      });
     } catch (error) {
-      console.error("Error in getAll:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-
-  getById = async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        res.status(400).json({ error: "Invalid ID" });
-        return;
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
       }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
 
-      const data = await this.dateService.getById(id);
+  async getById(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        RouteDate,
+        { route_date_id:number}
+      >(req, {
+        params: true,
+      });
+      
+      const data = await this.dateService.getById(com_id,params.route_date_id);
       if (!data) {
         res.status(404).json({ error: "Data not found" });
         return;
       }
 
-      res.json(data);
+      res.status(200).json({
+        message: "Route retrieved successfully",
+        result: data,
+      });
+
     } catch (error) {
-      console.error("Error in getById:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
-  create = async (req: Request, res: Response) => {
+  async create(req: Request, res: Response) {
     try {
       const { com_id, body } = Util.extractRequestContext<RouteDate>(req, {
         body: true,
       });
 
-      const data = await this.dateService.create(com_id,body);
-      res.status(201).json(data);
+      const data = await this.dateService.create(com_id, body);
+
+      res.status(201).json({
+        message: "Date created successfully",
+        result: data,
+      });
     } catch (error) {
-      console.error("Error in create:", error);
-      res.status(500).json({ error: "Failed to create route_date" });
-    }
-  };
-
-  update = async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-
-      if (isNaN(id)) {
-        res.status(400).json({ error: "Invalid ID" });
-        return;
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
       }
-
-      const body = req.body as Partial<RouteDate>;
-      const data = await this.dateService.update(id, body);
-
-      res.json(data);
-    } catch (error) {
-      console.error("Error in update:", error);
-      res.status(500).json({ error: "Failed to update route_date" });
+      ExceptionHandler.internalServerError(res, error);
     }
   };
 
-  delete = async (req: Request, res: Response) => {
+  async update(req: Request, res: Response) {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        res.status(400).json({ error: "Invalid ID" });
-        return;
-      }
+      const { com_id, body, params } = Util.extractRequestContext<
+        RouteDate,
+        { route_date_id: number }
+      >(req, {
+        body: true,
+        params: true,
+      });
 
-      await this.dateService.delete(id);
-      res.status(204).send();
+      const data = await this.dateService.update(
+        com_id,
+        params.route_date_id,
+        body
+      );
+
+      res.status(200).json({
+        message: "Date updated successfully",
+        result: data,
+      });
     } catch (error) {
-      console.error("Error in delete:", error);
-      res.status(500).json({ error: "Failed to delete route_date" });
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        RouteDate,
+        { route_date_id: number }
+      >(req, {
+        params: true,
+      });
+
+      await this.dateService.delete(com_id, params.route_date_id);
+
+      res.status(200).json({
+        message: "Date deleted successfully",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
 }

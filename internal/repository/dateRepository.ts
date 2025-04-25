@@ -5,19 +5,52 @@ import { AppError } from "../utils/appError";
 export class DateRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAll() {
-    return this.prisma.route_date.findMany();
+  async getPaginated(
+    comId: number,
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<[RouteDate[], number]> {
+    try {
+      const where = {
+        route_date_com_id: comId,
+        ...(search.trim()
+          ? {
+              route_date_name: { contains: search.toLowerCase() }
+            }
+          : {}),
+      };
+
+      const [data, total] = await this.prisma.$transaction([
+        this.prisma.route_date.findMany({
+          skip,
+          take,
+          where,
+          orderBy: { route_date_id: "desc" },
+        }),
+        this.prisma.route_date.count({ where }),
+      ]);
+
+      return [data, total];
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
   }
 
   async getById(id: number) {
-    return this.prisma.route_date.findUnique({
-      where: { route_date_id: id },
-    });
+    try {
+      return await this.prisma.route_date.findUnique({
+        where: { route_date_id: id },
+      });
+
+    } catch (error) {
+      throw AppError.fromPrismaError(error)
+    }
   }
 
   async create(data: RouteDate) {
     try {
-      return this.prisma.route_date.create({ 
+      return await this.prisma.route_date.create({ 
         data:{
           route_date_name:data.route_date_name,
           route_date_start:data.route_date_name,
@@ -38,15 +71,25 @@ export class DateRepository {
   }
 
   async update(id: number, data: Partial<RouteDate>) {
-    return this.prisma.route_date.update({
-      where: { route_date_id: id },
-      data,
-    });
+    try {
+      return await this.prisma.route_date.update({
+        where: { route_date_id: id },
+        data,
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+    
   }
 
   async delete(id: number) {
-    return this.prisma.route_date.delete({
-      where: { route_date_id: id },
-    });
+    try {
+      return await this.prisma.route_date.delete({
+        where: { route_date_id: id },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+
   }
 }
