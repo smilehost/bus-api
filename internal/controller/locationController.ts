@@ -1,26 +1,48 @@
 import { Request, Response } from "express";
-import { RouteService } from "../service/routeService";
-import { Route } from "../../cmd/models";
+import { LocationService } from "../service/locationService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteLocation } from "../../cmd/models";
+import { number } from "zod";
 
-export class RouteController {
-  constructor(private readonly routeService: RouteService) {}
+export class LocationController {
+  constructor(private readonly locationService: LocationService) {}
+
+  async getAll(req: Request, res: Response) {
+    try {
+      const { com_id } = Util.extractRequestContext(req);
+
+      const result = await this.locationService.getAll(com_id);
+
+      res.status(200).json({
+        message: "Route locations retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
 
   async getByPagination(req: Request, res: Response) {
     try {
-      console.log("------1");
+      console.log("------3");
       const { com_id, query } = Util.extractRequestContext<
-      void,
-      void,
-      { page: number; size: number; search: string }
+        void,
+        void,
+        { page: number; size: number; search: string }
       >(req, {
         query: true,
       });
-      console.log("------2");
+      console.log("------4");
 
-      const result = await this.routeService.getByPagination(
+      const result = await this.locationService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -28,7 +50,7 @@ export class RouteController {
       );
 
       res.status(200).json({
-        message: "Routes retrieved successfully",
+        message: "Route locations retrieved successfully",
         result,
       });
     } catch (error) {
@@ -45,21 +67,20 @@ export class RouteController {
   async getById(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        Route,
-        { route_id: number }
+        void,
+        { route_location_id: number }
       >(req, {
         params: true,
       });
 
-      const route = await this.routeService.getById(com_id, params.route_id);
-      console.log("ssssssdddfdfdfdf");
-      console.log(route);
-      
-      
+      const result = await this.locationService.getById(
+        com_id,
+        params.route_location_id
+      );
 
       res.status(200).json({
-        message: "Route retrieved successfully",
-        result: route,
+        message: "Route location retrieved successfully",
+        result,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -74,19 +95,15 @@ export class RouteController {
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<Route>(req, {
+      const { com_id, body } = Util.extractRequestContext<RouteLocation>(req, {
         body: true,
       });
 
-      const createdRoute = await this.routeService.create(com_id, body);
+      const result = await this.locationService.create(com_id, body);
 
       res.status(201).json({
-        message: "Route created successfully",
-        result: createdRoute,
-      });
-
-      res.status(201).json({
-        message: "Route created successfully",
+        message: "Route location created successfully",
+        result,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -102,22 +119,22 @@ export class RouteController {
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        Route,
-        { route_id: number }
+        RouteLocation,
+        { route_location_id: number }
       >(req, {
         body: true,
         params: true,
       });
 
-      const updatedRoute = await this.routeService.update(
+      const result = await this.locationService.update(
         com_id,
-        params.route_id,
+        params.route_location_id,
         body
       );
 
       res.status(200).json({
-        message: "Route updated successfully",
-        result: updatedRoute,
+        message: "Route location updated successfully",
+        result,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -133,16 +150,16 @@ export class RouteController {
   async delete(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        Route,
-        { route_id: number }
+        void,
+        { route_location_id: number }
       >(req, {
         params: true,
       });
 
-      await this.routeService.delete(com_id, params.route_id);
+      await this.locationService.delete(com_id, params.route_location_id);
 
       res.status(200).json({
-        message: "Route deleted successfully",
+        message: "Route location deleted successfully",
       });
     } catch (error) {
       if (error instanceof AppError) {
