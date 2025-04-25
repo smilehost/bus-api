@@ -50,6 +50,10 @@ export class RouteController {
       });
 
       const route = await this.routeService.getById(com_id, params.route_id);
+      console.log("ssssssdddfdfdfdf");
+      console.log(route);
+      
+      
 
       res.status(200).json({
         message: "Route retrieved successfully",

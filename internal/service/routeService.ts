@@ -39,8 +39,14 @@ export class RouteService {
     };
   }
 
-  async getById(comId: number, routeId: number) {
+  async getById(comId: number, routeId: number) {    
+    console.log("comId", comId);
+    console.log("routeId", routeId);
+    
     const route = await this.routeRepository.getById(routeId);
+    console.log("route", route);
+    
+
     if (!route) {
       throw AppError.NotFound("Route not found");
     }
