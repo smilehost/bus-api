@@ -4,7 +4,6 @@ import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteLocation } from "../../cmd/models";
-import { number } from "zod";
 
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
