@@ -40,8 +40,8 @@ export interface Route {
   route_color: string;
   route_status: number;
   route_com_id: number;
-  date_id: number;
-  time_id: number;
+  route_date_id: number;
+  route_time_id: number;
   route_array: string;
 }
 

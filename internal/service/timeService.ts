@@ -1,15 +1,35 @@
 import { TimeRepository } from "../repository/timeRepository";
+import { CompanyRepository } from "../repository/companyRepository";
 import { RouteTime } from "../../cmd/models";
 import { Util } from "../utils/util";
+import { AppError } from "../utils/appError";
 
 export class TimeService {
-  constructor(private readonly timeRepo: TimeRepository) {}
+  constructor(
+    private readonly timeRepository: TimeRepository,
+    private readonly companyRepository: CompanyRepository
+  ) {}
 
-  async getByPagination(page: number, size: number, search: string) {
+  async getAll(comId: number) {
+    return this.timeRepository.getAll(comId);
+  }
+
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    search: string
+  ) {
     const skip = (page - 1) * size;
     const take = size;
+    search = search.toString();
 
-    const [data, total] = await this.timeRepo.getPaginated(skip, take, search);
+    const [data, total] = await this.timeRepository.getPaginated(
+      comId,
+      skip,
+      take,
+      search
+    );
 
     return {
       page,
@@ -20,22 +40,31 @@ export class TimeService {
     };
   }
 
-  async getById(routeTimeId: number, comId: number): Promise<RouteTime | null> {
-    const routeTime = await this.timeRepo.getById(routeTimeId);
-    if (!Util.ValidCompany(comId, routeTime?.route_time_com_id)) {
-      console.error("Invalid company ID");
-      return null;
+  async getById(comId: number, routeTimeId: number) {
+    const routeTime = await this.timeRepository.getById(routeTimeId);
+
+    if (!routeTime) {
+      throw AppError.NotFound("Route time not found");
     }
+
+    if (!Util.ValidCompany(comId, routeTime.route_time_com_id)) {
+      throw AppError.Forbidden("Route time: Company ID does not match");
+    }
+
     return routeTime;
   }
 
-  async create(data: RouteTime) {
-    try {
-      return await this.timeRepo.create(data);
-    } catch (error) {
-      console.error("Error in TimeService.create:", error);
-      throw new Error("Failed to create route_time");
+  async create(comId: number, data: RouteTime) {
+    const company = await this.companyRepository.getById(data.route_time_com_id);
+    if (!company) {
+      throw AppError.NotFound("Company not found");
     }
+
+    if (!Util.ValidCompany(comId, data.route_time_com_id)) {
+      throw AppError.Forbidden("Route time: Company ID does not match");
+    }
+
+    return this.timeRepository.create(data);
   }
 
   async update(
@@ -43,30 +72,30 @@ export class TimeService {
     routeTimeId: number,
     updateData: Partial<RouteTime>
   ) {
-    const existing = await this.timeRepo.getById(routeTimeId);
+    const existing = await this.timeRepository.getById(routeTimeId);
+
     if (!existing) {
-      throw new Error("Route time not found");
+      throw AppError.NotFound("Route time not found");
     }
 
-    if (!Util.ValidCompany(existing.route_time_com_id, comId)) {
-      throw new Error("Permission denied: com_id mismatch");
+    if (!Util.ValidCompany(comId, existing.route_time_com_id)) {
+      throw AppError.Forbidden("Route time: Company ID does not match");
     }
 
-    // ✅ อัปเดตข้อมูล
-    return this.timeRepo.update(routeTimeId, updateData);
+    return this.timeRepository.update(routeTimeId, updateData);
   }
 
   async deleteById(comId: number, routeTimeId: number) {
-    const existing = await this.timeRepo.getById(routeTimeId);
+    const existing = await this.timeRepository.getById(routeTimeId);
 
     if (!existing) {
-      return null; // ไม่เจอ
+      throw AppError.NotFound("Route time not found");
     }
 
-    if (!Util.ValidCompany(existing.route_time_com_id, comId)) {
-      return null; // com_id ไม่ตรง
+    if (!Util.ValidCompany(comId, existing.route_time_com_id)) {
+      throw AppError.Forbidden("Route time: Company ID does not match");
     }
 
-    return this.timeRepo.delete(routeTimeId);
+    return this.timeRepository.delete(routeTimeId);
   }
 }

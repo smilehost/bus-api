@@ -6,12 +6,49 @@ import { Util } from '../utils/util';
 export class DateService {
   constructor(private readonly dateRepository: DateRepository) {}
 
-  getAll() {
-    return this.dateRepository.getAll();
+  async getAll(comId: number) {
+    return this.dateRepository.getAll(comId);
   }
 
-  getById(id: number) {
-    return this.dateRepository.getById(id);
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    search: string
+  ) {
+    search = search.toString();
+
+    const skip = (page - 1) * size;
+    const take = size;
+
+    const [data, total] = await this.dateRepository.getPaginated(
+      comId,
+      skip,
+      take,
+      search
+    );
+
+    return {
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      data,
+    };
+  }
+
+  async getById(comId:number,id: number) {
+    const routeDate = await this.dateRepository.getById(id);
+    if (!routeDate) {
+      throw AppError.NotFound("Route not found");
+    }
+    
+    console.log(routeDate.route_date_com_id)
+    if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
+      throw AppError.Forbidden("Company ID does not match");
+    }
+
+    return routeDate 
   }
 
   create(comId: number,data: RouteDate) {
@@ -19,28 +56,54 @@ export class DateService {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    const days = [
-      data.route_date_sun,
-      data.route_date_mon,
-      data.route_date_tue,
-      data.route_date_wen,
-      data.route_date_thu,
-      data.route_date_fri,
-      data.route_date_sat,
-     ] 
-     
-    if (days.some(day => (day !== 0 && day !== 1))){
+    if (this.validDateFormat(data)){
         throw AppError.BadRequest("Invalid Day Format")
     }
 
     return this.dateRepository.create(data);
   }
 
-  update(id: number, data: Partial<RouteDate>) {
+  async update(comId: number, id: number, data: RouteDate) {
+    const routeDate = await this.dateRepository.getById(id);
+    if (!routeDate) {
+      throw AppError.NotFound("Route date not found");
+    }
+
+    if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
+      throw AppError.Forbidden("Company ID does not match");
+    }
+
+    if (!this.validDateFormat(data)){
+      throw AppError.BadRequest("Invalid Day Format")
+    }
+    
     return this.dateRepository.update(id, data);
   }
 
-  delete(id: number) {
+  async delete(comId: number, id: number) {
+    const routeDate = await this.dateRepository.getById(id);
+    if (!routeDate) {
+      throw AppError.NotFound("Route date not found");
+    }
+
+    if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
+      throw AppError.Forbidden("Company ID does not match");
+    }
+
     return this.dateRepository.delete(id);
+  }
+
+  validDateFormat(date :RouteDate){
+    const days = [
+      date.route_date_sun,
+      date.route_date_mon,
+      date.route_date_tue,
+      date.route_date_wen,
+      date.route_date_thu,
+      date.route_date_fri,
+      date.route_date_sat,
+     ] 
+     
+    return !days.some(day => (day !== 0 && day !== 1))
   }
 }

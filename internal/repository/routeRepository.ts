@@ -59,8 +59,8 @@ export class RouteRepository {
           route_color: data.route_color,
           route_status: data.route_status,
           route_com_id: data.route_com_id,
-          date_id: data.date_id,
-          time_id: data.time_id,
+          route_date_id: data.route_date_id,
+          route_time_id: data.route_time_id,
           route_array: data.route_array,
         },
       });
@@ -79,8 +79,8 @@ export class RouteRepository {
           route_color: data.route_color,
           route_status: data.route_status,
           route_com_id: data.route_com_id,
-          date_id: data.date_id,
-          time_id: data.time_id,
+          route_date_id: data.route_date_id,
+          route_time_id: data.route_time_id,
           route_array: data.route_array,
         },
       });

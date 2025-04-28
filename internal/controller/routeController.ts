@@ -11,9 +11,9 @@ export class RouteController {
   async getByPagination(req: Request, res: Response) {
     try {
       const { com_id, query } = Util.extractRequestContext<
-        void,
-        void,
-        { page: number; size: number; search: string }
+      void,
+      void,
+      { page: number; size: number; search: string }
       >(req, {
         query: true,
       });
@@ -50,10 +50,6 @@ export class RouteController {
       });
 
       const route = await this.routeService.getById(com_id, params.route_id);
-      console.log("ssssssdddfdfdfdf");
-      console.log(route);
-      
-      
 
       res.status(200).json({
         message: "Route retrieved successfully",

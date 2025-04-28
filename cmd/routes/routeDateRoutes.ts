@@ -11,11 +11,12 @@ export const DateRoutes = (prisma: PrismaClient) => {
   const service = new DateService(repo);
   const controller = new DateController(service);
 
-  router.get('/', controller.getAll.bind(controller));
-  router.get('/:id', controller.getById.bind(controller));
+  router.get("/all", controller.getAll.bind(controller));
+  router.get('/', controller.getByPagination.bind(controller));
+  router.get('/:route_date_id', controller.getById.bind(controller));
   router.post('/', controller.create.bind(controller));
-  router.put('/:id', controller.update.bind(controller));
-  router.delete('/:id', controller.delete.bind(controller));
+  router.put('/:route_date_id', controller.update.bind(controller));
+  router.delete('/:route_date_id', controller.delete.bind(controller));
 
   return router;
 };

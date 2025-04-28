@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
-import { TimeService } from "../service/timeService";
-import { RouteTime } from "../../cmd/models";
+import { LocationService } from "../service/locationService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteLocation } from "../../cmd/models";
 
-export class TimeController {
-  constructor(private readonly timeService: TimeService) {}
+export class LocationController {
+  constructor(private readonly locationService: LocationService) {}
 
   async getAll(req: Request, res: Response) {
     try {
       const { com_id } = Util.extractRequestContext(req);
 
-      const result = await this.timeService.getAll(com_id);
+      const result = await this.locationService.getAll(com_id);
 
       res.status(200).json({
-        message: "Route times retrieved successfully",
+        message: "Route locations retrieved successfully",
         result,
       });
     } catch (error) {
@@ -39,7 +39,7 @@ export class TimeController {
         query: true,
       });
 
-      const result = await this.timeService.getByPagination(
+      const result = await this.locationService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -47,7 +47,7 @@ export class TimeController {
       );
 
       res.status(200).json({
-        message: "Route times retrieved successfully",
+        message: "Route locations retrieved successfully",
         result,
       });
     } catch (error) {
@@ -65,18 +65,18 @@ export class TimeController {
     try {
       const { com_id, params } = Util.extractRequestContext<
         void,
-        { route_time_id: number }
+        { route_location_id: number }
       >(req, {
         params: true,
       });
 
-      const result = await this.timeService.getById(
+      const result = await this.locationService.getById(
         com_id,
-        params.route_time_id
+        params.route_location_id
       );
 
       res.status(200).json({
-        message: "Route time retrieved successfully",
+        message: "Route location retrieved successfully",
         result,
       });
     } catch (error) {
@@ -92,24 +92,14 @@ export class TimeController {
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteTime>(req, {
+      const { com_id, body } = Util.extractRequestContext<RouteLocation>(req, {
         body: true,
       });
 
-      if (
-        !Array.isArray(body.route_time_array?.split(",")) ||
-        !body.route_time_array.split(",").every(isValidTimeFormat)
-      ) {
-        return ExceptionHandler.badRequest(
-          res,
-          'route_time_array must be a comma-separated string of HH:mm times (e.g., "08:30,09:00")'
-        );
-      }
-
-      const result = await this.timeService.create(com_id, body);
+      const result = await this.locationService.create(com_id, body);
 
       res.status(201).json({
-        message: "Route time created successfully",
+        message: "Route location created successfully",
         result,
       });
     } catch (error) {
@@ -126,21 +116,21 @@ export class TimeController {
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        RouteTime,
-        { route_time_id: number }
+        RouteLocation,
+        { route_location_id: number }
       >(req, {
         body: true,
         params: true,
       });
 
-      const result = await this.timeService.update(
+      const result = await this.locationService.update(
         com_id,
-        params.route_time_id,
+        params.route_location_id,
         body
       );
 
       res.status(200).json({
-        message: "Route time updated successfully",
+        message: "Route location updated successfully",
         result,
       });
     } catch (error) {
@@ -158,15 +148,15 @@ export class TimeController {
     try {
       const { com_id, params } = Util.extractRequestContext<
         void,
-        { route_time_id: number }
+        { route_location_id: number }
       >(req, {
         params: true,
       });
 
-      await this.timeService.deleteById(com_id, params.route_time_id);
+      await this.locationService.delete(com_id, params.route_location_id);
 
       res.status(200).json({
-        message: "Route time deleted successfully",
+        message: "Route location deleted successfully",
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -179,6 +169,3 @@ export class TimeController {
     }
   }
 }
-
-const isValidTimeFormat = (value: string): boolean =>
-  /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);
