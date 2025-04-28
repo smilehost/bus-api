@@ -3,168 +3,182 @@ import { TimeService } from "../service/timeService";
 import { RouteTime } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
-
-interface CreateRouteTimeInput {
-  routeTimeName: string;
-  routeTimeArray: string[];
-  routeTimeComIdd: number;
-}
-
-const isValidTimeFormat = (value: string): boolean =>
-  /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);
+import { AppError } from "../utils/appError";
 
 export class TimeController {
   constructor(private readonly timeService: TimeService) {}
 
-  getByPagination = async (req: Request, res: Response) => {
+  async getAll(req: Request, res: Response) {
     try {
-      
-      const page = parseInt(req.query.page as string) || 1;
-      const size = parseInt(req.query.size as string) || 10;
-      const search = (req.query.search as string) || "";
+      const { com_id } = Util.extractRequestContext(req);
 
-      if (page < 1 || size < 1) {
-        return ExceptionHandler.badRequest(
-          res,
-          "Invalid pagination parameters"
-        );
-      }
+      const result = await this.timeService.getAll(com_id);
 
-      const result = await this.timeService.getByPagination(page, size, search);
-      res.status(200).json(result);
+      res.status(200).json({
+        message: "Route times retrieved successfully",
+        result,
+      });
     } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
 
-  getById = async (req: Request, res: Response) => {
+  async getByPagination(req: Request, res: Response) {
     try {
-      const comId = Util.parseId(
-        req.headers["com-id"] || req.headers["com_id"]
-      );
-      const routeTimeId = Util.parseId(req.params.route_time_id);
-
-      if (comId === null) {
-        return ExceptionHandler.badRequest(
-          res,
-          "Invalid or missing com_id in headers"
-        );
-      }
-
-      if (routeTimeId === null) {
-        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
-      }
-
-      const result = await this.timeService.getById(routeTimeId, comId);
-
-      if (!result) {
-        return ExceptionHandler.notFound(res, "Route time not found");
-      }
-
-      res.status(200).json(result);
-    } catch (error) {
-      ExceptionHandler.internalServerError(res, error);
-    }
-  };
-
-  create = async (req: Request, res: Response) => {
-    try {
-      const { routeTimeName, routeTimeArray, routeTimeComIdd } =
-        req.body as CreateRouteTimeInput;
-
-      if (
-        !Array.isArray(routeTimeArray) ||
-        !routeTimeArray.every(
-          (t) => typeof t === "string" && isValidTimeFormat(t)
-        )
-      ) {
-        return ExceptionHandler.badRequest(
-          res,
-          'routeTimeArray must be an array of strings in HH:mm format (e.g., "08:30")'
-        );
-      }
-
-      if (
-        typeof routeTimeName !== "string" ||
-        typeof routeTimeComIdd !== "number"
-      ) {
-        return ExceptionHandler.badRequest(
-          res,
-          "Invalid routeTimeName or routeTimeComIdd"
-        );
-      }
-
-      const routeTimeString = routeTimeArray.join(",");
-
-      const result = await this.timeService.create({
-        route_time_id: 0,
-        route_time_name: routeTimeName,
-        route_time_array: routeTimeString,
-        route_time_com_id: routeTimeComIdd,
+      const { com_id, query } = Util.extractRequestContext<
+        void,
+        void,
+        { page: number; size: number; search: string }
+      >(req, {
+        query: true,
       });
 
-      res.status(201).json({ message: "Created successfully", result });
+      const result = await this.timeService.getByPagination(
+        com_id,
+        query.page,
+        query.size,
+        query.search
+      );
+
+      res.status(200).json({
+        message: "Route times retrieved successfully",
+        result,
+      });
     } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
 
-  update = async (req: Request, res: Response) => {
+  async getById(req: Request, res: Response) {
     try {
-      const comId = parseInt(
-        (req.headers["com_id"] || req.headers["com-id"]) as string,
-        10
-      );
-      const routeTimeId = parseInt(req.params.route_time_id, 10);
+      const { com_id, params } = Util.extractRequestContext<
+        void,
+        { route_time_id: number }
+      >(req, {
+        params: true,
+      });
 
-      if (isNaN(comId)) {
+      const result = await this.timeService.getById(
+        com_id,
+        params.route_time_id
+      );
+
+      res.status(200).json({
+        message: "Route time retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async create(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<RouteTime>(req, {
+        body: true,
+      });
+
+      if (
+        !Array.isArray(body.route_time_array?.split(",")) ||
+        !body.route_time_array.split(",").every(isValidTimeFormat)
+      ) {
         return ExceptionHandler.badRequest(
           res,
-          "Invalid or missing com_id in headers"
+          'route_time_array must be a comma-separated string of HH:mm times (e.g., "08:30,09:00")'
         );
       }
 
-      if (isNaN(routeTimeId)) {
-        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
-      }
+      const result = await this.timeService.create(com_id, body);
 
-      const body = req.body as Partial<RouteTime>;
-
-      const result = await this.timeService.update(comId, routeTimeId, body);
-      res.json(result);
+      res.status(201).json({
+        message: "Route time created successfully",
+        result,
+      });
     } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
 
-  delete = async (req: Request, res: Response) => {
+  async update(req: Request, res: Response) {
     try {
-      const comId = parseInt(
-        (req.headers["com_id"] || req.headers["com-id"]) as string,
-        10
+      const { com_id, body, params } = Util.extractRequestContext<
+        RouteTime,
+        { route_time_id: number }
+      >(req, {
+        body: true,
+        params: true,
+      });
+
+      const result = await this.timeService.update(
+        com_id,
+        params.route_time_id,
+        body
       );
-      const routeTimeId = parseInt(req.params.route_time_id, 10);
 
-      if (isNaN(comId)) {
-        return ExceptionHandler.badRequest(
-          res,
-          "Invalid or missing com_id in headers"
-        );
-      }
-
-      if (isNaN(routeTimeId)) {
-        return ExceptionHandler.badRequest(res, "Invalid route_time_id");
-      }
-
-      const result = await this.timeService.deleteById(comId, routeTimeId);
-
-      if (!result) {
-        return ExceptionHandler.notFound(res, "Route time not found");
-      }
-
-      res.status(200).json({ message: "Route time deleted successfully" });
+      res.status(200).json({
+        message: "Route time updated successfully",
+        result,
+      });
     } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        void,
+        { route_time_id: number }
+      >(req, {
+        params: true,
+      });
+
+      await this.timeService.deleteById(com_id, params.route_time_id);
+
+      res.status(200).json({
+        message: "Route time deleted successfully",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
 }
+
+const isValidTimeFormat = (value: string): boolean =>
+  /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);

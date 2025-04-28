@@ -11,6 +11,7 @@ export const DateRoutes = (prisma: PrismaClient) => {
   const service = new DateService(repo);
   const controller = new DateController(service);
 
+  router.get("/all", controller.getAll.bind(controller));
   router.get('/', controller.getByPagination.bind(controller));
   router.get('/:route_date_id', controller.getById.bind(controller));
   router.post('/', controller.create.bind(controller));

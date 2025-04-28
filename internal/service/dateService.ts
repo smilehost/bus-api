@@ -6,6 +6,10 @@ import { Util } from '../utils/util';
 export class DateService {
   constructor(private readonly dateRepository: DateRepository) {}
 
+  async getAll(comId: number) {
+    return this.dateRepository.getAll(comId);
+  }
+
   async getByPagination(
     comId: number,
     page: number,

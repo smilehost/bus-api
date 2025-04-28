@@ -40,12 +40,7 @@ export class RouteService {
   }
 
   async getById(comId: number, routeId: number) {    
-    console.log("comId", comId);
-    console.log("routeId", routeId);
-    
     const route = await this.routeRepository.getById(routeId);
-    console.log("route", route);
-    
 
     if (!route) {
       throw AppError.NotFound("Route not found");
@@ -63,7 +58,7 @@ export class RouteService {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
 
-    const date = await this.dateRepository.getById(data.date_id);
+    const date = await this.dateRepository.getById(data.route_date_id);
     if (!date) {
       throw AppError.NotFound("Date not found");
     }
@@ -72,7 +67,7 @@ export class RouteService {
       throw AppError.Forbidden("Date: Company ID does not match");
     }
 
-    const time = await this.timeRepository.getById(data.time_id);
+    const time = await this.timeRepository.getById(data.route_time_id);
     if (!time) {
       throw AppError.NotFound("Time not found");
     }
@@ -94,7 +89,7 @@ export class RouteService {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
 
-    const date = await this.dateRepository.getById(data.date_id);
+    const date = await this.dateRepository.getById(data.route_date_id);
     if (!date) {
       throw AppError.NotFound("Date not found");
     }
@@ -103,7 +98,7 @@ export class RouteService {
       throw AppError.Forbidden("Date: Company ID does not match");
     }
 
-    const time = await this.timeRepository.getById(data.time_id);
+    const time = await this.timeRepository.getById(data.route_time_id);
     if (!time) {
       throw AppError.NotFound("Time not found");
     }

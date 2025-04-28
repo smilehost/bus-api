@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model account {
@@ -41,15 +42,20 @@ model price_type {
 }
 
 model route {
-  route_id      Int    @id @default(autoincrement())
-  route_name_th String @db.VarChar(300)
-  route_name_en String @db.VarChar(300)
-  route_color   String @db.VarChar(300)
+  route_id      Int        @id @default(autoincrement())
+  route_name_th String     @db.VarChar(300)
+  route_name_en String     @db.VarChar(300)
+  route_color   String     @db.VarChar(300)
   route_status  Int
   route_com_id  Int
-  date_id       Int
-  time_id       Int
-  route_array   String @db.VarChar(300)
+  route_date_id Int
+  route_time_id Int
+  route_array   String     @db.VarChar(300)
+  route_time    route_time @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
+
+  @@index([route_time_id], map: "route_time_id")
+  @@index([route_com_id], map: "route_com_id")
+  @@index([route_date_id], map: "route_date_id")
 }
 
 model route_date {
@@ -76,10 +82,11 @@ model route_location {
 }
 
 model route_time {
-  route_time_id     Int    @id @default(autoincrement())
-  route_time_name   String @db.VarChar(300)
-  route_time_array  String @db.VarChar(300)
+  route_time_id     Int     @id @default(autoincrement())
+  route_time_name   String  @db.VarChar(300)
+  route_time_array  String  @db.VarChar(300)
   route_time_com_id Int
+  route             route[]
 }
 
 model ticket {
@@ -90,17 +97,6 @@ model ticket {
   ticket_status   Int
   ticket_route_id Int
   ticket_amount   Int
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model ticket_discount {
-  ticket_discount_id    Int    @id
-  ticket_discount_name  String @db.VarChar(300)
-  ticket_discount_type  Int
-  ticket_discount_value String @db.VarChar(300)
-
-  @@ignore
 }
 
 model ticket_price {
@@ -121,4 +117,12 @@ model transaction {
   transaction_amount            String @db.VarChar(300)
   transaction_pax               Int
   transaction_member_id         Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ticket_discount {
+  ticket_discount_id    Int    @id @default(autoincrement())
+  ticket_discount_name  String @db.VarChar(300)
+  ticket_discount_type  Int
+  ticket_discount_value String @db.VarChar(300)
 }
