@@ -4,6 +4,7 @@ import { RouteTime } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteTimeRequest } from "../../cmd/request";
 
 export class TimeController {
   constructor(private readonly timeService: TimeService) {}
@@ -92,21 +93,9 @@ export class TimeController {
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteTime>(req, {
+      const { com_id, body } = Util.extractRequestContext<RouteTimeRequest>(req, {
         body: true,
       });
-
-      console.log("11111111111");
-
-      if (
-        !Array.isArray(body.route_time_array?.split(",")) ||
-        !body.route_time_array.split(",").every(isValidTimeFormat)
-      ) {
-        return ExceptionHandler.badRequest(
-          res,
-          'route_time_array must be a comma-separated string of HH:mm times (e.g., "08:30,09:00")'
-        );
-      }
 
       const result = await this.timeService.create(com_id, body);
 

@@ -43,7 +43,6 @@ export class DateService {
       throw AppError.NotFound("Route not found");
     }
     
-    console.log(routeDate.route_date_com_id)
     if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
       throw AppError.Forbidden("Company ID does not match");
     }

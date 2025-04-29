@@ -3,6 +3,7 @@ import { CompanyRepository } from "../repository/companyRepository";
 import { RouteTime } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteTimeRequest } from "../../cmd/request";
 
 export class TimeService {
   constructor(
@@ -54,7 +55,7 @@ export class TimeService {
     return routeTime;
   }
 
-  async create(comId: number, data: RouteTime) {
+  async create(comId: number, data: RouteTimeRequest) {
     const company = await this.companyRepository.getById(
       data.route_time_com_id
     );
@@ -66,7 +67,24 @@ export class TimeService {
       throw AppError.Forbidden("Route time: Company ID does not match");
     }
 
-    return this.timeRepository.create(data);
+    if (
+      !Array.isArray(data.route_time_array) ||
+      !data.route_time_array.every(
+        (t) => typeof t === "string" && isValidTimeFormat(t)
+      )
+    ) {
+      throw AppError.BadRequest(
+        "Route time array must be an array of strings in HH:MM format"
+      );
+    }
+
+    const routeTime: RouteTime = {
+      route_time_name: data.route_time_name,
+      route_time_array: data.route_time_array.join(","),
+      route_time_com_id: data.route_time_com_id,
+    };
+
+    return this.timeRepository.create(routeTime);
   }
 
   async update(
