@@ -21,6 +21,7 @@ describe("RouteController", () => {
     const mockRouteRepository = {} as any;
     const mockDateRepository = {} as any;
     const mockTimeRepository = {} as any;
+    
     mockService = new RouteService(
       mockRouteRepository,
       mockDateRepository,
