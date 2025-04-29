@@ -179,10 +179,6 @@ describe("RouteController", () => {
     },
   ];
 
-  // ===============================
-  // Test Cases
-  // ===============================
-
   describe("getByPagination()", () => {
     getByPagination_cases.forEach((testCase) => {
       it(testCase.name, async () => {
@@ -328,3 +324,300 @@ describe("RouteController", () => {
     });
   });
 });
+
+
+
+// -----------------------------------------------------------------------------
+
+code ข้างบนคือตัวอย่าง
+
+
+import { Request, Response } from "express";
+import { LocationService } from "../service/locationService";
+import { ExceptionHandler } from "../utils/exception";
+import { Util } from "../utils/util";
+import { AppError } from "../utils/appError";
+import { RouteLocation } from "../../cmd/models";
+
+export class LocationController {
+  constructor(private readonly locationService: LocationService) {}
+
+  async getAll(req: Request, res: Response) {
+    try {
+      const { com_id } = Util.extractRequestContext(req);
+
+      const result = await this.locationService.getAll(com_id);
+
+      res.status(200).json({
+        message: "Route locations retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async getByPagination(req: Request, res: Response) {
+    try {
+      const { com_id, query } = Util.extractRequestContext<
+        void,
+        void,
+        { page: number; size: number; search: string }
+      >(req, {
+        query: true,
+      });
+
+      const result = await this.locationService.getByPagination(
+        com_id,
+        query.page,
+        query.size,
+        query.search
+      );
+
+      res.status(200).json({
+        message: "Route locations retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async getById(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        void,
+        { route_location_id: number }
+      >(req, {
+        params: true,
+      });
+
+      const result = await this.locationService.getById(
+        com_id,
+        params.route_location_id
+      );
+
+      res.status(200).json({
+        message: "Route location retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async create(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<RouteLocation>(req, {
+        body: true,
+      });
+
+      const result = await this.locationService.create(com_id, body);
+
+      res.status(201).json({
+        message: "Route location created successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const { com_id, body, params } = Util.extractRequestContext<
+        RouteLocation,
+        { route_location_id: number }
+      >(req, {
+        body: true,
+        params: true,
+      });
+
+      const result = await this.locationService.update(
+        com_id,
+        params.route_location_id,
+        body
+      );
+
+      res.status(200).json({
+        message: "Route location updated successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        void,
+        { route_location_id: number }
+      >(req, {
+        params: true,
+      });
+
+      await this.locationService.delete(com_id, params.route_location_id);
+
+      res.status(200).json({
+        message: "Route location deleted successfully",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+}
+
+
+
+
+getAll
+
+{
+    "message": "Route locations retrieved successfully",
+    "result": [
+        {
+            "route_location_id": 4,
+            "route_location_name": "จุดจอดหน้าโรงเรียน",
+            "route_location_lat": "13.7563",
+            "route_location_long": "100.5018",
+            "route_location_com_id": 1
+        },
+        {
+            "route_location_id": 3,
+            "route_location_name": "เซนทรัลพลาซ่า",
+            "route_location_lat": "16.432604",
+            "route_location_long": "102.825183",
+            "route_location_com_id": 1
+        }
+    ]
+}
+
+
+
+getPaginated
+
+{
+    "message": "Route locations retrieved successfully",
+    "result": {
+        "page": 1,
+        "size": 5,
+        "total": 2,
+        "totalPages": 1,
+        "data": [
+            {
+                "route_location_id": 4,
+                "route_location_name": "จุดจอดหน้าโรงเรียน",
+                "route_location_lat": "13.7563",
+                "route_location_long": "100.5018",
+                "route_location_com_id": 1
+            },
+            {
+                "route_location_id": 3,
+                "route_location_name": "เซนทรัลพลาซ่า",
+                "route_location_lat": "16.432604",
+                "route_location_long": "102.825183",
+                "route_location_com_id": 1
+            }
+        ]
+    }
+}
+
+
+getById
+
+
+{
+    "message": "Route location retrieved successfully",
+    "result": {
+        "route_location_id": 4,
+        "route_location_name": "จุดจอดหน้าโรงเรียน",
+        "route_location_lat": "13.7563",
+        "route_location_long": "100.5018",
+        "route_location_com_id": 1
+    }
+}
+
+
+create
+
+{
+    "message": "Route location created successfully",
+    "result": {
+        "route_location_id": 5,
+        "route_location_name": "จุดจอดหน้าโรงเรียน",
+        "route_location_lat": "13.7563",
+        "route_location_long": "100.5018",
+        "route_location_com_id": 1
+    }
+}
+
+update
+
+
+{
+    "message": "Route location updated successfully",
+    "result": {
+        "route_location_id": 5,
+        "route_location_name": "จุดจอดหน้าโรงเรียน 2",
+        "route_location_lat": "13.7563",
+        "route_location_long": "100.5018",
+        "route_location_com_id": 1
+    }
+}
+
+
+delete
+
+{
+    "message": "Route location deleted successfully"
+}
+
+
+export interface RouteLocation {
+  route_location_id: number;
+  route_location_name: string;
+  route_location_lat: string;
+  route_location_long: string;
+  route_location_com_id: number;
+}
+
+
+
+จากข้อมูลที่ให้ช่วยเขียน test รูปแบบเดียวกันกับตัวอย่างให้หน่อย

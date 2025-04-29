@@ -68,11 +68,11 @@ export class DateService {
       throw AppError.NotFound("Route date not found");
     }
 
-    if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
+    if (!Util.ValidCompany(comId, routeDate.route_date_com_id)) {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    if (!this.validDateFormat(data)) {
+    if (this.validDateFormat(data)) {
       throw AppError.BadRequest("Invalid Day Format");
     }
 

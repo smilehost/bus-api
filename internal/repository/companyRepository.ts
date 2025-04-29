@@ -20,7 +20,6 @@ export class CompanyRepository {
     });
   }
 
-
   async update(comId: number, data: Company) {
     return this.prisma.company.update({
       where: {
