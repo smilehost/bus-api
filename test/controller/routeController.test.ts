@@ -21,7 +21,7 @@ describe("RouteController", () => {
     const mockRouteRepository = {} as any;
     const mockDateRepository = {} as any;
     const mockTimeRepository = {} as any;
-    
+
     mockService = new RouteService(
       mockRouteRepository,
       mockDateRepository,
@@ -76,6 +76,109 @@ describe("RouteController", () => {
     },
   ];
 
+  // --- getById ---
+  const getById_cases = [
+    {
+      name: "should return a route by ID",
+      serviceResult: { id: 1, name: "Route A" },
+      params: { route_id: 1 },
+      serviceError: null,
+      expectedStatus: 200,
+      expectedJson: (route: any) => ({
+        message: "Route retrieved successfully",
+        result: route,
+      }),
+    },
+    {
+      name: "should return AppError (404) when route not found",
+      serviceResult: null,
+      params: { route_id: 999 },
+      serviceError: AppError.NotFound("Route not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route not found",
+      },
+    },
+  ];
+
+  // --- create ---
+  const create_cases = [
+    {
+      name: "should create a new route",
+      body: { name: "New Route" },
+      serviceResult: { id: 1, name: "New Route" },
+      serviceError: null,
+      expectedStatus: 201,
+      expectedJson: (route: any) => ({
+        message: "Route created successfully",
+        result: route,
+      }),
+    },
+    {
+      name: "should return AppError (400) when invalid body",
+      body: {},
+      serviceResult: null,
+      serviceError: AppError.BadRequest("Invalid data"),
+      expectedStatus: 400,
+      expectedJson: {
+        error: "Bad Request",
+        message: "Invalid data",
+      },
+    },
+  ];
+
+  // --- update ---
+  const update_cases = [
+    {
+      name: "should update an existing route",
+      body: { name: "Updated Route" },
+      params: { route_id: 1 },
+      serviceResult: { id: 1, name: "Updated Route" },
+      serviceError: null,
+      expectedStatus: 200,
+      expectedJson: (route: any) => ({
+        message: "Route updated successfully",
+        result: route,
+      }),
+    },
+    {
+      name: "should return AppError (404) when route not found",
+      body: { name: "Updated Route" },
+      params: { route_id: 999 },
+      serviceResult: null,
+      serviceError: AppError.NotFound("Route not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route not found",
+      },
+    },
+  ];
+
+  // --- delete ---
+  const delete_cases = [
+    {
+      name: "should delete a route",
+      params: { route_id: 1 },
+      serviceError: null,
+      expectedStatus: 200,
+      expectedJson: {
+        message: "Route deleted successfully",
+      },
+    },
+    {
+      name: "should return AppError (404) when route not found",
+      params: { route_id: 999 },
+      serviceError: AppError.NotFound("Route not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route not found",
+      },
+    },
+  ];
+
   describe("getByPagination()", () => {
     getByPagination_cases.forEach((testCase) => {
       it(testCase.name, async () => {
@@ -105,32 +208,6 @@ describe("RouteController", () => {
       });
     });
   });
-
-  // --- getById ---
-  const getById_cases = [
-    {
-      name: "should return a route by ID",
-      serviceResult: { id: 1, name: "Route A" },
-      params: { route_id: 1 },
-      serviceError: null,
-      expectedStatus: 200,
-      expectedJson: (route: any) => ({
-        message: "Route retrieved successfully",
-        result: route,
-      }),
-    },
-    {
-      name: "should return AppError (404) when route not found",
-      serviceResult: null,
-      params: { route_id: 999 },
-      serviceError: AppError.NotFound("Route not found"),
-      expectedStatus: 404,
-      expectedJson: {
-        error: "Not Found",
-        message: "Route not found",
-      },
-    },
-  ];
 
   describe("getById()", () => {
     getById_cases.forEach((testCase) => {
@@ -162,32 +239,6 @@ describe("RouteController", () => {
     });
   });
 
-  // --- create ---
-  const create_cases = [
-    {
-      name: "should create a new route",
-      body: { name: "New Route" },
-      serviceResult: { id: 1, name: "New Route" },
-      serviceError: null,
-      expectedStatus: 201,
-      expectedJson: (route: any) => ({
-        message: "Route created successfully",
-        result: route,
-      }),
-    },
-    {
-      name: "should return AppError (400) when invalid body",
-      body: {},
-      serviceResult: null,
-      serviceError: AppError.BadRequest("Invalid data"),
-      expectedStatus: 400,
-      expectedJson: {
-        error: "Bad Request",
-        message: "Invalid data",
-      },
-    },
-  ];
-
   describe("create()", () => {
     create_cases.forEach((testCase) => {
       it(testCase.name, async () => {
@@ -217,34 +268,6 @@ describe("RouteController", () => {
       });
     });
   });
-
-  // --- update ---
-  const update_cases = [
-    {
-      name: "should update an existing route",
-      body: { name: "Updated Route" },
-      params: { route_id: 1 },
-      serviceResult: { id: 1, name: "Updated Route" },
-      serviceError: null,
-      expectedStatus: 200,
-      expectedJson: (route: any) => ({
-        message: "Route updated successfully",
-        result: route,
-      }),
-    },
-    {
-      name: "should return AppError (404) when route not found",
-      body: { name: "Updated Route" },
-      params: { route_id: 999 },
-      serviceResult: null,
-      serviceError: AppError.NotFound("Route not found"),
-      expectedStatus: 404,
-      expectedJson: {
-        error: "Not Found",
-        message: "Route not found",
-      },
-    },
-  ];
 
   describe("update()", () => {
     update_cases.forEach((testCase) => {
@@ -276,29 +299,6 @@ describe("RouteController", () => {
       });
     });
   });
-
-  // --- delete ---
-  const delete_cases = [
-    {
-      name: "should delete a route",
-      params: { route_id: 1 },
-      serviceError: null,
-      expectedStatus: 200,
-      expectedJson: {
-        message: "Route deleted successfully",
-      },
-    },
-    {
-      name: "should return AppError (404) when route not found",
-      params: { route_id: 999 },
-      serviceError: AppError.NotFound("Route not found"),
-      expectedStatus: 404,
-      expectedJson: {
-        error: "Not Found",
-        message: "Route not found",
-      },
-    },
-  ];
 
   describe("delete()", () => {
     delete_cases.forEach((testCase) => {
