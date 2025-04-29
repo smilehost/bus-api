@@ -6,8 +6,6 @@ set -e
 # โหลดค่า ENV จาก .env
 export $(grep -v '^#' .env | xargs)
 
-echo "📦 Running go test with coverage..."
-
 echo "🚀 Running SonarQube scanner..."
 sonar-scanner \
   -Dsonar.token=$SONAR_TOKEN \
@@ -16,7 +14,7 @@ sonar-scanner \
   # -Dsonar.projectName="bussing" \
   # -Dsonar.sources="." \
   # -Dsonar.exclusions="**/__tests__/**, **/*.test.ts, **/*.test.js, **/test/**, **/mock/**, **/docs/**, **/zzzzzzzzzzzzzzzzz.txt" \
-  # -Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" \
+  -Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" \
   # -Dsonar.typescript.tsconfigPath="tsconfig.json"
   # ถ้ามี test execution report ก็เพิ่มได้ เช่น
   # -Dsonar.testExecutionReportPaths="test-report.xml"

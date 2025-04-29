@@ -96,6 +96,8 @@ export class TimeController {
         body: true,
       });
 
+      console.log("11111111111");
+
       if (
         !Array.isArray(body.route_time_array?.split(",")) ||
         !body.route_time_array.split(",").every(isValidTimeFormat)

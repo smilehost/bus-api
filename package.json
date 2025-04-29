@@ -6,7 +6,7 @@
     "start": "ts-node cmd/server/main.ts",
     "dev": "nodemon",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",

@@ -55,7 +55,9 @@ export class TimeService {
   }
 
   async create(comId: number, data: RouteTime) {
-    const company = await this.companyRepository.getById(data.route_time_com_id);
+    const company = await this.companyRepository.getById(
+      data.route_time_com_id
+    );
     if (!company) {
       throw AppError.NotFound("Company not found");
     }
@@ -99,3 +101,6 @@ export class TimeService {
     return this.timeRepository.delete(routeTimeId);
   }
 }
+
+const isValidTimeFormat = (value: string): boolean =>
+  /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);

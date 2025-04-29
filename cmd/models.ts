@@ -13,6 +13,7 @@ export interface Account {
 export interface Company {
   com_id: number;
   com_name: string;
+  com_status: number;
 }
 
 export interface Member {

@@ -24,6 +24,7 @@ export class CompanyRepository {
     return this.prisma.company.create({
       data: {
         com_name: data.com_name,
+        com_status: data.com_status,
       },
     });
   }
