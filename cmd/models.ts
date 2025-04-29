@@ -13,6 +13,7 @@ export interface Account {
 export interface Company {
   com_id: number;
   com_name: string;
+  com_status: number;
 }
 
 export interface Member {
@@ -40,8 +41,8 @@ export interface Route {
   route_color: string;
   route_status: number;
   route_com_id: number;
-  date_id: number;
-  time_id: number;
+  route_date_id: number;
+  route_time_id: number;
   route_array: string;
 }
 
@@ -69,7 +70,7 @@ export interface RouteLocation {
 }
 
 export interface RouteTime {
-  route_time_id: number;
+  route_time_id?: number;
   route_time_name: string;
   route_time_array: string;
   route_time_com_id: number;

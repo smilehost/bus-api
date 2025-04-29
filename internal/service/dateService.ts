@@ -1,10 +1,14 @@
-import { RouteDate } from '../../cmd/models';
-import { DateRepository } from '../repository/dateRepository';
-import { AppError } from '../utils/appError';
-import { Util } from '../utils/util';
+import { RouteDate } from "../../cmd/models";
+import { DateRepository } from "../repository/dateRepository";
+import { AppError } from "../utils/appError";
+import { Util } from "../utils/util";
 
 export class DateService {
   constructor(private readonly dateRepository: DateRepository) {}
+
+  async getAll(comId: number) {
+    return this.dateRepository.getAll(comId);
+  }
 
   async getByPagination(
     comId: number,
@@ -33,27 +37,26 @@ export class DateService {
     };
   }
 
-  async getById(comId:number,id: number) {
+  async getById(comId: number, id: number) {
     const routeDate = await this.dateRepository.getById(id);
     if (!routeDate) {
       throw AppError.NotFound("Route not found");
     }
-    
-    console.log(routeDate.route_date_com_id)
+
     if (Util.ValidCompany(comId, routeDate.route_date_com_id) === false) {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    return routeDate 
+    return routeDate;
   }
 
-  create(comId: number,data: RouteDate) {
-    if (Util.ValidCompany(comId, data.route_date_com_id) === false) {
+  create(comId: number, data: RouteDate) {
+    if (!Util.ValidCompany(comId, data.route_date_com_id)) {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    if (this.validDateFormat(data)){
-        throw AppError.BadRequest("Invalid Day Format")
+    if (this.validDateFormat(data)) {
+      throw AppError.BadRequest("Invalid Day Format");
     }
 
     return this.dateRepository.create(data);
@@ -69,10 +72,10 @@ export class DateService {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    if (!this.validDateFormat(data)){
-      throw AppError.BadRequest("Invalid Day Format")
+    if (!this.validDateFormat(data)) {
+      throw AppError.BadRequest("Invalid Day Format");
     }
-    
+
     return this.dateRepository.update(id, data);
   }
 
@@ -89,7 +92,7 @@ export class DateService {
     return this.dateRepository.delete(id);
   }
 
-  validDateFormat(date :RouteDate){
+  validDateFormat(date: RouteDate) {
     const days = [
       date.route_date_sun,
       date.route_date_mon,
@@ -98,8 +101,8 @@ export class DateService {
       date.route_date_thu,
       date.route_date_fri,
       date.route_date_sat,
-     ] 
-     
-    return !days.some(day => (day !== 0 && day !== 1))
+    ];
+
+    return days.some((day) => day !== 0 && day !== 1);
   }
 }

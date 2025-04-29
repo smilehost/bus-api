@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# โหลดค่า ENV จาก .env
-export $(cat .env | xargs)
+# ออกจาก script ถ้า error
+set -e
 
-echo "📦 Running go test with coverage..."
-go test -coverprofile=coverage.out ./...
+# โหลดค่า ENV จาก .env
+export $(grep -v '^#' .env | xargs)
 
 echo "🚀 Running SonarQube scanner..."
 sonar-scanner \
-  -Dsonar.projectKey=Peoject \
-  -Dsonar.sources=. \
-  -Dsonar.go.coverage.reportPaths=coverage.out \
-  -Dsonar.token=$SONAR_TOKEN
+  -Dsonar.token=$SONAR_TOKEN \
+  -Dsonar.exclusions="coverage/**" \
+  -Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" \

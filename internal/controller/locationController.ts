@@ -31,7 +31,6 @@ export class LocationController {
 
   async getByPagination(req: Request, res: Response) {
     try {
-      console.log("------3");
       const { com_id, query } = Util.extractRequestContext<
         void,
         void,
@@ -39,7 +38,6 @@ export class LocationController {
       >(req, {
         query: true,
       });
-      console.log("------4");
 
       const result = await this.locationService.getByPagination(
         com_id,

@@ -1,0 +1,6 @@
+projectKey=bussing
+serverUrl=http://94.237.73.171:9000
+serverVersion=25.4.0.105899
+dashboardUrl=http://94.237.73.171:9000/dashboard?id=bussing
+ceTaskId=bec39cac-5205-4152-bb13-7186d6f8e59c
+ceTaskUrl=http://94.237.73.171:9000/api/ce/task?id=bec39cac-5205-4152-bb13-7186d6f8e59c

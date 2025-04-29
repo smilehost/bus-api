@@ -8,15 +8,36 @@ import { AppError } from "../utils/appError";
 export class DateController {
   constructor(private readonly dateService: DateService) {}
 
+  async getAll(req: Request, res: Response) {
+    try {
+      const { com_id } = Util.extractRequestContext(req);
+
+      const data = await this.dateService.getAll(com_id);
+
+      res.status(200).json({
+        message: "Dates retrieved successfully",
+        result: data,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async getByPagination(req: Request, res: Response) {
     try {
-      const {com_id, query} = Util.extractRequestContext<
+      const { com_id, query } = Util.extractRequestContext<
         void,
         void,
-        {page:number; size: number; search:string}
-      >(req,{
-        query:true
-      })
+        { page: number; size: number; search: string }
+      >(req, {
+        query: true,
+      });
 
       const data = await this.dateService.getByPagination(
         com_id,
@@ -44,12 +65,12 @@ export class DateController {
     try {
       const { com_id, params } = Util.extractRequestContext<
         RouteDate,
-        { route_date_id:number}
+        { route_date_id: number }
       >(req, {
         params: true,
       });
-      
-      const data = await this.dateService.getById(com_id,params.route_date_id);
+
+      const data = await this.dateService.getById(com_id, params.route_date_id);
       if (!data) {
         res.status(404).json({ error: "Data not found" });
         return;
@@ -59,7 +80,6 @@ export class DateController {
         message: "Route retrieved successfully",
         result: data,
       });
-
     } catch (error) {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
@@ -69,7 +89,7 @@ export class DateController {
       }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
 
   async create(req: Request, res: Response) {
     try {
@@ -92,7 +112,7 @@ export class DateController {
       }
       ExceptionHandler.internalServerError(res, error);
     }
-  };
+  }
 
   async update(req: Request, res: Response) {
     try {
