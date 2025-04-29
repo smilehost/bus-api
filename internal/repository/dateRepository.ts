@@ -74,7 +74,19 @@ export class DateRepository {
     try {
       return await this.prisma.route_date.update({
         where: { route_date_id: id },
-        data,
+        data:{
+          route_date_name:data.route_date_name,
+          route_date_start:data.route_date_name,
+          route_date_end:data.route_date_end,
+          route_date_mon:data.route_date_mon,
+          route_date_tue:data.route_date_tue,
+          route_date_wen:data.route_date_wen,
+          route_date_thu:data.route_date_thu,
+          route_date_fri:data.route_date_fri,
+          route_date_sat:data.route_date_sat,
+          route_date_sun:data.route_date_sun,
+          route_date_com_id:data.route_date_com_id
+        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
