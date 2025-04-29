@@ -7,7 +7,4 @@ set -e
 export $(grep -v '^#' .env | xargs)
 
 echo "🚀 Running SonarQube scanner..."
-sonar-scanner \
-  -Dsonar.token=$SONAR_TOKEN \
-  -Dsonar.exclusions="coverage/**" \
-  -Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" \
+sonar-scanner -Dsonar.token=$SONAR_TOKEN -X > sonar-debug.log

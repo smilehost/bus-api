@@ -11,13 +11,13 @@ export class RouteController {
   async getByPagination(req: Request, res: Response) {
     try {
       const { com_id, query } = Util.extractRequestContext<
-      void,
-      void,
-      { page: number; size: number; search: string }
+        void,
+        void,
+        { page: number; size: number; search: string }
       >(req, {
         query: true,
       });
-
+      
       const result = await this.routeService.getByPagination(
         com_id,
         query.page,

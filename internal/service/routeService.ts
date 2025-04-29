@@ -39,7 +39,7 @@ export class RouteService {
     };
   }
 
-  async getById(comId: number, routeId: number) {    
+  async getById(comId: number, routeId: number) {
     const route = await this.routeRepository.getById(routeId);
 
     if (!route) {
@@ -63,19 +63,6 @@ export class RouteService {
       throw AppError.NotFound("Date not found");
     }
 
-    if (!Util.ValidCompany(comId, date.route_date_com_id)) {
-      throw AppError.Forbidden("Date: Company ID does not match");
-    }
-
-    const time = await this.timeRepository.getById(data.route_time_id);
-    if (!time) {
-      throw AppError.NotFound("Time not found");
-    }
-
-    if (!Util.ValidCompany(comId, time.route_time_com_id)) {
-      throw AppError.Forbidden("Time: Company ID does not match");
-    }
-
     return this.routeRepository.create(data);
   }
 
@@ -87,24 +74,6 @@ export class RouteService {
 
     if (!Util.ValidCompany(comId, existingRoute.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
-    }
-
-    const date = await this.dateRepository.getById(data.route_date_id);
-    if (!date) {
-      throw AppError.NotFound("Date not found");
-    }
-
-    if (!Util.ValidCompany(comId, date.route_date_com_id)) {
-      throw AppError.Forbidden("Date: Company ID does not match");
-    }
-
-    const time = await this.timeRepository.getById(data.route_time_id);
-    if (!time) {
-      throw AppError.NotFound("Time not found");
-    }
-
-    if (!Util.ValidCompany(comId, time.route_time_com_id)) {
-      throw AppError.Forbidden("Time: Company ID does not match");
     }
 
     return this.routeRepository.update(routeId, data);
