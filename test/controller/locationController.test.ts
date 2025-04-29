@@ -1,11 +1,11 @@
 import { LocationController } from "../../internal/controller/locationController";
 import { LocationService } from "../../internal/service/locationService";
+import { Request, Response } from "express";
 import { Util } from "../../internal/utils/util";
 import { AppError } from "../../internal/utils/appError";
-import { Request, Response } from "express";
 
 jest.mock("../../internal/service/locationService");
-jest.mock("../../internal/utils/util");
+jest.mock("../../internal/utils/util.ts");
 
 describe("LocationController", () => {
   let controller: LocationController;
@@ -17,8 +17,10 @@ describe("LocationController", () => {
 
   beforeEach(() => {
     jest.spyOn(console, "error").mockImplementation(() => {});
+
     const mockLocationRepository = {} as any;
     const mockCompanyRepository = {} as any;
+
     mockService = new LocationService(
       mockLocationRepository,
       mockCompanyRepository
@@ -35,89 +37,155 @@ describe("LocationController", () => {
     };
   });
 
-  const testCases = [
+  // --- getAll ---
+  const getAll_cases = [
     {
-      method: "getAll",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({ com_id: 1 });
-        mockService.getAll.mockResolvedValue([{ id: 1, name: "Loc A" }]);
-      },
+      name: "should return all route locations",
+      serviceResult: [
+        {
+          route_location_id: 4,
+          route_location_name: "จุดจอดหน้าโรงเรียน",
+          route_location_lat: "13.7563",
+          route_location_long: "100.5018",
+          route_location_com_id: 1,
+        },
+        {
+          route_location_id: 3,
+          route_location_name: "เซนทรัลพลาซ่า",
+          route_location_lat: "16.432604",
+          route_location_long: "102.825183",
+          route_location_com_id: 1,
+        },
+      ],
+      serviceError: null,
       expectedStatus: 200,
-      expectedJson: {
+      expectedJson: (result: any) => ({
         message: "Route locations retrieved successfully",
-        result: [{ id: 1, name: "Loc A" }],
-      },
+        result,
+      }),
     },
     {
-      method: "getByPagination",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({
-          com_id: 1,
-          query: { page: 1, size: 10, search: "" },
-        });
-        mockService.getByPagination.mockResolvedValue({ page: 1, size: 10, total: 1, data: [{}] });
-      },
-      expectedStatus: 200,
+      name: "should return AppError (400) on bad request",
+      serviceResult: null,
+      serviceError: AppError.BadRequest("Invalid request"),
+      expectedStatus: 400,
       expectedJson: {
-        message: "Route locations retrieved successfully",
-        result: { page: 1, size: 10, total: 1, data: [{}] },
+        error: "Bad Request",
+        message: "Invalid request",
       },
     },
+  ];
+
+  // --- getByPagination ---
+  const getByPagination_cases = [
     {
-      method: "getById",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({
-          com_id: 1,
-          params: { route_location_id: 1 },
-        });
-        mockService.getById.mockResolvedValue({ id: 1, name: "Loc A" });
+      name: "should return paginated route locations",
+      serviceResult: {
+        page: 1,
+        size: 5,
+        total: 2,
+        totalPages: 1,
+        data: [
+          {
+            route_location_id: 4,
+            route_location_name: "จุดจอดหน้าโรงเรียน",
+            route_location_lat: "13.7563",
+            route_location_long: "100.5018",
+            route_location_com_id: 1,
+          },
+          {
+            route_location_id: 3,
+            route_location_name: "เซนทรัลพลาซ่า",
+            route_location_lat: "16.432604",
+            route_location_long: "102.825183",
+            route_location_com_id: 1,
+          },
+        ],
       },
+      serviceError: null,
       expectedStatus: 200,
-      expectedJson: {
+      expectedJson: (result: any) => ({
+        message: "Route locations retrieved successfully",
+        result,
+      }),
+    },
+  ];
+
+  // --- getById ---
+  const getById_cases = [
+    {
+      name: "should return a route location by ID",
+      serviceResult: {
+        route_location_id: 4,
+        route_location_name: "จุดจอดหน้าโรงเรียน",
+        route_location_lat: "13.7563",
+        route_location_long: "100.5018",
+        route_location_com_id: 1,
+      },
+      serviceError: null,
+      expectedStatus: 200,
+      expectedJson: (result: any) => ({
         message: "Route location retrieved successfully",
-        result: { id: 1, name: "Loc A" },
-      },
+        result,
+      }),
     },
     {
-      method: "create",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({
-          com_id: 1,
-          body: { name: "New Location" },
-        });
-        mockService.create.mockResolvedValue({ id: 2, name: "New Location" });
+      name: "should return AppError (404) when not found",
+      serviceResult: null,
+      serviceError: AppError.NotFound("Route location not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route location not found",
       },
+    },
+  ];
+
+  // --- create ---
+  const create_cases = [
+    {
+      name: "should create a route location",
+      serviceResult: {
+        route_location_id: 5,
+        route_location_name: "จุดจอดหน้าโรงเรียน",
+        route_location_lat: "13.7563",
+        route_location_long: "100.5018",
+        route_location_com_id: 1,
+      },
+      serviceError: null,
       expectedStatus: 201,
-      expectedJson: {
+      expectedJson: (result: any) => ({
         message: "Route location created successfully",
-        result: { id: 2, name: "New Location" },
-      },
+        result,
+      }),
     },
+  ];
+
+  // --- update ---
+  const update_cases = [
     {
-      method: "update",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({
-          com_id: 1,
-          body: { name: "Updated" },
-          params: { route_location_id: 1 },
-        });
-        mockService.update.mockResolvedValue({ id: 1, name: "Updated" });
+      name: "should update a route location",
+      serviceResult: {
+        route_location_id: 5,
+        route_location_name: "จุดจอดหน้าโรงเรียน 2",
+        route_location_lat: "13.7563",
+        route_location_long: "100.5018",
+        route_location_com_id: 1,
       },
+      serviceError: null,
       expectedStatus: 200,
-      expectedJson: {
+      expectedJson: (result: any) => ({
         message: "Route location updated successfully",
-        result: { id: 1, name: "Updated" },
-      },
+        result,
+      }),
     },
+  ];
+
+  // --- delete ---
+  const delete_cases = [
     {
-      method: "delete",
-      setup: () => {
-        (Util.extractRequestContext as jest.Mock).mockReturnValue({
-          com_id: 1,
-          params: { route_location_id: 1 },
-        });
-        mockService.delete.mockResolvedValue(undefined);
-      },
+      name: "should delete a route location",
+      serviceError: null,
       expectedStatus: 200,
       expectedJson: {
         message: "Route location deleted successfully",
@@ -125,35 +193,191 @@ describe("LocationController", () => {
     },
   ];
 
-  testCases.forEach(({ method, setup, expectedStatus, expectedJson }) => {
-    it(`${method}() should respond with ${expectedStatus}`, async () => {
-      setup();
-      await (controller[method] as any)(req as Request, res as Response);
-      expect(statusMock).toHaveBeenCalledWith(expectedStatus);
-      expect(jsonMock).toHaveBeenCalledWith(expectedJson);
+  // ===============================
+  // Test Cases
+  // ===============================
+
+  describe("getAll()", () => {
+    getAll_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+        });
+
+        if (testCase.serviceError) {
+          (mockService.getAll as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.getAll as jest.Mock).mockResolvedValue(
+            testCase.serviceResult
+          );
+        }
+
+        await controller.getAll(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(
+          typeof testCase.expectedJson === "function"
+            ? testCase.expectedJson(testCase.serviceResult)
+            : testCase.expectedJson
+        );
+      });
     });
   });
 
-  it("should return AppError response", async () => {
-    (Util.extractRequestContext as jest.Mock).mockReturnValue({ com_id: 1 });
-    const appError = AppError.BadRequest("Invalid request");
-    mockService.getAll.mockRejectedValue(appError);
+  describe("getByPagination()", () => {
+    getByPagination_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+          query: { page: 1, size: 5, search: "" },
+        });
 
-    await controller.getAll(req as Request, res as Response);
-    expect(statusMock).toHaveBeenCalledWith(400);
-    expect(jsonMock).toHaveBeenCalledWith({
-      error: "Bad Request",
-      message: "Invalid request",
+        if (testCase.serviceError) {
+          (mockService.getByPagination as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.getByPagination as jest.Mock).mockResolvedValue(
+            testCase.serviceResult
+          );
+        }
+
+        await controller.getByPagination(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(
+          typeof testCase.expectedJson === "function"
+            ? testCase.expectedJson(testCase.serviceResult)
+            : testCase.expectedJson
+        );
+      });
     });
   });
 
-  it("should handle unexpected error", async () => {
-    (Util.extractRequestContext as jest.Mock).mockReturnValue({ com_id: 1 });
-    mockService.getAll.mockRejectedValue(new Error("Unknown error"));
+  describe("getById()", () => {
+    getById_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+          params: { route_location_id: 4 },
+        });
 
-    const spy = jest.spyOn(require("../../internal/utils/exception").ExceptionHandler, "internalServerError");
+        if (testCase.serviceError) {
+          (mockService.getById as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.getById as jest.Mock).mockResolvedValue(
+            testCase.serviceResult
+          );
+        }
 
-    await controller.getAll(req as Request, res as Response);
-    expect(spy).toHaveBeenCalled();
+        await controller.getById(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(
+          typeof testCase.expectedJson === "function"
+            ? testCase.expectedJson(testCase.serviceResult)
+            : testCase.expectedJson
+        );
+      });
+    });
+  });
+
+  describe("create()", () => {
+    create_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+          body: {
+            route_location_name: "จุดจอดหน้าโรงเรียน",
+            route_location_lat: "13.7563",
+            route_location_long: "100.5018",
+            route_location_com_id: 1,
+          },
+        });
+
+        if (testCase.serviceError) {
+          (mockService.create as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.create as jest.Mock).mockResolvedValue(
+            testCase.serviceResult
+          );
+        }
+
+        await controller.create(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(
+          typeof testCase.expectedJson === "function"
+            ? testCase.expectedJson(testCase.serviceResult)
+            : testCase.expectedJson
+        );
+      });
+    });
+  });
+
+  describe("update()", () => {
+    update_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+          body: {
+            route_location_name: "จุดจอดหน้าโรงเรียน 2",
+            route_location_lat: "13.7563",
+            route_location_long: "100.5018",
+            route_location_com_id: 1,
+          },
+          params: { route_location_id: 5 },
+        });
+
+        if (testCase.serviceError) {
+          (mockService.update as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.update as jest.Mock).mockResolvedValue(
+            testCase.serviceResult
+          );
+        }
+
+        await controller.update(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(
+          typeof testCase.expectedJson === "function"
+            ? testCase.expectedJson(testCase.serviceResult)
+            : testCase.expectedJson
+        );
+      });
+    });
+  });
+
+  describe("delete()", () => {
+    delete_cases.forEach((testCase) => {
+      it(testCase.name, async () => {
+        (Util.extractRequestContext as jest.Mock).mockReturnValue({
+          com_id: 1,
+          params: { route_location_id: 5 },
+        });
+
+        if (testCase.serviceError) {
+          (mockService.delete as jest.Mock).mockRejectedValue(
+            testCase.serviceError
+          );
+        } else {
+          (mockService.delete as jest.Mock).mockResolvedValue(undefined);
+        }
+
+        await controller.delete(req as Request, res as Response);
+
+        expect(statusMock).toHaveBeenCalledWith(testCase.expectedStatus);
+        expect(jsonMock).toHaveBeenCalledWith(testCase.expectedJson);
+      });
+    });
   });
 });
