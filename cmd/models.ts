@@ -8,6 +8,7 @@ export interface Account {
   account_com_id: number;
   account_menu: string;
   account_status: number;
+  account_role: string;
 }
 
 export interface Company {
