@@ -1,46 +1,59 @@
 import { account } from "@prisma/client";
 import { AuthRepository } from "../repository/authRespository";
 import { AppError } from "../utils/appError";
-import { hashPassword } from "../utils/hashing";
+import { hashPassword,comparePasswords } from "../utils/hashing";
 import { signJwt } from "../utils/jwt";
 import { Util } from "../utils/util";
+import { registerAccount } from "../controller/authController";
 
 
 export class AuthService {
     constructor (private readonly authRepository: AuthRepository) {}
 
     async login(username:string,password:string,lifeTime:number){
-        const hashedPassword = await hashPassword(password)
-
-        const user = await this.authRepository.login(username,hashedPassword)
-
+        const user = await this.authRepository.getUserByUsername(username)
         if (!user) {
+            throw AppError.NotFound("Incorrect username or password")
+        }
+
+        const checkingHash = await comparePasswords(password,user.account_password)
+        if (!checkingHash) {
             throw AppError.NotFound("Incorrect username or password")
         }
 
         if (user.account_status === 0){
             throw AppError.Forbidden("Your account is't in active")
         }
-
         const token = signJwt({ account_id:user.account_id,
                                 account_role:user.account_role,
                                 com_id:user.account_com_id,
          }
-        ,lifeTime*3600);
+        ,lifeTime);
 
         return token
     }    
 
-    async register(com_id:number,account:account){
-        const existingUser = await this.authRepository.getUserByUsername(account.account_username)
+    async register(com_id:number,account:registerAccount){
+
+        const existingUser = await this.authRepository.getUserByUsername(account.username)
         if (existingUser) {
             throw AppError.Conflict("This username already existed")
         }
 
-        account.account_com_id = com_id
-        account.account_status = 1
+        const hashedPassword = await hashPassword(account.password)
 
-        return await this.authRepository.register(account)
+        const newAccount:account = {
+            account_id:1,
+            account_username:account.username,
+            account_name:account.name,
+            account_com_id:com_id,
+            account_password:hashedPassword,
+            account_status:1,
+            account_role:account.role,
+            account_menu:"",
+        }
+
+        return await this.authRepository.register(newAccount)
     }
 
     async changePassword(com_id:number,account_id:number,newPassword:string){
@@ -52,7 +65,34 @@ export class AuthService {
         if (!Util.ValidCompany(com_id, user.account_com_id)) {
             throw AppError.Forbidden("Company ID does not match");
         }
-
-        return await this.authRepository.changePassword(user.account_id,newPassword) 
+        const hashedPassword = await hashPassword(newPassword)
+        return await this.authRepository.changePassword(user.account_id,hashedPassword) 
     }
+
+    async createAdmin(com_id:number,name:string,username:string){
+        const password = this.generatePassword()
+
+        const newAdmin:registerAccount = {
+            username:username,
+            name:name,
+            password:password,
+            role:"1",
+        }
+
+        const admin = await this.register(com_id,newAdmin)
+        return {password,admin}
+    }
+
+    generatePassword(length: number = 10): string {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*_+~";
+        let password = "";
+      
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          password += chars[randomIndex];
+        }
+      
+        return password;
+      }
+      
 }

@@ -5,8 +5,14 @@ import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { Request, Response } from "express";
 
+export interface registerAccount{
+    name:string,
+    username:string,
+    password:string,
+    role:string
+}
 
-const LOGIN_LIFT_TIME = Number(process.env.LOGIN_LIFT_TIME) ?? 12
+const LOGIN_LIFT_TIME = Number(process.env.LOGIN_LIFT_TIME) || 12
 
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
@@ -28,7 +34,7 @@ export class AuthController {
                 sameSite: 'strict',
               })
 
-            return res.status(200).json({ message: 'Login successful' });
+            res.status(200).json({ message: 'Login successful' });
 
         } catch (error) {
             if (error instanceof AppError) {
@@ -63,18 +69,18 @@ export class AuthController {
 
     async register(req: Request, res: Response) {
         try {
-            const { com_id, body } = Util.extractRequestContext<account>(req, {
+            const { com_id, body } = Util.extractRequestContext<registerAccount>(req, {
                 body: true,
             });
             
-            if(!body.account_name||
-            !body.account_password||
-            !body.account_role||
-            !body.account_username){
+            if(!body.name||
+            !body.password||
+            !body.role||
+            !body.username){
                 throw AppError.BadRequest("Request these fied:name,password,role,username")
             }
 
-            if(body.account_role === "1"){
+            if(body.role === "1"){
                 throw AppError.Forbidden("Forbidden to create this user")
             }
 
@@ -97,17 +103,17 @@ export class AuthController {
 
     async changePassword(req: Request, res: Response) {
         try {
-            const { com_id, body } = Util.extractRequestContext<account>(req, {
+            const { com_id, body } = Util.extractRequestContext<{userId:number,newPassword:string}>(req, {
                 body: true,
             });
 
-            if (!body.account_id||!body.account_password){
+            if (!body.userId||!body.newPassword){
                 throw AppError.BadRequest("request id and password")
             }
 
             const data = await this.authService.changePassword(com_id,
-                                                               body.account_id,
-                                                               body.account_password)
+                                                               body.userId,
+                                                               body.newPassword)
 
             res.status(200).json({
             message: "Change User password successfully",

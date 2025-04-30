@@ -22,7 +22,15 @@ export class AuthRepository {
     async register(account:account) {
       try {
         return await this.prisma.account.create({
-          data: account,
+          data: {
+            account_name:account.account_name,
+            account_password:account.account_password,
+            account_username:account.account_username,
+            account_com_id:account.account_com_id,
+            account_status:account.account_status,
+            account_role:account.account_role,
+            account_menu:account.account_menu
+          },
         });
   
       } catch (error) {

@@ -13,12 +13,10 @@ export const Auth = (prisma: PrismaClient) => {
     const service = new AuthService(repo)
     const controller = new AuthController(service)
 
-    router.post('/login',controller.login)
-    // router.post('/refresh',controller.refresh)
-    router.post('/logout',controller.logout)
-    router.post('/register',controller.register)
-    // router.post('/changepassword',controller.changePassword)
-
+    router.post('/login',controller.login.bind(controller))
+    router.post('/logout',controller.logout.bind(controller))
+    router.post('/register',controller.register.bind(controller))
+    router.post('/changepassword',controller.changePassword.bind(controller))
 
     return router
 }
