@@ -1,5 +1,3 @@
-// types/entities.ts
-
 export interface Account {
   account_id: number;
   account_username: string;
@@ -13,6 +11,7 @@ export interface Account {
 
 export interface Company {
   com_id: number;
+  com_prefix: string;
   com_name: string;
   com_status: number;
 }
@@ -30,11 +29,6 @@ export interface PaymentMethod {
   payment_method_status: number;
 }
 
-export interface PriceType {
-  price_type_id: number;
-  price_type_name: string;
-}
-
 export interface Route {
   route_id: number;
   route_name_th: string;
@@ -45,6 +39,7 @@ export interface Route {
   route_date_id: number;
   route_time_id: number;
   route_array: string;
+  route_time?: RouteTime; // optional relation
 }
 
 export interface RouteDate {
@@ -75,29 +70,12 @@ export interface RouteTime {
   route_time_name: string;
   route_time_array: string;
   route_time_com_id: number;
-}
-
-export interface Ticket {
-  ticket_id: number;
-  ticket_name_th: string;
-  ticket_name_en: string;
-  ticket_color: string;
-  ticket_status: number;
-  ticket_route_id: number;
-  ticket_amount: number;
-}
-
-export interface TicketPrice {
-  ticket_price_id: number;
-  ticket_location_start: string;
-  ticket_location_stop: string;
-  price: string;
-  price_type_id: number;
-  ticket_price_ticket_id: number;
+  route?: Route[]; // optional relation
 }
 
 export interface Transaction {
   transaction_id: number;
+  transaction_com_id: number;
   transaction_datetime: string;
   transaction_lat: string;
   transaction_long: string;
@@ -105,4 +83,38 @@ export interface Transaction {
   transaction_amount: string;
   transaction_pax: number;
   transaction_member_id: number;
+}
+
+export interface TicketDiscount {
+  ticket_discount_id: number;
+  ticket_discount_name: string;
+  ticket_discount_type: number;
+  ticket_discount_value: string;
+}
+
+export interface RouteTicket {
+  route_ticket_id: number;
+  route_ticket_name_th: string;
+  route_ticket_name_en: string;
+  route_ticket_color: string;
+  route_ticket_status: number;
+  route_ticket_route_id: number;
+  route_ticket_amount: number;
+  route_ticket_type: string;
+}
+
+export interface RouteTicketPrice {
+  route_ticket_price_id: number;
+  route_ticket_location_start: string;
+  route_ticket_location_stop: string;
+  price: string;
+  route_ticket_price_type_id: number;
+  route_ticket_price_ticket_id: number;
+  route_ticket_price_route_id: number;
+}
+
+export interface RouteTicketPriceType {
+  route_ticket_price_type_id: number;
+  route_ticket_price_type_name: string;
+  route_ticket_price_type_com_id: number;
 }

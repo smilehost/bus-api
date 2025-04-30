@@ -6,9 +6,8 @@ import { signJwt } from "../utils/jwt";
 import { Util } from "../utils/util";
 import { registerAccount } from "../controller/authController";
 
-
 export class AuthService {
-    constructor (private readonly authRepository: AuthRepository) {}
+  constructor(private readonly authRepository: AuthRepository) {}
 
     async login(username:string,password:string,lifeTime:number){
         const user = await this.authRepository.getUserByUsername(username)

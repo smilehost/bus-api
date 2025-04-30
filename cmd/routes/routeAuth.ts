@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { signJwt } from '../../internal/utils/jwt';
 import { PrismaClient } from '@prisma/client';
 import { AuthService } from '../../internal/service/authService';
 import { AuthRepository } from '../../internal/repository/authRespository';

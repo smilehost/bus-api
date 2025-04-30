@@ -1,8 +1,6 @@
-import { account } from "@prisma/client";
 import { AuthService } from "../service/authService";
 import { AppError } from "../utils/appError";
 import { ExceptionHandler } from "../utils/exception";
-import { Util } from "../utils/util";
 import { Request, Response } from "express";
 
 export interface registerAccount{

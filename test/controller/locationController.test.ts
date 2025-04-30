@@ -1,5 +1,5 @@
-import { LocationController } from "../../internal/controller/locationController";
-import { LocationService } from "../../internal/service/locationService";
+import { LocationController } from "../../internal/controller/routeLocationController";
+import { LocationService } from "../../internal/service/routeLocationService";
 import { Request, Response } from "express";
 import { Util } from "../../internal/utils/util";
 import { AppError } from "../../internal/utils/appError";
@@ -109,6 +109,26 @@ describe("LocationController", () => {
         result,
       }),
     },
+    {
+      name: "should return AppError (400) on invalid pagination params",
+      serviceResult: null,
+      serviceError: AppError.BadRequest("Invalid pagination parameters"),
+      expectedStatus: 400,
+      expectedJson: {
+        error: "Bad Request",
+        message: "Invalid pagination parameters",
+      },
+    },
+    {
+      name: "should return 500 on internal server error",
+      serviceResult: null,
+      serviceError: new Error("Unexpected error"),
+      expectedStatus: 500,
+      expectedJson: {
+        error: "Internal Server Error",
+        message: "Unexpected error",
+      },
+    },
   ];
 
   // --- getById ---
@@ -159,6 +179,26 @@ describe("LocationController", () => {
         result,
       }),
     },
+    {
+      name: "should return AppError (400) on invalid input data",
+      serviceResult: null,
+      serviceError: AppError.BadRequest("Invalid input"),
+      expectedStatus: 400,
+      expectedJson: {
+        error: "Bad Request",
+        message: "Invalid input",
+      },
+    },
+    {
+      name: "should return 500 on internal server error",
+      serviceResult: null,
+      serviceError: new Error("Unexpected error"),
+      expectedStatus: 500,
+      expectedJson: {
+        error: "Internal Server Error",
+        message: "Unexpected error",
+      },
+    },
   ];
 
   // --- update ---
@@ -179,6 +219,26 @@ describe("LocationController", () => {
         result,
       }),
     },
+    {
+      name: "should return AppError (404) when updating non-existent route location",
+      serviceResult: null,
+      serviceError: AppError.NotFound("Route location not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route location not found",
+      },
+    },
+    {
+      name: "should return 500 on internal server error",
+      serviceResult: null,
+      serviceError: new Error("Unexpected error"),
+      expectedStatus: 500,
+      expectedJson: {
+        error: "Internal Server Error",
+        message: "Unexpected error",
+      },
+    },
   ];
 
   // --- delete ---
@@ -189,6 +249,24 @@ describe("LocationController", () => {
       expectedStatus: 200,
       expectedJson: {
         message: "Route location deleted successfully",
+      },
+    },
+    {
+      name: "should return AppError (404) when deleting non-existent route location",
+      serviceError: AppError.NotFound("Route location not found"),
+      expectedStatus: 404,
+      expectedJson: {
+        error: "Not Found",
+        message: "Route location not found",
+      },
+    },
+    {
+      name: "should return 500 on internal server error",
+      serviceError: new Error("Unexpected error"),
+      expectedStatus: 500,
+      expectedJson: {
+        error: "Internal Server Error",
+        message: "Unexpected error",
       },
     },
   ];

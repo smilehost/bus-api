@@ -122,26 +122,28 @@ model ticket_discount {
 }
 
 model route_ticket {
-  route_ticket_id       Int    @id @default(autoincrement())
-  route_ticket_name_th  String @db.VarChar(300)
-  route_ticket_name_en  String @db.VarChar(300)
-  route_ticket_color    String @db.VarChar(300)
+  route_ticket_id       Int                  @id @default(autoincrement())
+  route_ticket_name_th  String               @db.VarChar(300)
+  route_ticket_name_en  String               @db.VarChar(300)
+  route_ticket_color    String               @db.VarChar(300)
   route_ticket_status   Int
   route_ticket_route_id Int
   route_ticket_amount   Int
-  route_ticket_type     String @db.VarChar(300)
+  route_ticket_type     String               @db.VarChar(300)
+  route_ticket_price    route_ticket_price[] @relation("TicketToPrices")
 
   @@index([route_ticket_route_id], map: "route_ticket_route_id")
 }
 
 model route_ticket_price {
-  route_ticket_price_id        Int    @id @default(autoincrement())
-  route_ticket_location_start  String @db.VarChar(300)
-  route_ticket_location_stop   String @db.VarChar(300)
-  price                        String @db.VarChar(300)
+  route_ticket_price_id        Int          @id @default(autoincrement())
+  route_ticket_location_start  String       @db.VarChar(300)
+  route_ticket_location_stop   String       @db.VarChar(300)
+  price                        String       @db.VarChar(300)
   route_ticket_price_type_id   Int
   route_ticket_price_ticket_id Int
   route_ticket_price_route_id  Int
+  route_ticket                 route_ticket @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
 
   @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
   @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
