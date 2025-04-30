@@ -134,4 +134,38 @@ export class AuthController {
             ExceptionHandler.internalServerError(res, error);
         }
     }
+
+    async changeStatus(req: Request, res: Response){
+        try {
+            const { com_id, body } = Util.extractRequestContext<{userId:number,status:string}>(req, {
+                body: true,
+            });
+
+            if (!body.userId||!body.status){
+                throw AppError.BadRequest("request id and status")
+            }
+
+            if (req.user?.id !== body.userId){
+                throw AppError.Forbidden("can't change other admin status")
+            }
+
+            const data = await this.authService.changePassword(com_id,
+                                                               body.userId,
+                                                               body.status)
+
+            res.status(200).json({
+            message: "Change User status successfully",
+            result: data,
+            });
+            
+        } catch (error) {
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json({
+                  error: error.name,
+                  message: error.message,
+                });
+              }
+            ExceptionHandler.internalServerError(res, error);
+        }
+    }
 }
