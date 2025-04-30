@@ -1,7 +1,9 @@
 // types/express/index.d.ts
 
 //for can attach user login data to req in authMiddleware.ts
-import { JwtPayload } from 'jsonwebtoken';
+// types/express/index.d.ts
+
+import { Request } from 'express';
 
 declare global {
   namespace Express {
@@ -13,3 +15,5 @@ declare global {
     }
   }
 }
+
+export {}; // very important to make this a module

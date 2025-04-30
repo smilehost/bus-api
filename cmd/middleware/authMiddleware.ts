@@ -11,7 +11,8 @@ return (req: Request, res: Response, next: NextFunction) =>{
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'No token provided' });
+        res.status(401).json({ message: 'No token provided' });
+        return 
     }
     const token = authHeader.split(' ')[1];
 
@@ -19,13 +20,15 @@ return (req: Request, res: Response, next: NextFunction) =>{
         const decoded = verifyJwt(token) as JwtPayload;
 
         if (!allowedRoles.includes(decoded.role)) {
-        return res.status(403).json({ message: 'Access denied: insufficient role' });
+        res.status(403).json({ message: 'Access denied: insufficient role' });
+        return
         }
-        req.user = decoded;
+        //req.user = decoded;
         next();
 
     } catch (err) {
-        return res.status(403).json({ message: 'Forbidden' });
+        res.status(403).json({ message: 'Forbidden' });
+        return
     }
 }
 }
