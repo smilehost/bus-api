@@ -1,15 +1,15 @@
 import { Route } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
-import { DateRepository } from "../repository/dateRepository";
-import { TimeRepository } from "../repository/timeRepository";
+import { RouteDateRepository } from "../repository/routeDateRepository";
+import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 
 export class RouteService {
   constructor(
     private readonly routeRepository: RouteRepository,
-    private readonly dateRepository: DateRepository,
-    private readonly timeRepository: TimeRepository
+    private readonly routeDateRepository: RouteDateRepository,
+    private readonly routeTimeRepository: RouteTimeRepository
   ) {}
 
   async getByPagination(
@@ -58,7 +58,7 @@ export class RouteService {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
 
-    const date = await this.dateRepository.getById(data.route_date_id);
+    const date = await this.routeDateRepository.getById(data.route_date_id);
     if (!date) {
       throw AppError.NotFound("Date not found");
     }

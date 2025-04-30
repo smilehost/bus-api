@@ -1,5 +1,5 @@
-import { LocationController } from "../../internal/controller/locationController";
-import { LocationService } from "../../internal/service/locationService";
+import { LocationController } from "../../internal/controller/routeLocationController";
+import { LocationService } from "../../internal/service/routeLocationService";
 import { Request, Response } from "express";
 import { Util } from "../../internal/utils/util";
 import { AppError } from "../../internal/utils/appError";

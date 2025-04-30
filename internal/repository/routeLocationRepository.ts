@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
 import { RouteLocation } from "../../cmd/models"; // หรือจะใช้ interface โดยตรงจากที่คุณเขียนก็ได้
 
-export class LocationRepository {
+export class RouteLocationRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async getAll(comId: number) {

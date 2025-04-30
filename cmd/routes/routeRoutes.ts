@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import { RouteRepository } from "../../internal/repository/routeRepository";
 import { RouteService } from "../../internal/service/routeService";
 import { RouteController } from "../../internal/controller/routeController";
-import { DateRepository } from "../../internal/repository/dateRepository";
-import { TimeRepository } from "../../internal/repository/timeRepository";
+import { DateRepository } from "../../internal/repository/routeDateRepository";
+import { TimeRepository } from "../../internal/repository/routeTimeRepository";
 
 export const Route = (prisma: PrismaClient) => {
   const router = Router();

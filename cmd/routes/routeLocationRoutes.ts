@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { LocationRepository } from "../../internal/repository/locationRepository";
-import { LocationService } from "../../internal/service/locationService";
-import { LocationController } from "../../internal/controller/locationController";
+import { LocationRepository } from "../../internal/repository/routeLocationRepository";
+import { LocationService } from "../../internal/service/routeLocationService";
+import { LocationController } from "../../internal/controller/routeLocationController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
 export const LocationRoute = (prisma: PrismaClient) => {

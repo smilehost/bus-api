@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import { LocationService } from "../service/locationService";
+import { RouteLocationService } from "../service/routeLocationService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteLocation } from "../../cmd/models";
 
 export class LocationController {
-  constructor(private readonly locationService: LocationService) {}
+  constructor(private readonly routeLocationService: RouteLocationService) {}
 
   async getAll(req: Request, res: Response) {
     try {
       const { com_id } = Util.extractRequestContext(req);
 
-      const result = await this.locationService.getAll(com_id);
+      const result = await this.routeLocationService.getAll(com_id);
 
       res.status(200).json({
         message: "Route locations retrieved successfully",
@@ -39,7 +39,7 @@ export class LocationController {
         query: true,
       });
 
-      const result = await this.locationService.getByPagination(
+      const result = await this.routeLocationService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -70,7 +70,7 @@ export class LocationController {
         params: true,
       });
 
-      const result = await this.locationService.getById(
+      const result = await this.routeLocationService.getById(
         com_id,
         params.route_location_id
       );
@@ -96,7 +96,7 @@ export class LocationController {
         body: true,
       });
 
-      const result = await this.locationService.create(com_id, body);
+      const result = await this.routeLocationService.create(com_id, body);
 
       res.status(201).json({
         message: "Route location created successfully",
@@ -123,7 +123,7 @@ export class LocationController {
         params: true,
       });
 
-      const result = await this.locationService.update(
+      const result = await this.routeLocationService.update(
         com_id,
         params.route_location_id,
         body
@@ -153,7 +153,7 @@ export class LocationController {
         params: true,
       });
 
-      await this.locationService.delete(com_id, params.route_location_id);
+      await this.routeLocationService.delete(com_id, params.route_location_id);
 
       res.status(200).json({
         message: "Route location deleted successfully",

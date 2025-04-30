@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { DateRepository } from '../../internal/repository/dateRepository';
-import { DateService } from '../../internal/service/dateService';
-import { DateController } from '../../internal/controller/dateController';
+import { DateRepository } from '../../internal/repository/routeDateRepository';
+import { DateService } from '../../internal/service/routeDateService';
+import { DateController } from '../../internal/controller/routeDateController';
 
 export const DateRoutes = (prisma: PrismaClient) => {
   const router = Router();

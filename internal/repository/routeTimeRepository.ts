@@ -1,9 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
 import { RouteTime } from "../../cmd/models"; // หรือใช้ Prisma model ก็ได้
-import { log } from "console";
 
-export class TimeRepository {
+export class RouteTimeRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async getAll(comId: number) {

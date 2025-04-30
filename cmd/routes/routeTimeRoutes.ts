@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { TimeRepository } from "../../internal/repository/timeRepository";
-import { TimeService } from "../../internal/service/timeService";
-import { TimeController } from "../../internal/controller/timeController";
+import { TimeRepository } from "../../internal/repository/routeTimeRepository";
+import { TimeService } from "../../internal/service/routeTimeService";
+import { TimeController } from "../../internal/controller/routeTimeController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
 export const TimeRoutes = (prisma: PrismaClient) => {
