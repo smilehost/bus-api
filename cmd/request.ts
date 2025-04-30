@@ -6,7 +6,6 @@ export interface RouteTimeRequest {
 }
 
 export interface RouteTicketPrice {
-  route_ticket_price_ticket_id: number; // FK → route_ticket
   route_ticket_price_type_id: number; // FK → ticket_price_type
   route_ticket_location_start: number; // FK → route_location
   route_ticket_location_stop: number; // FK → route_location
@@ -24,5 +23,5 @@ export interface RouteTicketWithPrices {
   route_ticket_route_id: number; // FK → route
   route_ticket_amount: number;
   route_ticket_type: string;
-  list_route_ticket_price: RouteTicketPrice[];
+  route_ticket_price: RouteTicketPrice[];
 }

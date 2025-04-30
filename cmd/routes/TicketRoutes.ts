@@ -13,12 +13,12 @@ export const Ticket = (prisma: PrismaClient) => {
   const service = new TicketService(repo,routeRepo);
   const controller = new TicketController(service);
 
-  // router.get("/all", controller.getAll.bind(controller));
-  // router.get("/", controller.getByPagination.bind(controller));
+  // router.get("/all/:route_id", controller.getAll.bind(controller));
+  router.get("/priceType/", controller.getTicketPriceType.bind(controller));
   router.get("/:route_ticket_id", controller.getById.bind(controller));
   router.post("/", controller.create.bind(controller));
-  // router.put("/:route_time_id", controller.update.bind(controller));
-  // router.delete("/:route_time_id", controller.delete.bind(controller));
+  router.put("/:route_ticket_id", controller.update.bind(controller));
+  // router.delete("/:route_ticket_id", controller.delete.bind(controller));
 
   return router;
 };
