@@ -2,9 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyJwt } from '../../internal/utils/jwt';
 
 interface JwtPayload {
-    account_id:number,
-    account_role:string,
-    com_id:number,
+    id: number;
+    role: string;
   }
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
@@ -19,10 +18,10 @@ return (req: Request, res: Response, next: NextFunction) =>{
     try {
         const decoded = verifyJwt(token) as JwtPayload;
 
-        if (!allowedRoles.includes(decoded.account_role)) {
+        if (!allowedRoles.includes(decoded.role)) {
         return res.status(403).json({ message: 'Access denied: insufficient role' });
         }
-    
+        req.user = decoded;
         next();
 
     } catch (err) {
