@@ -2,6 +2,7 @@ import { AuthService } from "../service/authService";
 import { AppError } from "../utils/appError";
 import { ExceptionHandler } from "../utils/exception";
 import { Request, Response } from "express";
+import { Util } from "../utils/util";
 
 export interface registerAccount{
     name:string,
