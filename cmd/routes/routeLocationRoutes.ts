@@ -5,7 +5,7 @@ import { RouteLocationService } from "../../internal/service/routeLocationServic
 import { LocationController } from "../../internal/controller/routeLocationController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
-export const LocationRoute = (prisma: PrismaClient) => {
+export const RouteLocation = (prisma: PrismaClient) => {
   const router = Router();
 
   const repo = new RouteLocationRepository(prisma);

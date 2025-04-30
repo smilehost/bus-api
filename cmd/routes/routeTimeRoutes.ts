@@ -5,7 +5,7 @@ import { RouteTimeService } from "../../internal/service/routeTimeService";
 import { TimeController } from "../../internal/controller/routeTimeController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
-export const TimeRoutes = (prisma: PrismaClient) => {
+export const RouteTime = (prisma: PrismaClient) => {
   const router = Router();
 
   const repo = new RouteTimeRepository(prisma);

@@ -4,7 +4,7 @@ import { RouteDateRepository } from '../../internal/repository/routeDateReposito
 import { RouteDateService } from '../../internal/service/routeDateService';
 import { DateController } from '../../internal/controller/routeDateController';
 
-export const DateRoutes = (prisma: PrismaClient) => {
+export const RouteDate = (prisma: PrismaClient) => {
   const router = Router();
 
   const repo = new RouteDateRepository(prisma);
