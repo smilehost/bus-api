@@ -110,9 +110,9 @@ export class AuthController {
                 throw AppError.BadRequest("request id and password")
             }
 
-            if (req.user?.id !== body.userId){
-                throw AppError.Forbidden("can't change other admin password")
-            }
+            // if (req.user?.id !== body.userId){
+            //     throw AppError.Forbidden("can't change other admin password")
+            // }
 
             const data = await this.authService.changePassword(com_id,
                                                                body.userId,
@@ -144,9 +144,9 @@ export class AuthController {
                 throw AppError.BadRequest("request id and status")
             }
 
-            if (req.user?.id !== body.userId){
-                throw AppError.Forbidden("can't change other admin status")
-            }
+            // if (req.user?.id !== body.userId){
+            //     throw AppError.Forbidden("can't change other admin status")
+            // }
 
             const data = await this.authService.changeStatus(com_id,
                                                                body.userId,
