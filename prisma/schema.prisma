@@ -16,10 +16,14 @@ model account {
   account_com_id   Int
   account_menu     String @db.VarChar(300)
   account_status   Int
+  account_role     String @db.VarChar(300)
+
+  @@index([account_com_id], map: "account_com_id")
 }
 
 model company {
   com_id     Int    @id @default(autoincrement())
+  com_prefix String @db.VarChar(300)
   com_name   String @db.VarChar(3000)
   com_status Int
 }
@@ -29,6 +33,8 @@ model member {
   member_com_id Int
   member_phone  String @db.VarChar(300)
   member_date   String @db.VarChar(300)
+
+  @@index([member_com_id], map: "member_com_id")
 }
 
 model payment_method {
@@ -93,6 +99,7 @@ model route_time {
 
 model transaction {
   transaction_id                Int    @id @default(autoincrement())
+  transaction_com_id            Int
   transaction_datetime          String @db.VarChar(300)
   transaction_lat               String @db.VarChar(300)
   transaction_long              String @db.VarChar(300)
@@ -100,6 +107,10 @@ model transaction {
   transaction_amount            String @db.VarChar(300)
   transaction_pax               Int
   transaction_member_id         Int
+
+  @@index([transaction_com_id], map: "transaction_com_id")
+  @@index([transaction_member_id], map: "transaction_member_id")
+  @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -119,6 +130,8 @@ model route_ticket {
   route_ticket_route_id Int
   route_ticket_amount   Int
   route_ticket_type     String @db.VarChar(300)
+
+  @@index([route_ticket_route_id], map: "route_ticket_route_id")
 }
 
 model route_ticket_price {
@@ -126,9 +139,13 @@ model route_ticket_price {
   route_ticket_location_start  String @db.VarChar(300)
   route_ticket_location_stop   String @db.VarChar(300)
   price                        String @db.VarChar(300)
-  route_price_type_id          Int
+  route_ticket_price_type_id   Int
   route_ticket_price_ticket_id Int
   route_ticket_price_route_id  Int
+
+  @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
+  @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
+  @@index([route_ticket_price_type_id], map: "route_ticket_price_type_id")
 }
 
 model route_ticket_price_type {

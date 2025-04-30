@@ -1,19 +1,21 @@
-นี่คือฟังของ controller ชั้นที่ต้องการ test โดยที่ทุกครั้งที่ client request จะติด com_id มากับ header เสมอ
+#!/bin/bash
 
-``
--------------------------------------------------
+# ออกจาก script ถ้า error
+set -e
 
-test case 1
+# โหลดค่า ENV จาก .env
+export $(grep -v '^#' .env | xargs)
 
-
-body
-
-``
-
-param
-
-``
-
-query
-
-``
+echo "🚀 Running SonarQube scanner..."
+sonar-scanner \
+  -Dsonar.token=$SONAR_TOKEN \
+  # -Dsonar.host.url="http://94.237.73.171:9000" \
+  # -Dsonar.projectKey="bussing" \
+  # -Dsonar.projectName="bussing" \
+  # -Dsonar.sources="." \
+  # -Dsonar.exclusions="**/__tests__/**, **/*.test.ts, **/*.test.js, **/test/**, **/mock/**, **/docs/**, **/zzzzzzzzzzzzzzzzz.txt" \
+  -Dsonar.exclusions="coverage/**" \
+  -Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" \
+  # -Dsonar.typescript.tsconfigPath="tsconfig.json"
+  # ถ้ามี test execution report ก็เพิ่มได้ เช่น
+  # -Dsonar.testExecutionReportPaths="test-report.xml"
