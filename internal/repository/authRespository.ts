@@ -68,4 +68,15 @@ export class AuthRepository {
         throw AppError.fromPrismaError(error)
       }
     }
+
+    async changeStatus(account_id:number,newStatus:number){
+      try {
+        return await this.prisma.account.update({
+          where:{account_id:account_id},
+          data:{account_status:newStatus}
+        })
+      } catch (error) {
+        throw AppError.fromPrismaError(error)
+      }
+    }
 }

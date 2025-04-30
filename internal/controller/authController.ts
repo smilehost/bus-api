@@ -137,7 +137,7 @@ export class AuthController {
 
     async changeStatus(req: Request, res: Response){
         try {
-            const { com_id, body } = Util.extractRequestContext<{userId:number,status:string}>(req, {
+            const { com_id, body } = Util.extractRequestContext<{userId:number,status:number}>(req, {
                 body: true,
             });
 
@@ -149,7 +149,7 @@ export class AuthController {
                 throw AppError.Forbidden("can't change other admin status")
             }
 
-            const data = await this.authService.changePassword(com_id,
+            const data = await this.authService.changeStatus(com_id,
                                                                body.userId,
                                                                body.status)
 

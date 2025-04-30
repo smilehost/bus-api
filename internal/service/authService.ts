@@ -69,6 +69,18 @@ export class AuthService {
         return await this.authRepository.changePassword(user.account_id,hashedPassword) 
     }
 
+    async changeStatus(com_id:number,account_id:number,newStatus:number){
+        const user = await this.authRepository.getUserById(account_id)
+        if (!user) {
+            throw AppError.NotFound("User not found")
+        }
+
+        if (!Util.ValidCompany(com_id, user.account_com_id)) {
+            throw AppError.Forbidden("Company ID does not match");
+        }
+        return await this.authRepository.changeStatus(user.account_id,newStatus) 
+    }
+
     async createAdmin(com_id:number,name:string,username:string){
         const password = this.generatePassword()
 
