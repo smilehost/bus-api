@@ -102,21 +102,21 @@ export class AuthController {
 
     async changePassword(req: Request, res: Response) {
         try {
+            console.log(req.body)
             const { com_id, body } = Util.extractRequestContext<{userId:number,newPassword:string}>(req, {
                 body: true,
             });
+
+            const changer = req.body.user
 
             if (!body.userId||!body.newPassword){
                 throw AppError.BadRequest("request id and password")
             }
 
-            // if (req.user?.id !== body.userId){
-            //     throw AppError.Forbidden("can't change other admin password")
-            // }
-
             const data = await this.authService.changePassword(com_id,
                                                                body.userId,
-                                                               body.newPassword)
+                                                               body.newPassword,
+                                                               changer)
 
             res.status(200).json({
             message: "Change User password successfully",
@@ -136,21 +136,20 @@ export class AuthController {
 
     async changeStatus(req: Request, res: Response){
         try {
-            const { com_id, body } = Util.extractRequestContext<{userId:number,status:number}>(req, {
+            const { com_id, body } = Util.extractRequestContext<{userId:number,newStatus:number}>(req, {
                 body: true,
             });
 
-            if (!body.userId||!body.status){
+            const changer = req.body.user
+
+            if (!body.userId||!body.newStatus){
                 throw AppError.BadRequest("request id and status")
             }
 
-            // if (req.user?.id !== body.userId){
-            //     throw AppError.Forbidden("can't change other admin status")
-            // }
-
             const data = await this.authService.changeStatus(com_id,
                                                                body.userId,
-                                                               body.status)
+                                                               body.newStatus,
+                                                               changer)
 
             res.status(200).json({
             message: "Change User status successfully",

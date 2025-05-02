@@ -23,12 +23,13 @@ export class AuthService {
         if (user.account_status === 0){
             throw AppError.Forbidden("Your account is't in active")
         }
-        const token = signJwt({ account_id:user.account_id,
+        const token = await signJwt({ account_id:user.account_id,
                                 account_role:user.account_role,
                                 com_id:user.account_com_id,
+                                login_at: Date.now(),
          }
         ,lifeTime);
-
+         console.log(token)
         return token
     }    
 
@@ -55,7 +56,7 @@ export class AuthService {
         return await this.authRepository.register(newAccount)
     }
 
-    async changePassword(com_id:number,account_id:number,newPassword:string){
+    async changePassword(com_id:number,account_id:number,newPassword:string,changer:{account_id:number,account_role:string}){
         const user = await this.authRepository.getUserById(account_id)
         if (!user) {
             throw AppError.NotFound("User not found")
@@ -64,11 +65,17 @@ export class AuthService {
         if (!Util.ValidCompany(com_id, user.account_com_id)) {
             throw AppError.Forbidden("Company ID does not match");
         }
+
+        
+        if (user.account_id !== changer.account_id && changer.account_role === "1"){
+            throw AppError.Forbidden("can't change other admin password")
+        }
+
         const hashedPassword = await hashPassword(newPassword)
         return await this.authRepository.changePassword(user.account_id,hashedPassword) 
     }
 
-    async changeStatus(com_id:number,account_id:number,newStatus:number){
+    async changeStatus(com_id:number,account_id:number,newStatus:number,changer:{account_id:number,account_role:string}){
         const user = await this.authRepository.getUserById(account_id)
         if (!user) {
             throw AppError.NotFound("User not found")
@@ -77,6 +84,11 @@ export class AuthService {
         if (!Util.ValidCompany(com_id, user.account_com_id)) {
             throw AppError.Forbidden("Company ID does not match");
         }
+
+        if (user.account_id !== changer.account_id && changer.account_role === "1"){
+            throw AppError.Forbidden("can't change other admin status")
+        }
+
         return await this.authRepository.changeStatus(user.account_id,newStatus) 
     }
 
