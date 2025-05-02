@@ -1,12 +1,12 @@
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteRepository } from "../repository/routeRepository";
-import { TicketRepository } from "../repository/ticketRepository";
+import { RouteTicketRepository } from "../repository/routeTicketRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 
-export class TicketService {
+export class RouteTicketService {
   constructor(
-    private readonly ticketRepository: TicketRepository,
+    private readonly ticketRepository: RouteTicketRepository,
     private readonly routeRepository: RouteRepository
   ) {}
 
