@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        // Define SonarQube Scanner tool - this is the important addition
-        sonarqubeScanner 'SonarQube Scanner'
+        // Use the correct tool type from the error message: hudson.plugins.sonar.SonarRunnerInstallation
+        'hudson.plugins.sonar.SonarRunnerInstallation' 'SonarQube Scanner'
     }
 
     stages {
