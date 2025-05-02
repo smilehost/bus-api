@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    tools {
-        sonarQubeScanner 'SonarQube' // ใช้ชื่อจาก Tools config
-    }
+    // tools {
+    //     sonarQubeScanner 'SonarQube' // ใช้ชื่อจาก Tools config
+    // }
 
     stages {
         stage('Checkout') {
