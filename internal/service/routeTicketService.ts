@@ -6,7 +6,7 @@ import { Util } from "../utils/util";
 
 export class RouteTicketService {
   constructor(
-    private readonly ticketRepository: RouteTicketRepository,
+    private readonly routeTicketRepository: RouteTicketRepository,
     private readonly routeRepository: RouteRepository
   ) {}
 
@@ -20,12 +20,12 @@ export class RouteTicketService {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
-    const tickets = await this.ticketRepository.getAllTicketsByRouteId(routeId);
+    const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(routeId);
     return tickets;
   }
 
   async getTicketPriceType(comId: number) {
-    const ticketPriceTypes = await this.ticketRepository.getTicketPriceType(
+    const ticketPriceTypes = await this.routeTicketRepository.getTicketPriceType(
       comId
     );
     if (!ticketPriceTypes) {
@@ -45,7 +45,7 @@ export class RouteTicketService {
     const take = size;
     search = search.toString();
 
-    const [data, total] = await this.ticketRepository.getPaginated(
+    const [data, total] = await this.routeTicketRepository.getPaginated(
       comId,
       skip,
       take,
@@ -62,7 +62,7 @@ export class RouteTicketService {
   }
 
   async getById(comId: number, ticketId: number) {
-    const ticket = await this.ticketRepository.getById(ticketId);
+    const ticket = await this.routeTicketRepository.getById(ticketId);
 
     if (!ticket) {
       throw AppError.NotFound("Route ticket not found");
@@ -84,7 +84,7 @@ export class RouteTicketService {
   }
 
   async create(comId: number, data: RouteTicketWithPrices) {
-    return this.ticketRepository.create(data);
+    return this.routeTicketRepository.create(data);
   }
 
   async update(comId: number, ticketId: number, data: RouteTicketWithPrices) {
@@ -92,7 +92,7 @@ export class RouteTicketService {
       throw AppError.BadRequest("Route ticket ID does not match");
     }
 
-    const ticket = await this.ticketRepository.getById(ticketId);
+    const ticket = await this.routeTicketRepository.getById(ticketId);
     if (!ticket) {
       throw AppError.NotFound("Route ticket not found");
     }
@@ -108,6 +108,6 @@ export class RouteTicketService {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
-    return await this.ticketRepository.update(ticketId, data);
+    return await this.routeTicketRepository.update(ticketId, data);
   }
 }

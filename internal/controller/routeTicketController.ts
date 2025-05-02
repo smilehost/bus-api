@@ -6,7 +6,7 @@ import { AppError } from "../utils/appError";
 import { RouteTicketWithPrices } from "../../cmd/request";
 
 export class RouteTicketController {
-  constructor(private readonly ticketService: RouteTicketService) {}
+  constructor(private readonly routeTicketService: RouteTicketService) {}
 
   async getAllTicketsByRouteId(req: Request, res: Response) {
     try {
@@ -17,7 +17,7 @@ export class RouteTicketController {
         params: true,
       });
 
-      const result = await this.ticketService.getAllTicketsByRouteId(
+      const result = await this.routeTicketService.getAllTicketsByRouteId(
         com_id,
         params.route_id
       );
@@ -41,7 +41,7 @@ export class RouteTicketController {
     try {
       const { com_id } = Util.extractRequestContext(req, {});
 
-      const result = await this.ticketService.getTicketPriceType(com_id);
+      const result = await this.routeTicketService.getTicketPriceType(com_id);
 
       res.status(200).json({
         message: "Ticket price types retrieved successfully",
@@ -68,7 +68,7 @@ export class RouteTicketController {
         query: true,
       });
 
-      const result = await this.ticketService.getByPagination(
+      const result = await this.routeTicketService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -99,7 +99,7 @@ export class RouteTicketController {
         params: true,
       });
 
-      const result = await this.ticketService.getById(
+      const result = await this.routeTicketService.getById(
         com_id,
         params.route_ticket_id
       );
@@ -126,7 +126,7 @@ export class RouteTicketController {
           body: true,
         });
 
-      const result = await this.ticketService.create(com_id, body);
+      const result = await this.routeTicketService.create(com_id, body);
 
       res.status(201).json({
         message: "Ticket created successfully",
@@ -153,7 +153,7 @@ export class RouteTicketController {
         params: true,
       });
 
-      const result = await this.ticketService.update(
+      const result = await this.routeTicketService.update(
         com_id,
         params.route_ticket_id,
         body

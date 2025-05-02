@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: true,
     credentials: true,
-    exposedHeaders: ["Authorization"], // 👈 เพิ่มบรรทัดนี้
+    exposedHeaders: ["Authorization"],
   })
 );
 

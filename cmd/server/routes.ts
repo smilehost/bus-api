@@ -11,12 +11,12 @@ import { RoutesTicket } from '../routes/routeTicket';
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();
   router.use('/route', Route(prisma));
-  router.use('/dates', RouteDate(prisma));
-  router.use('/times', RouteTime(prisma));
-  router.use('/locations', RouteLocation(prisma));
+  router.use('/routeDates', RouteDate(prisma));
+  router.use('/routeTimes', RouteTime(prisma));
+  router.use('/routeLocations', RouteLocation(prisma));
 
   router.use('/auth', Auth(prisma));
-  router.use('/routeticket', RoutesTicket(prisma));
+  router.use('/routeTicket', RoutesTicket(prisma));
 
   return router;
 };
