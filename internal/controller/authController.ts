@@ -33,8 +33,8 @@ export class AuthController {
       res.cookie("token", token, {
         maxAge: 3600 * 1000 * Number(LOGIN_LIFT_TIME),
         httpOnly: true,
-        secure: false, // ❌ true จะไม่ทำงานใน HTTP (dev)
-        sameSite: "lax", // ✅ หรือ 'none' ถ้า frontend อยู่ domain อื่น
+        secure: true, // ✅ ตอนนี้ใช้ได้แล้ว เพราะเราใช้ HTTPS
+        sameSite: "none", // ✅ ต้องใช้คู่กับ secure สำหรับ cross-origin
       });
 
       res.status(200).json({ message: "Login successful" });
