@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-import cors from "cors";
 import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
 
 const app = express();
@@ -9,12 +10,13 @@ const prisma = new PrismaClient();
 
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true,
+    credentials: true,
   })
 );
 
 app.use(express.json());
+app.use(cookieParser()); // ✅ สำคัญมาก
 
 app.get("/", (req, res) => {
   res.send("Hello World!!!!");

@@ -23,7 +23,9 @@ services:
       - sonarqube-network
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: jenkins.Dockerfile
     user: root
     ports:
       - 8080:8080
