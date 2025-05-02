@@ -4,7 +4,7 @@ import { ExceptionHandler } from "../utils/exception";
 import { Request, Response } from "express";
 import { Util } from "../utils/util";
 
-export interface registerAccount {
+export interface RegisterAccount {
   name: string;
   username: string;
   password: string;
@@ -72,7 +72,7 @@ export class AuthController {
 
   async register(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<registerAccount>(
+      const { com_id, body } = Util.extractRequestContext<RegisterAccount>(
         req,
         {
           body: true,

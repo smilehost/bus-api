@@ -4,7 +4,7 @@ import { AppError } from "../utils/appError";
 import { hashPassword,comparePasswords } from "../utils/hashing";
 import { signJwt } from "../utils/jwt";
 import { Util } from "../utils/util";
-import { registerAccount } from "../controller/authController";
+import { RegisterAccount } from "../controller/authController";
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
@@ -33,7 +33,7 @@ export class AuthService {
         return token
     }    
 
-    async register(com_id:number,account:registerAccount){
+    async register(com_id:number,account:RegisterAccount){
 
         const existingUser = await this.authRepository.getUserByUsername(account.username)
         if (existingUser) {
@@ -95,7 +95,7 @@ export class AuthService {
     async createAdmin(com_id:number,name:string,username:string){
         const password = this.generatePassword()
 
-        const newAdmin:registerAccount = {
+        const newAdmin:RegisterAccount = {
             username:username,
             name:name,
             password:password,

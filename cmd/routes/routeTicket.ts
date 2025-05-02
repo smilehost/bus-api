@@ -21,15 +21,15 @@ export const RoutesTicket = (prisma: PrismaClient) => {
   router.put("/:route_ticket_id", controller.update.bind(controller));
   // router.delete("/:route_ticket_id", controller.delete.bind(controller));
   
-  router.get("/routeticket/route/:route_id");
-  router.get("/routeticket/all");
-  router.get("/routeticket/ticket/:route_ticket_id");
+  // router.get("/routeticket/route/:route_id");
+  // router.get("/routeticket/all");
+  // router.get("/routeticket/ticket/:route_ticket_id");
   
-  router.post("/routeticket/create");
+  // router.post("/routeticket/create");
 
-  router.put("/routeticket/:route_ticket_id");
+  // router.put("/routeticket/:route_ticket_id");
   
-  router.delete("/routeticket/:route_ticket_id");
+  // router.delete("/routeticket/:route_ticket_id");
 
   return router;
 };
