@@ -8,17 +8,14 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Check SonarQube') {
             steps {
-                // Skip tool declaration altogether and just use withSonarQubeEnv
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        ${SONAR_RUNNER_HOME}/bin/sonar-scanner \
-                        -Dsonar.projectKey=bus-api \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://YOUR_SONARQUBE_URL:9000
-                    '''
-                }
+                sh '''
+                    which sonar-scanner || echo "SonarQube Scanner not in PATH"
+                    find / -name "sonar-scanner" 2>/dev/null || echo "SonarQube Scanner not found"
+                    echo "JENKINS_HOME = $JENKINS_HOME"
+                    ls -la $JENKINS_HOME/tools || echo "No tools directory found"
+                '''
             }
         }
     }
