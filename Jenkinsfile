@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Define SonarQube Scanner tool - this is the important addition
+        sonarqubeScanner 'SonarQube Scanner'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,13 +15,13 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'SONAR_TOKEN') {
-                    // sh '${SONAR_SCANNER_HOME}/bin/sonar-scanner'
-                    // sh 'echo $SONAR_SCANNER_HOME'
+                withSonarQubeEnv(installationName: 'SonarQube') {
                     sh '''
-  echo "SCANNER HOME = $SONAR_SCANNER_HOME"
-  ls -la $SONAR_SCANNER_HOME/bin
-'''
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        -Dsonar.projectKey=bus-api \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://YOUR_SONARQUBE_URL:9000
+                    '''
                 }
             }
         }
