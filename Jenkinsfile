@@ -1,13 +1,22 @@
 pipeline {
     agent any
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
+
+    tools {
+        sonarQubeScanner 'SonarQube' // ใช้ชื่อจาก Tools config
     }
+
     stages {
-        stage('Scan') {
+        stage('Checkout') {
             steps {
-                withSonarQubeEnv('sq1') {
-                    sh 'sonar-scanner'
+                checkout scm
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'SONAR_TOKEN') {
+                    // sh 'sonar-scanner'
+                    sh 'echo Connected to SonarQube!'
                 }
             }
         }

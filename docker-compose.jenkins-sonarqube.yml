@@ -23,10 +23,7 @@ services:
       - sonarqube-network
 
   jenkins:
-    build:
-      context: .
-      dockerfile: jenkins.Dockerfile
-    user: root
+    image: jenkins/jenkins:lts
     ports:
       - 8080:8080
       - 50000:50000
@@ -35,6 +32,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - sonarqube-network
+    restart: unless-stopped
 
 volumes:
   sonarqube_data:
