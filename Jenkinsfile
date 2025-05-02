@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Try this simpler syntax instead
-        SonarRunnerInstallation 'SonarQube Scanner'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -15,9 +10,10 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(installationName: 'SonarQube') {
+                // Skip tool declaration altogether and just use withSonarQubeEnv
+                withSonarQubeEnv('SonarQube') {
                     sh '''
-                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        ${SONAR_RUNNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=bus-api \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://YOUR_SONARQUBE_URL:9000
