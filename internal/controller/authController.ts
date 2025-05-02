@@ -30,12 +30,14 @@ export class AuthController {
         LOGIN_LIFT_TIME
       );
 
-      res.cookie("token", token, {
-        maxAge: 3600 * 1000 * Number(LOGIN_LIFT_TIME),
-        httpOnly: true,
-        secure: true, // ✅ ตอนนี้ใช้ได้แล้ว เพราะเราใช้ HTTPS
-        sameSite: "none", // ✅ ต้องใช้คู่กับ secure สำหรับ cross-origin
-      });
+      res.setHeader('Authorization', `Bearer ${token}`);
+      // res.cookie("token", token, {2
+      //   maxAge: 3600 * 1000 * Number(LOGIN_LIFT_TIME),
+      //   httpOnly: true,
+      //   secure: true, // ✅ ตอนนี้ใช้ได้แล้ว เพราะเราใช้ HTTPS
+      //   sameSite: "none", // ✅ ต้องใช้คู่กับ secure สำหรับ cross-origin
+      // });
+
 
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
