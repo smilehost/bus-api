@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // ใช้ชื่อที่คุณตั้งค่าไว้ (เช่น "SonarQube")
+        SonarRunnerInstallation 'SonarQube'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,14 +13,11 @@ pipeline {
             }
         }
 
-        stage('Check SonarQube') {
+        stage('SonarQube Analysis') {
             steps {
-                sh '''
-                    which sonar-scanner || echo "SonarQube Scanner not in PATH"
-                    find / -name "sonar-scanner" 2>/dev/null || echo "SonarQube Scanner not found"
-                    echo "JENKINS_HOME = $JENKINS_HOME"
-                    ls -la $JENKINS_HOME/tools || echo "No tools directory found"
-                '''
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner -Dsonar.projectKey=bus-api -Dsonar.sources=.'
+                }
             }
         }
     }
