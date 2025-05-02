@@ -1,13 +1,12 @@
 pipeline {
     agent any
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
+
     stages {
-        stage('Scan') {
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sq1') {
+                withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'SONAR_TOKEN') {
                     sh 'sonar-scanner'
+                    // sh 'echo $SONAR_SCANNER_HOME'
                 }
             }
         }
