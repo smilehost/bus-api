@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { AppError } from "../utils/appError";
 
-export class TicketRepository {
+export class RouteTicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async getAllTicketsByRouteId(routeId: number) {

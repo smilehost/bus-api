@@ -6,7 +6,7 @@ import { RouteTime } from '../routes/routeTimeRoutes';
 import { Route } from '../routes/routeRoutes';
 import { RouteLocation } from '../routes/routeLocationRoutes';
 import { Auth } from '../routes/routeAuth';
-import { Ticket } from '../routes/TicketRoutes';
+import { RoutesTicket } from '../routes/routeTicket';
 
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();
@@ -15,8 +15,8 @@ export const Routes = (prisma: PrismaClient) => {
   router.use('/times', RouteTime(prisma));
   router.use('/locations', RouteLocation(prisma));
 
-  router.use('/ticket', Ticket(prisma));
   router.use('/auth', Auth(prisma));
+  router.use('/routeticket', RoutesTicket(prisma));
 
   return router;
 };

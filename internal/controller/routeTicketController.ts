@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { TicketService } from "../service/ticketService";
+import { RouteTicketService } from "../service/routeTicketService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTicketWithPrices } from "../../cmd/request";
 
-export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+export class RouteTicketController {
+  constructor(private readonly ticketService: RouteTicketService) {}
 
   async getAllTicketsByRouteId(req: Request, res: Response) {
     try {
