@@ -1,9 +1,11 @@
 pipeline {
     agent any
 
-    // tools {
-    //     sonarQubeScanner 'SonarQube' // ใช้ชื่อจาก Tools config
-    // }
+    environment {
+        // กำหนดชื่อ installation ตรงกับที่ตั้งไว้ใน Jenkins > Global Tool Config
+        // (ตรงกับชื่อใน "SonarQube Scanner installations")
+        SONARQUBE_INSTALLATION = 'SonarQube'
+    }
 
     stages {
         stage('Checkout') {
@@ -14,9 +16,8 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'SONAR_TOKEN') {
-                    // sh 'sonar-scanner'
-                    sh 'echo Connected to SonarQube!'
+                withSonarQubeEnv(installationName: "${SONARQUBE_INSTALLATION}", credentialsId: 'SONAR_TOKEN') {
+                    sh 'sonar-scanner'
                 }
             }
         }
