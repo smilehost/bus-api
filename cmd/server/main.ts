@@ -19,8 +19,9 @@ const prisma = new PrismaClient();
 
 app.use(
   cors({
-    origin: true, // รองรับทุก origin ที่มาจริง
+    origin: true,
     credentials: true,
+    exposedHeaders: ["Authorization"], // 👈 เพิ่มบรรทัดนี้
   })
 );
 
