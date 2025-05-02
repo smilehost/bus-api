@@ -5,10 +5,16 @@ services:
       dockerfile: Dockerfile
     container_name: internship-app
     ports:
-      - "3000:3000"
+      - "8000:8000"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      CLOUD_URL: ${CLOUD_URL}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      SONAR_HOST_URL: ${SONAR_HOST_URL}
+      SONAR_TOKEN: ${SONAR_TOKEN}
     command: npm run start
