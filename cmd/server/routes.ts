@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 
-import { RouteDate } from '../routes/routeDateRoutes';
+import { RouteDate } from '../routes/routeDateRoute';
 import { RouteTime } from '../routes/routeTimeRoutes';
 import { Route } from '../routes/routeRoutes';
-import { RouteLocation } from '../routes/routeLocationRoutes';
-import { Auth } from '../routes/routeAuth';
-import { RoutesTicket } from '../routes/routeTicket';
+import { RouteLocation } from '../routes/routeLocationRoute';
+import { Auth } from '../routes/routeAuthRoute';
+import { RoutesTicket } from '../routes/routeTicketRoute';
 
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();

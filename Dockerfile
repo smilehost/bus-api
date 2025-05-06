@@ -16,13 +16,14 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# ✅ ติดตั้ง OpenSSL สำหรับ Prisma
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/certs ./certs
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/cmd ./cmd
 
 EXPOSE 8000
 

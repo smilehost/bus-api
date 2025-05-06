@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node cmd/server/main.ts",
+    "start": "node dist/cmd/server/main.js",
     "dev": "nodemon",
     "build": "tsc",
     "test": "jest --coverage",
