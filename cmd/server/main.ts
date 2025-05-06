@@ -14,7 +14,7 @@ const key = fs.readFileSync(keyPath);
 const cert = fs.readFileSync(certPath);
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT ?? 3000;
 const prisma = new PrismaClient();
 
 app.use(

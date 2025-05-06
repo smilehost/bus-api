@@ -5,6 +5,23 @@ import { AppError } from "../utils/appError";
 export class RouteTicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
+
+  async getTicketPrices(route_ticket_id:number){
+    try {
+      return await this.prisma.route_ticket_price.findMany({
+        where: {
+          route_ticket_price_ticket_id: route_ticket_id,
+        },
+        orderBy: {
+          route_ticket_location_start:"asc",
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+
   async getAllTicketsByRouteId(routeId: number) {
     try {
       return await this.prisma.route_ticket.findMany({
@@ -132,13 +149,10 @@ export class RouteTicketRepository {
     }
   }
 
-  async getById(id: number) {
+  async getById(id: number,typeId:number) {
     try {
       return await this.prisma.route_ticket.findUnique({
         where: { route_ticket_id: id },
-        include: {
-          route_ticket_price: true,
-        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);

@@ -8,6 +8,40 @@ import { RouteTicketWithPrices } from "../../cmd/request";
 export class RouteTicketController {
   constructor(private readonly routeTicketService: RouteTicketService) {}
 
+
+  async getTicketPricing(req:Request,res:Response){
+    try {
+      const { com_id, params,query } = Util.extractRequestContext<
+        void,
+        { route_ticket_id: number },
+        {ticket_price_type:number}
+      >(req, {
+        params: true,
+        query: true
+      });
+
+      const {ticket,priceTable} = await this.routeTicketService.getById(
+        com_id,
+        params.route_ticket_id,
+        query.ticket_price_type
+      );
+
+      res.status(200).json({
+        message: "Ticket retrieved successfully",
+        ticket,
+        priceTable,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async getAllTicketsByRouteId(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
@@ -77,35 +111,6 @@ export class RouteTicketController {
 
       res.status(200).json({
         message: "Tickets retrieved successfully",
-        result,
-      });
-    } catch (error) {
-      if (error instanceof AppError) {
-        res.status(error.statusCode).json({
-          error: error.name,
-          message: error.message,
-        });
-      }
-      ExceptionHandler.internalServerError(res, error);
-    }
-  }
-
-  async getById(req: Request, res: Response) {
-    try {
-      const { com_id, params } = Util.extractRequestContext<
-        void,
-        { route_ticket_id: number }
-      >(req, {
-        params: true,
-      });
-
-      const result = await this.routeTicketService.getById(
-        com_id,
-        params.route_ticket_id
-      );
-
-      res.status(200).json({
-        message: "Ticket retrieved successfully",
         result,
       });
     } catch (error) {

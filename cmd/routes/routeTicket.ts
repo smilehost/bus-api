@@ -13,17 +13,17 @@ export const RoutesTicket = (prisma: PrismaClient) => {
   const service = new RouteTicketService(repo,routeRepo);
   const controller = new RouteTicketController(service);
 
-  router.get("/all/:route_id", controller.getAllTicketsByRouteId.bind(controller));
-  router.get("/priceType", controller.getTicketPriceType.bind(controller));
-  router.get("/", controller.getByPagination.bind(controller));
-  router.get("/:route_ticket_id", controller.getById.bind(controller));
-  router.post("/", controller.create.bind(controller));
-  router.put("/:route_ticket_id", controller.update.bind(controller));
+  // router.get("/all/:route_id", controller.getAllTicketsByRouteId.bind(controller));
+  // router.get("/priceType", controller.getTicketPriceType.bind(controller));
+  // router.get("/", controller.getByPagination.bind(controller));
+  // router.get("/:route_ticket_id", controller.getById.bind(controller));
+  // router.post("/", controller.create.bind(controller));
+  // router.put("/:route_ticket_id", controller.update.bind(controller));
   // router.delete("/:route_ticket_id", controller.delete.bind(controller));
   
   // router.get("/routeticket/route/:route_id");
   // router.get("/routeticket/all");
-  // router.get("/routeticket/ticket/:route_ticket_id");
+  router.get("/ticket/:route_ticket_id", controller.getTicketPricing.bind(controller));
   
   // router.post("/routeticket/create");
 
