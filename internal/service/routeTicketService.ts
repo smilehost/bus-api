@@ -1,5 +1,6 @@
 import { RouteTicketPrice } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
+import { RouteTicketPriceType } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteTicketRepository } from "../repository/routeTicketRepository";
 import { AppError } from "../utils/appError";
@@ -111,5 +112,37 @@ export class RouteTicketService {
     }
 
     return await this.routeTicketRepository.update(ticketId, data);
+  }
+
+  async delete(comId: number, ticketId: number) {
+    const ticket = await this.routeTicketRepository.getById(ticketId);
+    if (!ticket) {
+      throw AppError.NotFound("Route ticket not found");
+    }
+
+    const route = await this.routeRepository.getById(
+      ticket.route_ticket_route_id
+    );
+    if (!route) {
+      throw AppError.NotFound("Route not found");
+    }
+
+    if (!Util.ValidCompany(comId, route.route_com_id)) {
+      throw AppError.Forbidden("Route ticket: Company ID does not match");
+    }
+
+    return await this.routeTicketRepository.delete(ticketId);
+  }
+
+  async createPriceType(comId: number, data: RouteTicketPriceType) {
+    if (data.route_ticket_price_type_com_id !== comId) {
+      throw AppError.Forbidden("Company ID does not match for price type creation");
+    }
+
+    return this.routeTicketRepository.createPriceType(comId, data);
+  }
+
+  async deletePriceType(comId: number, priceTypeId: number) {
+    return this.routeTicketRepository.deletePriceType(comId, priceTypeId);
   }
 }

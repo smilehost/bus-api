@@ -12,24 +12,17 @@ export const RoutesTicket = (prisma: PrismaClient) => {
   const routeRepo = new RouteRepository(prisma);
   const service = new RouteTicketService(repo,routeRepo);
   const controller = new RouteTicketController(service);
-
-  // router.get("/all/:route_id", controller.getAllTicketsByRouteId.bind(controller));
-  // router.get("/priceType", controller.getTicketPriceType.bind(controller));
-  // router.get("/", controller.getByPagination.bind(controller));
-  // router.get("/:route_ticket_id", controller.getById.bind(controller));
-  // router.post("/", controller.create.bind(controller));
-  // router.put("/:route_ticket_id", controller.update.bind(controller));
-  // router.delete("/:route_ticket_id", controller.delete.bind(controller));
   
   router.get("/route/:route_id",controller.getAllTicketsByRouteId.bind(controller));
-  // router.get("/routeticket/all");
+  router.get("/all",controller.getByPagination.bind(controller));
   router.get("/ticket/:route_ticket_id", controller.getTicketPricing.bind(controller));
   
   router.post("/create",controller.create.bind(controller));
+  router.put("/:route_ticket_id",controller.update.bind(controller));
+  router.delete("/:route_ticket_id",controller.delete.bind(controller));
 
-  // router.put("/routeticket/:route_ticket_id");
-  
-  // router.delete("/routeticket/:route_ticket_id");
-
+  router.get("/priceTypes", controller.getTicketPriceType.bind(controller));
+  router.post("/priceType", controller.createPriceType.bind(controller));
+  router.delete("/priceType/:route_ticket_price_type_id", controller.deletePriceType.bind(controller));
   return router;
 };
