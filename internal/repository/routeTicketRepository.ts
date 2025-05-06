@@ -28,10 +28,7 @@ export class RouteTicketRepository {
         },
         orderBy: {
           route_ticket_id: "desc",
-        },
-        include: {
-          route_ticket_price: true,
-        },
+        }
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);

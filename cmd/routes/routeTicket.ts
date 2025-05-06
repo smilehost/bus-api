@@ -21,7 +21,7 @@ export const RoutesTicket = (prisma: PrismaClient) => {
   // router.put("/:route_ticket_id", controller.update.bind(controller));
   // router.delete("/:route_ticket_id", controller.delete.bind(controller));
   
-  // router.get("/routeticket/route/:route_id");
+  router.get("/route/:route_id",controller.getAllTicketsByRouteId.bind(controller));
   // router.get("/routeticket/all");
   router.get("/ticket/:route_ticket_id", controller.getTicketPricing.bind(controller));
   
