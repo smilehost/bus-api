@@ -54,14 +54,26 @@ export class RouteService {
   }
 
   async create(comId: number, data: Route) {
+    console.log("--------------1");
+    
     if (!Util.ValidCompany(comId, data.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
-
+    console.log("--------------2");
+    console.log(data.route_date_id);
+    
     const date = await this.routeDateRepository.getById(data.route_date_id);
+    console.log("--------------3");
+    console.log(date);
+    
+    
     if (!date) {
+      console.log("--------------3.1");
+      
       throw AppError.NotFound("Date not found");
     }
+    console.log("--------------4");
+    
 
     return this.routeRepository.create(data);
   }
@@ -90,5 +102,40 @@ export class RouteService {
     }
 
     return this.routeRepository.delete(routeId);
+  }
+
+  async getRouteByLocations(
+    comId: number,
+    startLocationId: number,
+    endLocationId: number,
+    date: string
+  ) {
+    console.log("--------------1");
+    const dayOfWeek = new Date(date).getDay();
+    console.log("--------------2");
+
+    // 1. ดึง routes ที่มี route_date_id ว่างในวันนั้น (ต้อง join route_date)
+    const routes = await this.routeRepository.getRouteByDay(comId, dayOfWeek);
+    console.log(routes);
+    
+
+    const start = String(startLocationId);
+    const end = String(endLocationId);
+
+    // 2. Filter เส้นทางที่มี start มาก่อน end
+    const filteredRoutes = routes.filter((route) => {
+      const routeArray = route.route_array.split(",");
+      const startIndex = routeArray.indexOf(start);
+      const endIndex = routeArray.indexOf(end);
+      return startIndex !== -1 && endIndex !== -1 && startIndex < endIndex;
+    });
+
+    if (filteredRoutes.length === 0) {
+      throw AppError.NotFound(
+        "ไม่พบเส้นทางที่มีจุดเริ่มต้นมาก่อนจุดสิ้นสุดในวันนั้น"
+      );
+    }
+
+    return filteredRoutes;
   }
 }

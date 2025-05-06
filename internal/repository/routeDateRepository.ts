@@ -58,6 +58,8 @@ export class RouteDateRepository {
         where: { route_date_id: id },
       });
     } catch (error) {
+      console.log(error);
+      
       throw AppError.fromPrismaError(error);
     }
   }
