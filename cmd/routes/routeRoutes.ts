@@ -21,5 +21,7 @@ export const Route = (prisma: PrismaClient) => {
   router.put("/:route_id", controller.update.bind(controller));
   router.delete("/:route_id", controller.delete.bind(controller));
 
+  router.post("/getRouteByLocations", controller.getRouteByLocations.bind(controller));
+
   return router;
 };

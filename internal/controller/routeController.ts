@@ -17,7 +17,7 @@ export class RouteController {
       >(req, {
         query: true,
       });
-      
+
       const result = await this.routeService.getByPagination(
         com_id,
         query.page,
@@ -71,8 +71,10 @@ export class RouteController {
       const { com_id, body } = Util.extractRequestContext<Route>(req, {
         body: true,
       });
-
+      
       const createdRoute = await this.routeService.create(com_id, body);
+      console.log("creatdsfdsfdsfdfdfdsfsdfdsfsdfdfdfdsfdsfedRoute");
+      
 
       res.status(201).json({
         message: "Route created successfully",
@@ -137,6 +139,38 @@ export class RouteController {
 
       res.status(200).json({
         message: "Route deleted successfully",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async getRouteByLocations(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        start_location_id: number;
+        end_location_id: number;
+        date: string;
+      }>(req, {
+        body: true,
+      });
+
+      const result = await this.routeService.getRouteByLocations(
+        com_id,
+        body.start_location_id,
+        body.end_location_id,
+        body.date
+      );
+
+      res.status(200).json({
+        message: "Routes retrieved successfully",
+        result,
       });
     } catch (error) {
       if (error instanceof AppError) {
