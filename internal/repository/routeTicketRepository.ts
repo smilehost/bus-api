@@ -12,9 +12,7 @@ export class RouteTicketRepository {
         where: {
           route_ticket_price_ticket_id: route_ticket_id,
         },
-        orderBy: {
-          route_ticket_location_start:"asc",
-        }
+        
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
@@ -149,7 +147,7 @@ export class RouteTicketRepository {
     }
   }
 
-  async getById(id: number,typeId:number) {
+  async getById(id: number) {
     try {
       return await this.prisma.route_ticket.findUnique({
         where: { route_ticket_id: id },

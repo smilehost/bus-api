@@ -62,9 +62,8 @@ export class RouteTicketService {
     };
   }
 
-  async getById(comId: number, ticketId: number,ticketType:number) {
-    const priceTable: RouteTicketPrice[][] = []
-    const ticket = await this.routeTicketRepository.getById(ticketId,ticketType);
+  async getById(comId: number, ticketId: number) {
+    const ticket = await this.routeTicketRepository.getById(ticketId);
 
     if (!ticket) {
       throw AppError.NotFound("Route ticket not found");
@@ -83,40 +82,7 @@ export class RouteTicketService {
     }
 
     const prices = await this.routeTicketRepository.getTicketPrices(ticketId)
-    
-    if (!prices){
-      return {ticket,priceTable}
-    }
-
-    if (ticket.route_ticket_type==="fix"){
-      priceTable.push(prices)
-      return {ticket,priceTable}
-    }
-    
-    const routeLocations = route.route_array.split(",")
-
-    const grouped: Record<string, RouteTicketPrice[]> = {};
-    for (const price of prices){
-      const start = price.route_ticket_location_start
-      if(!grouped[start]){
-        grouped[start] = [];
-      }
-      grouped[start].push(price)
-    }
-
-    for (const start of routeLocations){
-      if (!grouped[start]) {
-        continue
-      }
-
-      const sortedStops = grouped[start].sort((a,b)=>
-        routeLocations.indexOf(a.route_ticket_location_stop)-
-        routeLocations.indexOf(b.route_ticket_location_stop)
-      )
-      priceTable.push(sortedStops)
-    }
-
-    return {ticket,priceTable};
+    return {ticket,prices}
   }
 
   async create(comId: number, data: RouteTicketWithPrices) {
@@ -128,7 +94,7 @@ export class RouteTicketService {
       throw AppError.BadRequest("Route ticket ID does not match");
     }
 
-    const ticket = await this.routeTicketRepository.getById(ticketId,1);
+    const ticket = await this.routeTicketRepository.getById(ticketId);
     if (!ticket) {
       throw AppError.NotFound("Route ticket not found");
     }

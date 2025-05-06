@@ -11,25 +11,20 @@ export class RouteTicketController {
 
   async getTicketPricing(req:Request,res:Response){
     try {
-      const { com_id, params,query } = Util.extractRequestContext<
+      const { com_id, params} = Util.extractRequestContext<
         void,
         { route_ticket_id: number },
         {ticket_price_type:number}
       >(req, {
-        params: true,
-        query: true
+        params: true
       });
 
-      const {ticket,priceTable} = await this.routeTicketService.getById(
-        com_id,
-        params.route_ticket_id,
-        query.ticket_price_type
-      );
+      const {ticket,prices} = await this.routeTicketService.getById(com_id,params.route_ticket_id)
 
       res.status(200).json({
         message: "Ticket retrieved successfully",
-        ticket,
-        priceTable,
+        route_ticket:ticket,
+        route_ticket_price:prices
       });
     } catch (error) {
       if (error instanceof AppError) {
