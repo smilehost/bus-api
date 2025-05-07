@@ -5,9 +5,11 @@ import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteTicketPriceType } from "../../cmd/models";
+import { RouteService } from "../service/routeService";
 
 export class RouteTicketController {
-  constructor(private readonly routeTicketService: RouteTicketService) {}
+  constructor(
+    private readonly routeTicketService: RouteTicketService) {}
 
 
   async getTicketPricing(req:Request,res:Response){
@@ -232,6 +234,38 @@ export class RouteTicketController {
       const result = await this.routeTicketService.deletePriceType(com_id, params.route_ticket_price_type_id);
       res.status(200).json({
         message: "Ticket price type deleted successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async getRouteTicketsByLocations(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        start_location_id: number;
+        end_location_id: number;
+        date: string;
+      }>(req, {
+        body: true,
+      });
+
+      const result = await this.routeTicketService.getTicketsByLocations(
+        com_id,
+        body.start_location_id,
+        body.end_location_id,
+        body.date
+      );
+
+      res.status(200).json({
+        message: "Routes retrieved successfully",
         result,
       });
     } catch (error) {

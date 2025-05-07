@@ -5,11 +5,13 @@ import { RouteRepository } from "../repository/routeRepository";
 import { RouteTicketRepository } from "../repository/routeTicketRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
+import { RouteService } from "./routeService";
 
 export class RouteTicketService {
   constructor(
     private readonly routeTicketRepository: RouteTicketRepository,
-    private readonly routeRepository: RouteRepository
+    private readonly routeRepository: RouteRepository,
+    private readonly routeService:RouteService,
   ) {}
 
   async getAllTicketsByRouteId(comId: number, routeId: number) {
@@ -26,15 +28,11 @@ export class RouteTicketService {
     return tickets;
   }
 
-  async getTicketPriceType(comId: number) {
-    const ticketPriceTypes = await this.routeTicketRepository.getTicketPriceType(
-      comId
-    );
-    if (!ticketPriceTypes) {
-      throw AppError.NotFound("Ticket price types not found");
-    }
+  async getPricingByLocation(startId:string,stopId:string,routeId:number){
+    const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(routeId);
+    const prices = await this.routeTicketRepository.getPricingByLocation(routeId,startId,stopId)
 
-    return ticketPriceTypes;
+    
   }
 
   async getByPagination(
@@ -134,6 +132,17 @@ export class RouteTicketService {
     return await this.routeTicketRepository.delete(ticketId);
   }
 
+  async getTicketPriceType(comId: number) {
+    const ticketPriceTypes = await this.routeTicketRepository.getTicketPriceType(
+      comId
+    );
+    if (!ticketPriceTypes) {
+      throw AppError.NotFound("Ticket price types not found");
+    }
+
+    return ticketPriceTypes;
+  }
+
   async createPriceType(comId: number, data: RouteTicketPriceType) {
     if (data.route_ticket_price_type_com_id !== comId) {
       throw AppError.Forbidden("Company ID does not match for price type creation");
@@ -145,4 +154,14 @@ export class RouteTicketService {
   async deletePriceType(comId: number, priceTypeId: number) {
     return this.routeTicketRepository.deletePriceType(comId, priceTypeId);
   }
+
+  async getTicketsByLocations(com_id:number,startId:number,stopId:number,date:string){
+    const routes = await this.routeService.getRouteByLocations(
+      com_id,
+      startId,
+      stopId,
+      date
+    );
+  }
+
 }

@@ -114,7 +114,6 @@ export class RouteService {
 
     // 1. ดึง routes ที่มี route_date_id ว่างในวันนั้น (ต้อง join route_date)
     const routes = await this.routeRepository.getRouteByDay(comId, dayOfWeek);
-    console.log(routes);
 
     const start = String(startLocationId);
     const end = String(endLocationId);
@@ -126,10 +125,6 @@ export class RouteService {
       const endIndex = routeArray.indexOf(end);
       return startIndex !== -1 && endIndex !== -1 && startIndex < endIndex;
     });
-
-    // ต่อไปคือ check กับ ticket_remain เพื่อเช็คจำนวนตั๋ว
-
-    // ถ้ายังเหลือจะดึงราคาออกมา จาก toute_ticket_price where route_id = route.route_id and route_ticket_location_start = start and route_ticket_location_stop = stop
 
     if (filteredRoutes.length === 0) {
       throw AppError.NotFound(
