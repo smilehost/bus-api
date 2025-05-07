@@ -34,16 +34,24 @@ export class AuthRepository {
         });
   
       } catch (error) {
+        console.log("------------------------------------------------------");
+        
+        console.log(error);
+        
         throw AppError.fromPrismaError(error)
       }
     }
 
     async getUserByUsername(username:string){
       try {
+        console.log("---------------5");
         return await this.prisma.account.findFirst({
           where:{account_username:username}
         })
       } catch (error) {
+        console.log("---------------6");
+        console.log(error);
+        
         throw AppError.fromPrismaError(error)
       }
     }

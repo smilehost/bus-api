@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { AccountRepository } from "../../internal/repository/accountRepository";
 import { AccountService } from "../../internal/service/accountService";
 import { AccountController } from "../../internal/controller/accountController";
+import { authorizeRoles } from "../middleware/authMiddleware";
 
 export class AccountRoutes {
   private router: Router;
@@ -34,6 +35,16 @@ export class AccountRoutes {
 
 // For backward compatibility
 export const Account = (prisma: PrismaClient) => {
-  const accountRoutes = new AccountRoutes(prisma);
-  return accountRoutes.routing();
+  const router = Router();
+
+  const repo = new AccountRepository(prisma);
+  const service = new AccountService(repo);
+  const controller = new AccountController(service);
+
+  router.get("/all", controller.getAll.bind(controller));
+  router.get("/:account_id", controller.getById.bind(controller));
+  router.put("/:account_id", controller.update.bind(controller)); // update can't change account_status and account_password
+  router.delete("/:account_id",authorizeRoles('1'),controller.delete.bind(controller));
+
+  return router;
 };

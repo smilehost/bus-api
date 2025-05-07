@@ -34,12 +34,12 @@ export class AuthService {
     }    
 
     async register(com_id:number,account:RegisterAccount){
-
+        console.log("---------------3");
         const existingUser = await this.authRepository.getUserByUsername(account.username)
         if (existingUser) {
             throw AppError.Conflict("This username already existed")
         }
-
+        console.log("---------------4");
         const hashedPassword = await hashPassword(account.password)
 
         const newAccount:account = {
@@ -101,7 +101,7 @@ export class AuthService {
             password:password,
             role:"1",
         }
-
+        console.log("---------------2");
         const admin = await this.register(com_id,newAdmin)
         return {password,admin}
     }

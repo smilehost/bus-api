@@ -71,6 +71,7 @@ export class AccountController {
         params.account_id,
         body
       );
+      
       res.status(200).json({
         message: "Account updated successfully",
         result,
@@ -88,16 +89,27 @@ export class AccountController {
 
   async delete(req: Request, res: Response) {
     try {
+      console.log("-----------1");
+      
       const { com_id, params } = Util.extractRequestContext<
         void,
         { account_id: number }
       >(req, {
         params: true,
       });
+      console.log("-----------2");
 
-      await this.accountService.delete(com_id, params.account_id);
+      console.log("gdfhgjkghjkgfghjkhgfdsghjkhgfdsfgh");
+      console.log(req.body.user);
+      console.log("-----------3");
+      
+      
+
+      // await this.accountService.delete(com_id, params.account_id);
+
       res.status(200).json({
         message: "Account deleted successfully",
+        body: req.body.user,
       });
     } catch (error) {
       if (error instanceof AppError) {
