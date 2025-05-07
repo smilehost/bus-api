@@ -159,7 +159,7 @@ model route_ticket_price_type {
 }
 
 model ticket_remain {
-  ticket_remain_id       Int    @id @default(autoincrement())
+  ticket_remain_id       String @id @db.VarChar(300)
   ticket_remain_date     String @db.VarChar(300)
   ticket_remain_time     String @db.VarChar(300)
   ticket_remain_number   Int

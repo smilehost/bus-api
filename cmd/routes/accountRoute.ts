@@ -6,7 +6,7 @@ import { AccountController } from '../../internal/controller/accountController';
 
 
 
-export const Auth = (prisma: PrismaClient) => {
+export const Account = (prisma: PrismaClient) => {
     const router = Router();
 
     const repo = new AccountRepository(prisma)

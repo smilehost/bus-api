@@ -7,6 +7,7 @@ import { Route } from '../routes/routeRoutes';
 import { RouteLocation } from '../routes/routeLocationRoute';
 import { Auth } from '../routes/routeAuthRoute';
 import { RoutesTicket } from '../routes/routeTicketRoute';
+import { Account } from '../routes/accountRoute';
 
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();
@@ -17,6 +18,7 @@ export const Routes = (prisma: PrismaClient) => {
 
   router.use('/auth', Auth(prisma));
   router.use('/routeTicket', RoutesTicket(prisma));
+  router.use('/account', Account(prisma));
 
   return router;
 };
