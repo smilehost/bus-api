@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
   res.send("Hello Secure World!!!!--++60");
 });
 
-app.get("/areYouPay?", (req, res) => {
+app.get("/areYouPay", (req, res) => {
   const { monney } = req.query;
 
   res.send("pay successfully");
