@@ -36,7 +36,10 @@ app.get("/", (req, res) => {
 app.get("/areYouPay", (req, res) => {
   const { monney } = req.query;
 
-  res.send("pay successfully");
+  res.json({
+    message: `Pay Successfully`,
+    amonut: monney,
+  });
 });
 
 app.use("/api", Routes(prisma));
