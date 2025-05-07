@@ -71,10 +71,9 @@ export class RouteController {
       const { com_id, body } = Util.extractRequestContext<Route>(req, {
         body: true,
       });
-      
+
       const createdRoute = await this.routeService.create(com_id, body);
       console.log("creatdsfdsfdsfdfdfdsfsdfdsfsdfdfdfdsfdsfedRoute");
-      
 
       res.status(201).json({
         message: "Route created successfully",
