@@ -4,6 +4,7 @@ import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
 import { Account } from "../../cmd/models";
+import { JwtPayloadUser } from "../../cmd/middleware/authMiddleware";
 
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
@@ -71,7 +72,7 @@ export class AccountController {
         params.account_id,
         body
       );
-      
+
       res.status(200).json({
         message: "Account updated successfully",
         result,
@@ -90,22 +91,21 @@ export class AccountController {
   async delete(req: Request, res: Response) {
     try {
       console.log("-----------1");
-      
+
       const { com_id, params } = Util.extractRequestContext<
         void,
         { account_id: number }
       >(req, {
         params: true,
       });
-      console.log("-----------2");
 
-      console.log("gdfhgjkghjkgfghjkhgfdsghjkhgfdsfgh");
-      console.log(req.body.user);
-      console.log("-----------3");
-      
-      
+      const user = (req as any).user as JwtPayloadUser;
 
-      // await this.accountService.delete(com_id, params.account_id);
+      await this.accountService.delete(
+        com_id,
+        user.account_id,
+        params.account_id
+      );
 
       res.status(200).json({
         message: "Account deleted successfully",

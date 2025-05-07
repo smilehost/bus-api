@@ -64,14 +64,35 @@ export class AccountService {
     return this.accountRepository.update(accountId, sanitized);
   }
 
-  async delete(comId: number, accountId: number) {
-    const account = await this.accountRepository.getById(accountId);
+  async delete(comId: number, account_id: number, accountId: number) {
+    const accountToDelete = await this.accountRepository.getById(accountId);
+    const requesterAccount = await this.accountRepository.getById(account_id);
 
-    if (!account) throw AppError.NotFound("Account not found");
+    if (!accountToDelete) {
+      throw AppError.NotFound("Account to delete not found");
+    }
 
-    if (!Util.ValidCompany(comId, account.account_com_id)) {
+    if (!requesterAccount) {
+      throw AppError.NotFound("Requester account not found");
+    }
+
+    if (!Util.ValidCompany(comId, accountToDelete.account_com_id)) {
       throw AppError.Forbidden("Account: Company ID does not match");
     }
+
+    const requesterRole = parseInt(requesterAccount.account_role);
+    const targetRole = parseInt(accountToDelete.account_role);
+
+    if (isNaN(requesterRole) || isNaN(targetRole)) {
+      throw AppError.BadRequest("Invalid account role format");
+    }
+
+    if (requesterRole > targetRole) {
+      throw AppError.Forbidden(
+        "You do not have permission to delete this account"
+      );
+    }
+
     return this.accountRepository.delete(accountId);
   }
 }

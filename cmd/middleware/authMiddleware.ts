@@ -7,6 +7,15 @@ interface JwtPayload {
   account_role: string;
 }
 
+export interface JwtPayloadUser {
+  account_id: number;
+  account_role: string;
+  com_id: number;
+  login_at: number;
+  iat: number;
+  exp: number;
+}
+
 export const authorizeRoles = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -34,9 +43,11 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
       }
       console.log("=====================3");
 
-      req.body.user = decoded;
+      //   req.body.user = decoded;
+      (req as any).user = decoded;
       console.log("=====================5");
-      console.log(req.body.user);
+      const user = (req as any).user;
+      console.log(user);
       console.log("=====================");
 
       next();
