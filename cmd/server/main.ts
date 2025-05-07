@@ -4,7 +4,7 @@ import fs from "fs";
 import https from "https";
 import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 import path from "path";
@@ -31,6 +31,12 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Hello Secure World!!!!--++60");
+});
+
+app.get("/areYouPay?", (req, res) => {
+  const { monney } = req.query;
+
+  res.send("pay successfully");
 });
 
 app.use("/api", Routes(prisma));
