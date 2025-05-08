@@ -4,7 +4,8 @@ import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
 import { Account } from "../../cmd/models";
-import { JwtPayloadUser } from "../../cmd/middleware/authMiddleware";
+import { JwtPayloadUser } from "../../cmd/dto";
+
 
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
