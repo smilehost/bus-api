@@ -1,8 +1,5 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
-import { RouteTimeService } from "../../internal/service/routeTimeService";
-import { TimeController } from "../../internal/controller/routeTimeController";
 import { TicketRemainRepository } from "../../internal/repository/ticketRemainRepository";
 
 import { TicketRemainController } from "../../internal/controller/ticketRemainController";

@@ -4,9 +4,7 @@ import fs from "fs";
 import https from "https";
 import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
-import dotenv from "dotenv";
-dotenv.config();
-
+import "dotenv/config";
 import path from "path";
 
 const keyPath = path.resolve(process.cwd(), "certs", "key.pem");
