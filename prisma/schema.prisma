@@ -159,9 +159,11 @@ model route_ticket_price_type {
 }
 
 model ticket_remain {
-  ticket_remain_id       String @id @unique(map: "ticket_remain_id_UNIQUE") @db.VarChar(300)
-  ticket_remain_date     String @db.VarChar(300)
-  ticket_remain_time     String @db.VarChar(300)
-  ticket_remain_number   Int
-  ticket_remain_route_id Int
+  ticket_remain_id              String @id @db.VarChar(300)
+  ticket_remain_date            String @db.VarChar(300)
+  ticket_remain_time            String @db.VarChar(300)
+  ticket_remain_number          Int
+  ticket_remain_route_ticket_id Int
+
+  @@index([ticket_remain_route_ticket_id], map: "ticket_remain_route_ticket_id")
 }

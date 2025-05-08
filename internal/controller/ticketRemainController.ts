@@ -15,7 +15,9 @@ export class TicketRemainController {
     try {
       const { com_id, params } = Util.extractRequestContext<
         void,
-        { ticket_remain_id: string }
+        {
+          ticket_remain_id: string;
+        }
       >(req, {
         params: true,
       });
