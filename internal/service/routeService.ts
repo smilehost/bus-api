@@ -126,16 +126,6 @@ export class RouteService {
       return startIndex !== -1 && endIndex !== -1 && startIndex < endIndex;
     });
 
-    // ต่อไปคือ check กับ ticket_remain เพื่อเช็คจำนวนตั๋ว
-    // if (ticket_remain_number == 0){
-
-    // }
-
-    // ถ้ายังเหลือจะดึงราคาออกมา จาก 
-    // toute_ticket_price where route_id = route.route_id
-    // and route_ticket_location_start = start
-    // and route_ticket_location_stop = stop
-
     if (filteredRoutes.length === 0) {
       throw AppError.NotFound(
         "Route not found for the given locations and date"

@@ -36,6 +36,19 @@ export class RouteTicketRepository {
     }
   }
 
+  async getTicketPricingByLocation(routeId: number,startId:string,stopId:string) {
+    try {
+      return await this.prisma.route_ticket.findMany({
+        where:{
+          route_ticket_route_id:routeId
+        }
+      })
+
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async getTicketPriceType(id: number) {
     try {
       return await this.prisma.route_ticket_price_type.findMany({
