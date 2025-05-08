@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 
-import { RouteDateRoutes } from '../routes/routeDateRoutes';
 import { RouteTimeRoutes } from '../routes/routeTimeRoutes';
 import { RouteRoutes } from '../routes/routeRoutes';
-import { RouteLocationRoutes } from '../routes/routeLocationRoutes';
-import { AuthRoutes } from '../routes/routeAuth';
-import { RouteTicketRoutes } from '../routes/routeTicket';
+import { AccountRoutes } from '../routes/accountRoute'; // Added import for AccountRoutes
 import { CompanyRepository } from '../../internal/repository/companyRepository';
+import { RouteDateRoutes } from '../routes/routeDateRoute';
+import { RouteLocationRoutes } from '../routes/routeLocationRoute';
+import { AuthRoutes } from '../routes/routeAuthRoute';
+import { RouteTicketRoutes } from '../routes/routeTicketRoute';
 
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();
@@ -21,6 +22,7 @@ export const Routes = (prisma: PrismaClient) => {
   const routeLocationRoutes = new RouteLocationRoutes(prisma,comRepo);
   const authRoutes = new AuthRoutes(prisma);
   const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes);
+  const accountRoutes = new AccountRoutes(prisma); // Added instance for AccountRoutes
   
   // Use the routing method of each class
   router.use('/route', routeRoutes.routing());
@@ -29,6 +31,7 @@ export const Routes = (prisma: PrismaClient) => {
   router.use('/routeLocations', routeLocationRoutes.routing());
   router.use('/auth', authRoutes.routing());
   router.use('/routeTicket', routeTicketRoutes.routing());
+  router.use('/accounts', accountRoutes.routing()); // Added routing for AccountRoutes
 
   return router;
 };
