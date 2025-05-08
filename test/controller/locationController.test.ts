@@ -1,5 +1,5 @@
-import { LocationController } from "../../internal/controller/locationController";
-import { LocationService } from "../../internal/service/locationService";
+import { LocationController } from "../../internal/controller/routeLocationController";
+import { RouteLocationService } from "../../internal/service/routeLocationService";
 import { Request, Response } from "express";
 import { Util } from "../../internal/utils/util";
 import { AppError } from "../../internal/utils/appError";
@@ -9,7 +9,7 @@ jest.mock("../../internal/utils/util.ts");
 
 describe("LocationController", () => {
   let controller: LocationController;
-  let mockService: jest.Mocked<LocationService>;
+  let mockService: jest.Mocked<RouteLocationService>;
   let req: Partial<Request>;
   let res: Partial<Response>;
   let statusMock: jest.Mock;
@@ -21,10 +21,10 @@ describe("LocationController", () => {
     const mockLocationRepository = {} as any;
     const mockCompanyRepository = {} as any;
 
-    mockService = new LocationService(
+    mockService = new RouteLocationService(
       mockLocationRepository,
       mockCompanyRepository
-    ) as jest.Mocked<LocationService>;
+    ) as jest.Mocked<RouteLocationService>;
     controller = new LocationController(mockService);
 
     req = {};

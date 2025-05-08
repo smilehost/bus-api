@@ -54,6 +54,7 @@ model route {
   route_time_id Int
   route_array   String     @db.VarChar(300)
   route_time    route_time @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
+  route_date    route_date @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
 
   @@index([route_time_id], map: "route_time_id")
   @@index([route_com_id], map: "route_com_id")
@@ -61,10 +62,10 @@ model route {
 }
 
 model route_date {
-  route_date_id     Int    @id @default(autoincrement())
-  route_date_name   String @db.VarChar(300)
-  route_date_start  String @db.VarChar(300)
-  route_date_end    String @db.VarChar(300)
+  route_date_id     Int     @id @default(autoincrement())
+  route_date_name   String  @db.VarChar(300)
+  route_date_start  String  @db.VarChar(300)
+  route_date_end    String  @db.VarChar(300)
   route_date_mon    Int
   route_date_tue    Int
   route_date_wen    Int
@@ -73,6 +74,7 @@ model route_date {
   route_date_sat    Int
   route_date_sun    Int
   route_date_com_id Int
+  routes            route[]
 
   @@index([route_date_com_id], map: "route_date_com_id")
 }
@@ -122,26 +124,28 @@ model ticket_discount {
 }
 
 model route_ticket {
-  route_ticket_id       Int    @id @default(autoincrement())
-  route_ticket_name_th  String @db.VarChar(300)
-  route_ticket_name_en  String @db.VarChar(300)
-  route_ticket_color    String @db.VarChar(300)
+  route_ticket_id       Int                  @id @default(autoincrement())
+  route_ticket_name_th  String               @db.VarChar(300)
+  route_ticket_name_en  String               @db.VarChar(300)
+  route_ticket_color    String               @db.VarChar(300)
   route_ticket_status   Int
   route_ticket_route_id Int
   route_ticket_amount   Int
-  route_ticket_type     String @db.VarChar(300)
+  route_ticket_type     String               @db.VarChar(300)
+  route_ticket_price    route_ticket_price[] @relation("TicketToPrices")
 
   @@index([route_ticket_route_id], map: "route_ticket_route_id")
 }
 
 model route_ticket_price {
-  route_ticket_price_id        Int    @id @default(autoincrement())
-  route_ticket_location_start  String @db.VarChar(300)
-  route_ticket_location_stop   String @db.VarChar(300)
-  price                        String @db.VarChar(300)
+  route_ticket_price_id        Int          @id @default(autoincrement())
+  route_ticket_location_start  String       @db.VarChar(300)
+  route_ticket_location_stop   String       @db.VarChar(300)
+  price                        String       @db.VarChar(300)
   route_ticket_price_type_id   Int
   route_ticket_price_ticket_id Int
   route_ticket_price_route_id  Int
+  route_ticket                 route_ticket @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
 
   @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
   @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
@@ -152,4 +156,12 @@ model route_ticket_price_type {
   route_ticket_price_type_id     Int    @id @default(autoincrement())
   route_ticket_price_type_name   String @db.VarChar(300)
   route_ticket_price_type_com_id Int
+}
+
+model ticket_remain {
+  ticket_remain_id       String @id @unique(map: "ticket_remain_id_UNIQUE") @db.VarChar(300)
+  ticket_remain_date     String @db.VarChar(300)
+  ticket_remain_time     String @db.VarChar(300)
+  ticket_remain_number   Int
+  ticket_remain_route_id Int
 }

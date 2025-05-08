@@ -1,17 +1,17 @@
 import { RouteLocation } from "../../cmd/models";
-import { LocationRepository } from "../repository/locationRepository";
+import { RouteLocationRepository } from "../repository/routeLocationRepository";
 import { CompanyRepository } from "../repository/companyRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 
-export class LocationService {
+export class RouteLocationService {
   constructor(
-    private readonly locationRepository: LocationRepository,
+    private readonly routeLocationRepository: RouteLocationRepository,
     private readonly companyRepository: CompanyRepository
   ) {}
 
   async getAll(comId: number) {
-    return this.locationRepository.getAll(comId);
+    return this.routeLocationRepository.getAll(comId);
   }
 
   async getByPagination(
@@ -24,7 +24,7 @@ export class LocationService {
     const take = size;
     search = search.toString();
 
-    const [data, total] = await this.locationRepository.getPaginated(
+    const [data, total] = await this.routeLocationRepository.getPaginated(
       comId,
       skip,
       take,
@@ -41,7 +41,7 @@ export class LocationService {
   }
 
   async getById(comId: number, locationId: number) {
-    const location = await this.locationRepository.getById(locationId);
+    const location = await this.routeLocationRepository.getById(locationId);
 
     if (!location) {
       throw AppError.NotFound("Route location not found");
@@ -66,7 +66,7 @@ export class LocationService {
       throw AppError.Forbidden("Route location: Company ID does not match");
     }
 
-    return this.locationRepository.create(data);
+    return this.routeLocationRepository.create(data);
   }
 
   async update(comId: number, locationId: number, data: RouteLocation) {
@@ -77,7 +77,7 @@ export class LocationService {
       throw AppError.NotFound("Company not found");
     }
 
-    const existing = await this.locationRepository.getById(locationId);
+    const existing = await this.routeLocationRepository.getById(locationId);
     if (!existing) {
       throw AppError.NotFound("Route location not found");
     }
@@ -86,11 +86,11 @@ export class LocationService {
       throw AppError.Forbidden("Route location: Company ID does not match");
     }
 
-    return this.locationRepository.update(locationId, data);
+    return this.routeLocationRepository.update(locationId, data);
   }
 
   async delete(comId: number, locationId: number) {
-    const existing = await this.locationRepository.getById(locationId);
+    const existing = await this.routeLocationRepository.getById(locationId);
     if (!existing) {
       throw AppError.NotFound("Route location not found");
     }
@@ -99,6 +99,6 @@ export class LocationService {
       throw AppError.Forbidden("Route location: Company ID does not match");
     }
 
-    return this.locationRepository.delete(locationId);
+    return this.routeLocationRepository.delete(locationId);
   }
 }

@@ -1,13 +1,13 @@
 import { RouteDate } from "../../cmd/models";
-import { DateRepository } from "../repository/dateRepository";
+import { RouteDateRepository } from "../repository/routeDateRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 
-export class DateService {
-  constructor(private readonly dateRepository: DateRepository) {}
+export class RouteDateService {
+  constructor(private readonly routeDateRepository: RouteDateRepository) {}
 
   async getAll(comId: number) {
-    return this.dateRepository.getAll(comId);
+    return this.routeDateRepository.getAll(comId);
   }
 
   async getByPagination(
@@ -21,7 +21,7 @@ export class DateService {
     const skip = (page - 1) * size;
     const take = size;
 
-    const [data, total] = await this.dateRepository.getPaginated(
+    const [data, total] = await this.routeDateRepository.getPaginated(
       comId,
       skip,
       take,
@@ -38,7 +38,7 @@ export class DateService {
   }
 
   async getById(comId: number, id: number) {
-    const routeDate = await this.dateRepository.getById(id);
+    const routeDate = await this.routeDateRepository.getById(id);
     if (!routeDate) {
       throw AppError.NotFound("Route not found");
     }
@@ -59,11 +59,11 @@ export class DateService {
       throw AppError.BadRequest("Invalid Day Format");
     }
 
-    return this.dateRepository.create(data);
+    return this.routeDateRepository.create(data);
   }
 
   async update(comId: number, id: number, data: RouteDate) {
-    const routeDate = await this.dateRepository.getById(id);
+    const routeDate = await this.routeDateRepository.getById(id);
     if (!routeDate) {
       throw AppError.NotFound("Route date not found");
     }
@@ -76,11 +76,11 @@ export class DateService {
       throw AppError.BadRequest("Invalid Day Format");
     }
 
-    return this.dateRepository.update(id, data);
+    return this.routeDateRepository.update(id, data);
   }
 
   async delete(comId: number, id: number) {
-    const routeDate = await this.dateRepository.getById(id);
+    const routeDate = await this.routeDateRepository.getById(id);
     if (!routeDate) {
       throw AppError.NotFound("Route date not found");
     }
@@ -89,7 +89,7 @@ export class DateService {
       throw AppError.Forbidden("Company ID does not match");
     }
 
-    return this.dateRepository.delete(id);
+    return this.routeDateRepository.delete(id);
   }
 
   validDateFormat(date: RouteDate) {

@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
-import { DateService } from "../service/dateService";
+import { RouteDateService } from "../service/routeDateService";
 import { RouteDate } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
 
 export class DateController {
-  constructor(private readonly dateService: DateService) {}
+  constructor(private readonly routeDateService: RouteDateService) {}
 
   async getAll(req: Request, res: Response) {
     try {
       const { com_id } = Util.extractRequestContext(req);
 
-      const data = await this.dateService.getAll(com_id);
+      const data = await this.routeDateService.getAll(com_id);
 
       res.status(200).json({
         message: "Dates retrieved successfully",
@@ -39,7 +39,7 @@ export class DateController {
         query: true,
       });
 
-      const data = await this.dateService.getByPagination(
+      const data = await this.routeDateService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -70,7 +70,7 @@ export class DateController {
         params: true,
       });
 
-      const data = await this.dateService.getById(com_id, params.route_date_id);
+      const data = await this.routeDateService.getById(com_id, params.route_date_id);
       if (!data) {
         res.status(404).json({ error: "Data not found" });
         return;
@@ -97,7 +97,7 @@ export class DateController {
         body: true,
       });
 
-      const data = await this.dateService.create(com_id, body);
+      const data = await this.routeDateService.create(com_id, body);
 
       res.status(201).json({
         message: "Date created successfully",
@@ -124,7 +124,7 @@ export class DateController {
         params: true,
       });
 
-      const data = await this.dateService.update(
+      const data = await this.routeDateService.update(
         com_id,
         params.route_date_id,
         body
@@ -154,7 +154,7 @@ export class DateController {
         params: true,
       });
 
-      await this.dateService.delete(com_id, params.route_date_id);
+      await this.routeDateService.delete(com_id, params.route_date_id);
 
       res.status(200).json({
         message: "Date deleted successfully",

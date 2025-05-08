@@ -1,18 +1,18 @@
-import { TimeRepository } from "../repository/timeRepository";
+import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { CompanyRepository } from "../repository/companyRepository";
 import { RouteTime } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTimeRequest } from "../../cmd/request";
 
-export class TimeService {
+export class RouteTimeService {
   constructor(
-    private readonly timeRepository: TimeRepository,
+    private readonly routeTimeRepository: RouteTimeRepository,
     private readonly companyRepository: CompanyRepository
   ) {}
 
   async getAll(comId: number) {
-    return this.timeRepository.getAll(comId);
+    return this.routeTimeRepository.getAll(comId);
   }
 
   async getByPagination(
@@ -25,7 +25,7 @@ export class TimeService {
     const take = size;
     search = search.toString();
 
-    const [data, total] = await this.timeRepository.getPaginated(
+    const [data, total] = await this.routeTimeRepository.getPaginated(
       comId,
       skip,
       take,
@@ -42,7 +42,7 @@ export class TimeService {
   }
 
   async getById(comId: number, routeTimeId: number) {
-    const routeTime = await this.timeRepository.getById(routeTimeId);
+    const routeTime = await this.routeTimeRepository.getById(routeTimeId);
 
     if (!routeTime) {
       throw AppError.NotFound("Route time not found");
@@ -84,7 +84,7 @@ export class TimeService {
       route_time_com_id: data.route_time_com_id,
     };
 
-    return this.timeRepository.create(routeTime);
+    return this.routeTimeRepository.create(routeTime);
   }
 
   async update(
@@ -92,7 +92,7 @@ export class TimeService {
     routeTimeId: number,
     updateData: Partial<RouteTime>
   ) {
-    const existing = await this.timeRepository.getById(routeTimeId);
+    const existing = await this.routeTimeRepository.getById(routeTimeId);
 
     if (!existing) {
       throw AppError.NotFound("Route time not found");
@@ -102,11 +102,11 @@ export class TimeService {
       throw AppError.Forbidden("Route time: Company ID does not match");
     }
 
-    return this.timeRepository.update(routeTimeId, updateData);
+    return this.routeTimeRepository.update(routeTimeId, updateData);
   }
 
   async deleteById(comId: number, routeTimeId: number) {
-    const existing = await this.timeRepository.getById(routeTimeId);
+    const existing = await this.routeTimeRepository.getById(routeTimeId);
 
     if (!existing) {
       throw AppError.NotFound("Route time not found");
@@ -116,7 +116,7 @@ export class TimeService {
       throw AppError.Forbidden("Route time: Company ID does not match");
     }
 
-    return this.timeRepository.delete(routeTimeId);
+    return this.routeTimeRepository.delete(routeTimeId);
   }
 }
 

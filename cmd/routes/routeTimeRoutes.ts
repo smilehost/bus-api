@@ -1,24 +1,38 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { TimeRepository } from "../../internal/repository/timeRepository";
-import { TimeService } from "../../internal/service/timeService";
-import { TimeController } from "../../internal/controller/timeController";
+import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
+import { RouteTimeService } from "../../internal/service/routeTimeService";
+import { TimeController } from "../../internal/controller/routeTimeController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
-export const TimeRoutes = (prisma: PrismaClient) => {
-  const router = Router();
+export class RouteTimeRoutes {
+  private readonly router: Router;
+  
+  public repo: RouteTimeRepository;
+  public service: RouteTimeService;
+  public controller: TimeController;
 
-  const repo = new TimeRepository(prisma);
-  const comRepo = new CompanyRepository(prisma);
-  const service = new TimeService(repo, comRepo);
-  const controller = new TimeController(service);
+  constructor(prisma: PrismaClient,comRepo:CompanyRepository) {
+    this.router = Router();
+    
+    this.repo = new RouteTimeRepository(prisma);
+    this.service = new RouteTimeService(this.repo, comRepo);
+    this.controller = new TimeController(this.service);
+    this.setupRoutes();
+  }
 
-  router.get("/all", controller.getAll.bind(controller));
-  router.get("/", controller.getByPagination.bind(controller));
-  router.get("/:route_time_id", controller.getById.bind(controller));
-  router.post("/", controller.create.bind(controller));
-  router.put("/:route_time_id", controller.update.bind(controller));
-  router.delete("/:route_time_id", controller.delete.bind(controller));
+  private setupRoutes(): void {
+    this.router.get("/all", this.controller.getAll.bind(this.controller));
+    this.router.get("/", this.controller.getByPagination.bind(this.controller));
+    this.router.get("/:route_time_id", this.controller.getById.bind(this.controller));
+    this.router.post("/", this.controller.create.bind(this.controller));
+    this.router.put("/:route_time_id", this.controller.update.bind(this.controller));
+    this.router.delete("/:route_time_id", this.controller.delete.bind(this.controller));
+  }
 
-  return router;
-};
+  public routing(): Router {
+    return this.router;
+  }
+}
+
+

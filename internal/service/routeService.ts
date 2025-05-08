@@ -1,15 +1,15 @@
 import { Route } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
-import { DateRepository } from "../repository/dateRepository";
-import { TimeRepository } from "../repository/timeRepository";
+import { RouteDateRepository } from "../repository/routeDateRepository";
+import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 
 export class RouteService {
   constructor(
     private readonly routeRepository: RouteRepository,
-    private readonly dateRepository: DateRepository,
-    private readonly timeRepository: TimeRepository
+    private readonly routeDateRepository: RouteDateRepository,
+    private readonly routeTimeRepository: RouteTimeRepository
   ) {}
 
   async getByPagination(
@@ -54,14 +54,26 @@ export class RouteService {
   }
 
   async create(comId: number, data: Route) {
+    console.log("--------------1");
+    
     if (!Util.ValidCompany(comId, data.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
-
-    const date = await this.dateRepository.getById(data.route_date_id);
+    console.log("--------------2");
+    console.log(data.route_date_id);
+    
+    const date = await this.routeDateRepository.getById(data.route_date_id);
+    console.log("--------------3");
+    console.log(date);
+    
+    
     if (!date) {
+      console.log("--------------3.1");
+      
       throw AppError.NotFound("Date not found");
     }
+    console.log("--------------4");
+    
 
     return this.routeRepository.create(data);
   }
@@ -90,5 +102,36 @@ export class RouteService {
     }
 
     return this.routeRepository.delete(routeId);
+  }
+
+  async getRouteByLocations(
+    comId: number,
+    startLocationId: number,
+    endLocationId: number,
+    date: string
+  ) {
+    const dayOfWeek = new Date(date).getDay();
+
+    // 1. ดึง routes ที่มี route_date_id ว่างในวันนั้น (ต้อง join route_date)
+    const routes = await this.routeRepository.getRouteByDay(comId, dayOfWeek);
+
+    const start = String(startLocationId);
+    const end = String(endLocationId);
+
+    // 2. Filter เส้นทางที่มี start มาก่อน end ///
+    const filteredRoutes = routes.filter((route) => {
+      const routeArray = route.route_array.split(",");
+      const startIndex = routeArray.indexOf(start);
+      const endIndex = routeArray.indexOf(end);
+      return startIndex !== -1 && endIndex !== -1 && startIndex < endIndex;
+    });
+
+    if (filteredRoutes.length === 0) {
+      throw AppError.NotFound(
+        "Route not found for the given locations and date"
+      );
+    }
+
+    return filteredRoutes;
   }
 }

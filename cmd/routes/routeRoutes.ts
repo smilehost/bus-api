@@ -3,23 +3,35 @@ import { PrismaClient } from "@prisma/client";
 import { RouteRepository } from "../../internal/repository/routeRepository";
 import { RouteService } from "../../internal/service/routeService";
 import { RouteController } from "../../internal/controller/routeController";
-import { DateRepository } from "../../internal/repository/dateRepository";
-import { TimeRepository } from "../../internal/repository/timeRepository";
+import { RouteDateRepository } from "../../internal/repository/routeDateRepository";
+import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
 
-export const Route = (prisma: PrismaClient) => {
-  const router = Router();
+export class RouteRoutes {
+  public readonly router: Router;
+  public repo: RouteRepository;
+  public controller: RouteController;
+  public service: RouteService;
 
-  const repo = new RouteRepository(prisma);
-  const dateRepo = new DateRepository(prisma);
-  const timeRepo = new TimeRepository(prisma);
-  const service = new RouteService(repo, dateRepo, timeRepo);
-  const controller = new RouteController(service);
+  constructor(prisma: PrismaClient,dateRepo:RouteDateRepository,timeRepo:RouteTimeRepository) {
+    this.router = Router();
+    
+    this.repo = new RouteRepository(prisma);
+    this.service = new RouteService(this.repo, dateRepo, timeRepo);
+    this.controller = new RouteController(this.service);
+    this.setupRoutes();
+  }
 
-  router.get("/", controller.getByPagination.bind(controller));
-  router.get("/:route_id", controller.getById.bind(controller));
-  router.post("/", controller.create.bind(controller));
-  router.put("/:route_id", controller.update.bind(controller));
-  router.delete("/:route_id", controller.delete.bind(controller));
+  private setupRoutes(): void {
+    this.router.get("/", this.controller.getByPagination.bind(this.controller));
+    this.router.get("/:route_id", this.controller.getById.bind(this.controller));
+    this.router.post("/", this.controller.create.bind(this.controller));
+    this.router.put("/:route_id", this.controller.update.bind(this.controller));
+    this.router.delete("/:route_id", this.controller.delete.bind(this.controller));
+  }
 
-  return router;
-};
+  public routing(): Router {
+    return this.router;
+  }
+}
+
+

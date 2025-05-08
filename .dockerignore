@@ -1,0 +1,38 @@
+# Node dependencies
+node_modules
+npm-debug.log
+yarn.lock
+
+# Build output
+dist
+coverage
+*.log
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Test
+test
+__tests__/
+*.test.ts
+*.test.js
+
+# Env & config
+.env
+.env.local
+.env.*.local
+
+# VSCode & IDEs
+.vscode
+.idea
+
+# Sonar & CI
+sonar-debug.log
+sonar-project.properties
+run-sonar.sh
+sona.yml
+Jenkinsfile
+
+# Misc
+*.swp
+.DS_Store

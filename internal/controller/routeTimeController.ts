@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TimeService } from "../service/timeService";
+import { RouteTimeService } from "../service/routeTimeService";
 import { RouteTime } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
@@ -7,13 +7,13 @@ import { AppError } from "../utils/appError";
 import { RouteTimeRequest } from "../../cmd/request";
 
 export class TimeController {
-  constructor(private readonly timeService: TimeService) {}
+  constructor(private readonly routeTimeService: RouteTimeService) {}
 
   async getAll(req: Request, res: Response) {
     try {
       const { com_id } = Util.extractRequestContext(req);
 
-      const result = await this.timeService.getAll(com_id);
+      const result = await this.routeTimeService.getAll(com_id);
 
       res.status(200).json({
         message: "Route times retrieved successfully",
@@ -40,7 +40,7 @@ export class TimeController {
         query: true,
       });
 
-      const result = await this.timeService.getByPagination(
+      const result = await this.routeTimeService.getByPagination(
         com_id,
         query.page,
         query.size,
@@ -71,7 +71,7 @@ export class TimeController {
         params: true,
       });
 
-      const result = await this.timeService.getById(
+      const result = await this.routeTimeService.getById(
         com_id,
         params.route_time_id
       );
@@ -97,7 +97,7 @@ export class TimeController {
         body: true,
       });
 
-      const result = await this.timeService.create(com_id, body);
+      const result = await this.routeTimeService.create(com_id, body);
 
       res.status(201).json({
         message: "Route time created successfully",
@@ -124,7 +124,7 @@ export class TimeController {
         params: true,
       });
 
-      const result = await this.timeService.update(
+      const result = await this.routeTimeService.update(
         com_id,
         params.route_time_id,
         body
@@ -154,7 +154,7 @@ export class TimeController {
         params: true,
       });
 
-      await this.timeService.deleteById(com_id, params.route_time_id);
+      await this.routeTimeService.deleteById(com_id, params.route_time_id);
 
       res.status(200).json({
         message: "Route time deleted successfully",

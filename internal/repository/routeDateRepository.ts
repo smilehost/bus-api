@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { RouteDate } from "../../cmd/models";
 import { AppError } from "../utils/appError";
 
-export class DateRepository {
+export class RouteDateRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async getAll(comId: number) {
@@ -58,6 +58,8 @@ export class DateRepository {
         where: { route_date_id: id },
       });
     } catch (error) {
+      console.log(error);
+      
       throw AppError.fromPrismaError(error);
     }
   }
