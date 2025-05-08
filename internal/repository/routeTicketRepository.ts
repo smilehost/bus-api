@@ -36,14 +36,24 @@ export class RouteTicketRepository {
     }
   }
 
-  async getTicketPricingByLocation(routeId: number,startId:string,stopId:string) {
+  async getTicketPricingByLocation(ticketId:number,startId?:string,stopId?:string) {
     try {
-      return await this.prisma.route_ticket.findMany({
-        where:{
-          route_ticket_route_id:routeId
-        }
-      })
+      const query:any = {
+        route_ticket_price_ticket_id: ticketId,
+        route_ticket_status:1,
+      }
 
+      if(startId){
+        query.route_ticket_location_start = startId
+      }
+
+      if(stopId){
+        query.route_ticket_location_stop = stopId
+      }
+
+      return await this.prisma.route_ticket_price.findMany({
+        where: query
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
