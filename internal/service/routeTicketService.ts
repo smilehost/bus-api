@@ -151,9 +151,10 @@ export class RouteTicketService {
   async getTicketsByLocations(com_id: number,startId: number,stopId: number,date: string){
     const routes = await this.routeService.getRouteByLocations(com_id, startId, stopId, date);
   
-    const getPrices = async (routeId: number, ticketType: string) => {
+    const getPrices = async (ticketId: number, ticketType: string) => {
+      console.log(ticketId)
       if (ticketType !== "tier") {
-        const fixTicket = await this.routeTicketRepository.getTicketPricingByLocation(routeId);
+        const fixTicket = await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
         fixTicket.map((ticket)=>{
           ticket.route_ticket_location_start = String(startId)
           ticket.route_ticket_location_stop = String(stopId)
@@ -161,7 +162,7 @@ export class RouteTicketService {
         return fixTicket
       }
       return await this.routeTicketRepository.getTicketPricingByLocation(
-        routeId,
+        ticketId,
         String(startId),
         String(stopId)
       );
@@ -174,7 +175,7 @@ export class RouteTicketService {
       const ticketsWithPrices = await Promise.all(
         tickets.map(async (ticket) => ({
           ...ticket,
-          prices: await getPrices(route.route_id, ticket.route_ticket_type),
+          prices: await getPrices(ticket.route_ticket_id, ticket.route_ticket_type),
         }))
       );
   
