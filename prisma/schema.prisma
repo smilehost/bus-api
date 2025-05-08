@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model account {
+  account_id       Int    @id @default(autoincrement())
+  account_username String @db.VarChar(300)
+  account_password String @db.VarChar(300)
+  account_name     String @db.VarChar(300)
+  account_com_id   Int
+  account_menu     String @db.VarChar(300)
+  account_status   Int
+  account_role     String @db.VarChar(300)
+
+  @@index([account_com_id], map: "account_com_id")
+}
+
+model company {
+  com_id     Int    @id @default(autoincrement())
+  com_prefix String @db.VarChar(300)
+  com_name   String @db.VarChar(3000)
+  com_status Int
+}
+
+model member {
+  member_id     Int    @id @default(autoincrement())
+  member_com_id Int
+  member_phone  String @db.VarChar(300)
+  member_date   String @db.VarChar(300)
+
+  @@index([member_com_id], map: "member_com_id")
+}
+
+model payment_method {
+  payment_method_id     Int    @id @default(autoincrement())
+  payment_method_name   String @db.VarChar(300)
+  payment_method_status Int
+}
+
+model route {
+  route_id      Int        @id @default(autoincrement())
+  route_name_th String     @db.VarChar(300)
+  route_name_en String     @db.VarChar(300)
+  route_color   String     @db.VarChar(300)
+  route_status  Int
+  route_com_id  Int
+  route_date_id Int
+  route_time_id Int
+  route_array   String     @db.VarChar(300)
+  route_time    route_time @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
+  route_date    route_date @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
+
+  @@index([route_time_id], map: "route_time_id")
+  @@index([route_com_id], map: "route_com_id")
+  @@index([route_date_id], map: "route_date_id")
+}
+
+model route_date {
+  route_date_id     Int     @id @default(autoincrement())
+  route_date_name   String  @db.VarChar(300)
+  route_date_start  String  @db.VarChar(300)
+  route_date_end    String  @db.VarChar(300)
+  route_date_mon    Int
+  route_date_tue    Int
+  route_date_wen    Int
+  route_date_thu    Int
+  route_date_fri    Int
+  route_date_sat    Int
+  route_date_sun    Int
+  route_date_com_id Int
+  routes            route[]
+
+  @@index([route_date_com_id], map: "route_date_com_id")
+}
+
+model route_location {
+  route_location_id     Int    @id @default(autoincrement())
+  route_location_name   String @db.VarChar(300)
+  route_location_lat    String @db.VarChar(300)
+  route_location_long   String @db.VarChar(300)
+  route_location_com_id Int
+
+  @@index([route_location_com_id], map: "route_location_com_id")
+}
+
+model route_time {
+  route_time_id     Int     @id @default(autoincrement())
+  route_time_name   String  @db.VarChar(300)
+  route_time_array  String  @db.VarChar(300)
+  route_time_com_id Int
+  route             route[]
+
+  @@index([route_time_com_id], map: "route_time_com_id")
+}
+
+model transaction {
+  transaction_id                Int    @id @default(autoincrement())
+  transaction_com_id            Int
+  transaction_datetime          String @db.VarChar(300)
+  transaction_lat               String @db.VarChar(300)
+  transaction_long              String @db.VarChar(300)
+  transaction_payment_method_id Int
+  transaction_amount            String @db.VarChar(300)
+  transaction_pax               Int
+  transaction_member_id         Int
+
+  @@index([transaction_com_id], map: "transaction_com_id")
+  @@index([transaction_member_id], map: "transaction_member_id")
+  @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ticket_discount {
+  ticket_discount_id    Int    @id @default(autoincrement())
+  ticket_discount_name  String @db.VarChar(300)
+  ticket_discount_type  Int
+  ticket_discount_value String @db.VarChar(300)
+}
+
+model route_ticket {
+  route_ticket_id       Int                  @id @default(autoincrement())
+  route_ticket_name_th  String               @db.VarChar(300)
+  route_ticket_name_en  String               @db.VarChar(300)
+  route_ticket_color    String               @db.VarChar(300)
+  route_ticket_status   Int
+  route_ticket_route_id Int
+  route_ticket_amount   Int
+  route_ticket_type     String               @db.VarChar(300)
+  route_ticket_price    route_ticket_price[] @relation("TicketToPrices")
+
+  @@index([route_ticket_route_id], map: "route_ticket_route_id")
+}
+
+model route_ticket_price {
+  route_ticket_price_id        Int          @id @default(autoincrement())
+  route_ticket_location_start  String       @db.VarChar(300)
+  route_ticket_location_stop   String       @db.VarChar(300)
+  price                        String       @db.VarChar(300)
+  route_ticket_price_type_id   Int
+  route_ticket_price_ticket_id Int
+  route_ticket_price_route_id  Int
+  route_ticket                 route_ticket @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
+
+  @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
+  @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
+  @@index([route_ticket_price_type_id], map: "route_ticket_price_type_id")
+}
+
+model route_ticket_price_type {
+  route_ticket_price_type_id     Int    @id @default(autoincrement())
+  route_ticket_price_type_name   String @db.VarChar(300)
+  route_ticket_price_type_com_id Int
+}
+
+model ticket_remain {
+  ticket_remain_id       String @id @db.VarChar(300)
+  ticket_remain_date     String @db.VarChar(300)
+  ticket_remain_time     String @db.VarChar(300)
+  ticket_remain_number   Int
+  ticket_remain_route_id Int
+}

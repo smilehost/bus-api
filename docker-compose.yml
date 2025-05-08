@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: internship-app
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+    command: npm run start

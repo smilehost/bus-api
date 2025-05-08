@@ -1,0 +1,55 @@
+# ---------------------
+# Node / TypeScript
+# ---------------------
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+
+# ---------------------
+# Env & Secrets
+# ---------------------
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# ---------------------
+# Prisma
+# ---------------------
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/
+
+# ---------------------
+# Jest / Testing
+# ---------------------
+coverage/
+test-report.xml
+*.test.ts.snap
+
+# ---------------------
+# Docker / Sonar / Jenkins
+# ---------------------
+sonar-debug.log
+*.pid
+docker-volume/
+run-sonar.sh
+docker-compose.override.yml
+
+# ---------------------
+# OS/System Files
+# ---------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------
+# IDE/editor config
+# ---------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+secret
