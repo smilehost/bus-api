@@ -25,7 +25,7 @@ export class TicketRemainRoute {
   }
 
   private setupRoutes(): void {
-    // this.router.get("/:route_time_id", this.controller.getById.bind(this.controller));
+    this.router.get("/:ticket_remain_id", this.controller.getById.bind(this.controller));
   }
 
   public routing(): Router {
