@@ -5,20 +5,33 @@ import { RouteLocationService } from "../../internal/service/routeLocationServic
 import { LocationController } from "../../internal/controller/routeLocationController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
-export const RouteLocation = (prisma: PrismaClient) => {
-  const router = Router();
+export class RouteLocationRoutes {
+  private router: Router;
+  
+  public repo: RouteLocationRepository;
+  public service: RouteLocationService;
+  public controller: LocationController;
 
-  const repo = new RouteLocationRepository(prisma);
-  const comRepo = new CompanyRepository(prisma);
-  const service = new RouteLocationService(repo, comRepo);
-  const controller = new LocationController(service);
+  constructor(prisma: PrismaClient,comRepo:CompanyRepository) {
+    this.router = Router();
+    
+    this.repo = new RouteLocationRepository(prisma);
+    this.service = new RouteLocationService(this.repo, comRepo);
+    this.controller = new LocationController(this.service);
+    this.setupRoutes();
+  }
 
-  router.get("/all", controller.getAll.bind(controller));
-  router.get("/", controller.getByPagination.bind(controller));
-  router.get("/:route_location_id", controller.getById.bind(controller));
-  router.post("/", controller.create.bind(controller));
-  router.put("/:route_location_id", controller.update.bind(controller));
-  router.delete("/:route_location_id", controller.delete.bind(controller));
+  private setupRoutes(): void {
+    this.router.get("/all", this.controller.getAll.bind(this.controller));
+    this.router.get("/", this.controller.getByPagination.bind(this.controller));
+    this.router.get("/:route_location_id", this.controller.getById.bind(this.controller));
+    this.router.post("/", this.controller.create.bind(this.controller));
+    this.router.put("/:route_location_id", this.controller.update.bind(this.controller));
+    this.router.delete("/:route_location_id", this.controller.delete.bind(this.controller));
+  }
 
-  return router;
-};
+  public routing(): Router {
+    return this.router;
+  }
+}
+

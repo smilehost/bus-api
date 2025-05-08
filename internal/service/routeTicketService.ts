@@ -28,13 +28,6 @@ export class RouteTicketService {
     return tickets;
   }
 
-  async getPricingByLocation(startId:string,stopId:string,routeId:number){
-    const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(routeId);
-    const prices = await this.routeTicketRepository.getPricingByLocation(routeId,startId,stopId)
-
-    
-  }
-
   async getByPagination(
     comId: number,
     page: number,
@@ -162,6 +155,15 @@ export class RouteTicketService {
       stopId,
       date
     );
+
+    for (const route of routes ){
+      const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
+      // const prices = await this.routeTicketRepository.getPricingByLocation(
+      //   route.route_id,
+      //   String(startId),String(stopId))
+
+      // console.log(prices)
+    }
   }
 
 }

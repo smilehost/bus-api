@@ -16,7 +16,7 @@ export class RouteTicketRoutes {
     this.router = Router();
     
     this.repo = new RouteTicketRepository(prisma);
-    this.service = new RouteTicketService(this.repo, routeRoutes.repo,routeRoutes.service);
+    this.service = new RouteTicketService(this.repo, routeRoutes.repo, routeRoutes.service);
     this.controller = new RouteTicketController(this.service);
     this.setupRoutes();
   }
@@ -41,3 +41,9 @@ export class RouteTicketRoutes {
     return this.router;
   }
 }
+
+// For backward compatibility
+export const RouteTicket = (prisma: PrismaClient, routeRoutes: RouteRoutes) => {
+  const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes);
+  return routeTicketRoutes.routing();
+};

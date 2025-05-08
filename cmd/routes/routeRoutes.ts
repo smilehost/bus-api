@@ -12,16 +12,11 @@ export class RouteRoutes {
   public controller: RouteController;
   public service: RouteService;
 
-  private dateRepo: RouteDateRepository;
-  private timeRepo: RouteTimeRepository;
-
-  constructor(prisma: PrismaClient) {
+  constructor(prisma: PrismaClient,dateRepo:RouteDateRepository,timeRepo:RouteTimeRepository) {
     this.router = Router();
-    this.dateRepo = new RouteDateRepository(prisma);
-    this.timeRepo = new RouteTimeRepository(prisma);
     
     this.repo = new RouteRepository(prisma);
-    this.service = new RouteService(this.repo, this.dateRepo, this.timeRepo);
+    this.service = new RouteService(this.repo, dateRepo, timeRepo);
     this.controller = new RouteController(this.service);
     this.setupRoutes();
   }
@@ -39,8 +34,4 @@ export class RouteRoutes {
   }
 }
 
-// For backward compatibility and easier migration
-export const Route = (prisma: PrismaClient) => {
-  const routeRoutes = new RouteRoutes(prisma);
-  return routeRoutes.routing();
-};
+
