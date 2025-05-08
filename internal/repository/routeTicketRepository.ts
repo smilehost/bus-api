@@ -40,7 +40,6 @@ export class RouteTicketRepository {
     try {
       const query:any = {
         route_ticket_price_ticket_id: ticketId,
-        route_ticket_status:1,
       }
 
       if(startId){
