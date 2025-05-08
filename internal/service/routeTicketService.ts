@@ -1,4 +1,4 @@
-import { RouteTicketPrice } from "../../cmd/models";
+import { RouteTicket, RouteTicketPrice } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteTicketPriceType } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
@@ -148,22 +148,43 @@ export class RouteTicketService {
     return this.routeTicketRepository.deletePriceType(comId, priceTypeId);
   }
 
-  async getTicketsByLocations(com_id:number,startId:number,stopId:number,date:string){
-    const routes = await this.routeService.getRouteByLocations(
-      com_id,
-      startId,
-      stopId,
-      date
-    );
-
-    for (const route of routes ){
+  async getTicketsByLocations(com_id: number,startId: number,stopId: number,date: string){
+    const routes = await this.routeService.getRouteByLocations(com_id, startId, stopId, date);
+  
+    const getPrices = async (routeId: number, ticketType: string) => {
+      if (ticketType !== "tier") {
+        const fixTicket = await this.routeTicketRepository.getTicketPricingByLocation(routeId);
+        fixTicket.map((ticket)=>{
+          ticket.route_ticket_location_start = String(startId)
+          ticket.route_ticket_location_stop = String(stopId)
+        })
+        return fixTicket
+      }
+      return await this.routeTicketRepository.getTicketPricingByLocation(
+        routeId,
+        String(startId),
+        String(stopId)
+      );
+    };
+  
+    const processRoute = async (route: any): Promise<RouteTicket[]> => {
       const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
-      // const prices = await this.routeTicketRepository.getPricingByLocation(
-      //   route.route_id,
-      //   String(startId),String(stopId))
-
-      // console.log(prices)
-    }
+      if (!tickets.length) return [];
+  
+      const ticketsWithPrices = await Promise.all(
+        tickets.map(async (ticket) => ({
+          ...ticket,
+          prices: await getPrices(route.route_id, ticket.route_ticket_type),
+        }))
+      );
+  
+      return ticketsWithPrices;
+    };
+  
+    const ticketWithPrices = await Promise.all(routes.map(processRoute));
+  
+    return ticketWithPrices;
   }
+  
 
 }
