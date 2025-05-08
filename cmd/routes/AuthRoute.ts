@@ -6,7 +6,7 @@ import { AuthController } from '../../internal/controller/authController';
 import { authorizeRoles } from '../middleware/authMiddleware';
 
 export class AuthRoutes {
-    private router: Router;
+    private readonly router: Router;
     
     public repo: AuthRepository;
     public service: AuthService;

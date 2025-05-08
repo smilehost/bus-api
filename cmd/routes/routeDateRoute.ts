@@ -5,7 +5,7 @@ import { RouteDateService } from '../../internal/service/routeDateService';
 import { DateController } from '../../internal/controller/routeDateController';
 
 export class RouteDateRoutes {
-  private router: Router;
+  private readonly router: Router;
   
   public repo: RouteDateRepository;
   public service: RouteDateService;

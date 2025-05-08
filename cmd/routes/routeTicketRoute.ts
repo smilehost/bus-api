@@ -6,7 +6,7 @@ import { RouteTicketController } from "../../internal/controller/routeTicketCont
 import { RouteRoutes } from "../routes/routeRoutes";
 
 export class RouteTicketRoutes {
-  private router: Router;
+  private readonly router: Router;
 
   public repo: RouteTicketRepository;
   public service: RouteTicketService;

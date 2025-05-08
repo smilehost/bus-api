@@ -6,7 +6,7 @@ import { LocationController } from "../../internal/controller/routeLocationContr
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
 export class RouteLocationRoutes {
-  private router: Router;
+  private readonly router: Router;
   
   public repo: RouteLocationRepository;
   public service: RouteLocationService;

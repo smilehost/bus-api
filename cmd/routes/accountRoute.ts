@@ -6,7 +6,7 @@ import { AccountController } from "../../internal/controller/accountController";
 import { authorizeRoles } from "../middleware/authMiddleware";
 
 export class AccountRoutes {
-  private router: Router;
+  private readonly router: Router;
 
   public repo: AccountRepository;
   public service: AccountService;

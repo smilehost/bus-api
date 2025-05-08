@@ -6,7 +6,7 @@ import { TimeController } from "../../internal/controller/routeTimeController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
 export class RouteTimeRoutes {
-  private router: Router;
+  private readonly router: Router;
   
   public repo: RouteTimeRepository;
   public service: RouteTimeService;

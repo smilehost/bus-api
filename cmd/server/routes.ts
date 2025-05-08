@@ -7,8 +7,9 @@ import { AccountRoutes } from '../routes/accountRoute'; // Added import for Acco
 import { CompanyRepository } from '../../internal/repository/companyRepository';
 import { RouteDateRoutes } from '../routes/routeDateRoute';
 import { RouteLocationRoutes } from '../routes/routeLocationRoute';
-import { AuthRoutes } from '../routes/routeAuthRoute';
+import { AuthRoutes } from '../routes/AuthRoute';
 import { RouteTicketRoutes } from '../routes/routeTicketRoute';
+import { TicketRemainRoute } from '../routes/ticketRemainRoute';
 
 export const Routes = (prisma: PrismaClient) => {
   const router = Router();
@@ -22,6 +23,7 @@ export const Routes = (prisma: PrismaClient) => {
   const routeLocationRoutes = new RouteLocationRoutes(prisma,comRepo);
   const authRoutes = new AuthRoutes(prisma);
   const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes);
+  const ticketRemainRoute = new TicketRemainRoute(prisma);
   const accountRoutes = new AccountRoutes(prisma); // Added instance for AccountRoutes
   
   // Use the routing method of each class
@@ -32,6 +34,7 @@ export const Routes = (prisma: PrismaClient) => {
   router.use('/auth', authRoutes.routing());
   router.use('/routeTicket', routeTicketRoutes.routing());
   router.use('/accounts', accountRoutes.routing()); // Added routing for AccountRoutes
+  router.use('/ticketRemain', ticketRemainRoute.routing());
 
   return router;
 };

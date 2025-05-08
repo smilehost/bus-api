@@ -7,7 +7,7 @@ import { RouteDateRepository } from "../../internal/repository/routeDateReposito
 import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
 
 export class RouteRoutes {
-  public router: Router;
+  public readonly router: Router;
   public repo: RouteRepository;
   public controller: RouteController;
   public service: RouteService;
