@@ -1,4 +1,3 @@
-import "dotenv/config";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PrismaClient } from "@prisma/client";
