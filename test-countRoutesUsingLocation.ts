@@ -4,6 +4,7 @@ import { CompanyRepository } from "./internal/repository/companyRepository";
 import { RouteService } from "./internal/service/routeService";
 import { RouteDateRepository } from "./internal/repository/routeDateRepository";
 import { RouteTimeRepository } from "./internal/repository/routeTimeRepository";
+import { RouteLocationRepository } from "./internal/repository/routeLocationRepository";
 
 // 1. สร้าง Prisma instance
 const prisma = new PrismaClient();
@@ -12,9 +13,9 @@ const prisma = new PrismaClient();
 const routeRepo = new RouteRepository(prisma);
 const routeDateRepo = new RouteDateRepository(prisma);
 const routeTimeRepo = new RouteTimeRepository(prisma);
-
+const routeLocationRepo = new RouteLocationRepository(prisma);
 // 3. สร้าง Service
-const routeService = new RouteService(routeRepo, routeDateRepo, routeTimeRepo);
+const routeService = new RouteService(routeRepo, routeDateRepo, routeLocationRepo,);
 
 // 4. ใส่ com_id และ location_id ที่จะใช้ทดสอบ
 const com_id = 1;
