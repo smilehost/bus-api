@@ -1,7 +1,4 @@
-import { AccountRepository } from "../repository/accountRepository";
-import { Account } from "../../cmd/models";
 import { AppError } from "../utils/appError";
-import { Util } from "../utils/util";
 import { TicketRemainRepository } from "../repository/ticketRemainRepository";
 import { GetRemainByRouteTimeDTO, GetRemainNumberDTO } from "../../cmd/dto";
 
@@ -47,11 +44,12 @@ export class TicketRemainService {
   async getRemainByRouteTime(dto: GetRemainByRouteTimeDTO) {
     const times = dto.ticket_remain_time.split(",").map((t) => t.trim());
 
-    const remains = await this.ticketRemainRepository.findByTicketIdDateAndTimes(
-      dto.ticket_id,
-      dto.ticket_remain_date,
-      times
-    );
+    const remains =
+      await this.ticketRemainRepository.findByTicketIdDateAndTimes(
+        dto.ticket_id,
+        dto.ticket_remain_date,
+        times
+      );
 
     const remainMap = new Map(
       remains.map((remain) => [remain.ticket_remain_time, remain])

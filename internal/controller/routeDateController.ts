@@ -70,7 +70,10 @@ export class DateController {
         params: true,
       });
 
-      const data = await this.routeDateService.getById(com_id, params.route_date_id);
+      const data = await this.routeDateService.getById(
+        com_id,
+        params.route_date_id
+      );
       if (!data) {
         res.status(404).json({ error: "Data not found" });
         return;

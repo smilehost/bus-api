@@ -6,7 +6,6 @@ import { AppError } from "../utils/appError";
 import { Account } from "../../cmd/models";
 import { JwtPayloadUser } from "../../cmd/dto";
 
-
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
@@ -91,8 +90,6 @@ export class AccountController {
 
   async delete(req: Request, res: Response) {
     try {
-      console.log("-----------1");
-
       const { com_id, params } = Util.extractRequestContext<
         void,
         { account_id: number }

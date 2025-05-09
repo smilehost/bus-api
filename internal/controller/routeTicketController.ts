@@ -95,8 +95,6 @@ export class RouteTicketController {
 
   async create(req: Request, res: Response) {
     try {
-      console.log("-------------1");
-
       const { com_id, body } =
         Util.extractRequestContext<RouteTicketWithPrices>(req, {
           body: true,
@@ -210,8 +208,6 @@ export class RouteTicketController {
 
   async createPriceType(req: Request, res: Response) {
     try {
-      console.log("-------------1");
-      
       const { com_id, body } = Util.extractRequestContext<RouteTicketPriceType>(
         req,
         { body: true }
@@ -220,6 +216,7 @@ export class RouteTicketController {
         com_id,
         body
       );
+      
       res.status(201).json({
         message: "Ticket price type created successfully",
         result,

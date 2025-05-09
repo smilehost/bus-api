@@ -102,8 +102,6 @@ export class RouteRepository {
         },
       });
     } catch (error) {
-      console.log(error);
-
       throw AppError.fromPrismaError(error);
     }
   }

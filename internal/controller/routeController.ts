@@ -73,7 +73,6 @@ export class RouteController {
       });
 
       const createdRoute = await this.routeService.create(com_id, body);
-      console.log("creatdsfdsfdsfdfdfdsfsdfdsfsdfdfdfdsfdsfedRoute");
 
       res.status(201).json({
         message: "Route created successfully",
@@ -149,6 +148,4 @@ export class RouteController {
       ExceptionHandler.internalServerError(res, error);
     }
   }
-
-  
 }

@@ -19,35 +19,35 @@ export class Util {
     return com_id1 === com_id2;
   }
 
-  // กลัวแตกจังเลย
   static parseId(input: unknown, label = "com_id"): number {
     if (input === null || input === undefined) {
       throw AppError.BadRequest(`Missing ${label}`);
     }
-  
+
     if (Array.isArray(input)) {
       input = input[0];
     }
-  
+
     if (typeof input === "number") {
       if (!Number.isInteger(input)) {
         throw AppError.BadRequest(`Invalid ${label} (not an integer)`);
       }
       return input;
     }
-  
+
     if (typeof input === "string") {
       const trimmed = input.trim();
       if (trimmed === "") throw AppError.BadRequest(`Empty ${label} value`);
-  
-      // ✅ ตรวจว่า string นี้เป็นตัวเลขล้วน (ไม่ใช่ 1_1_1)
+
       if (!/^\d+$/.test(trimmed)) {
-        throw AppError.BadRequest(`Invalid ${label} (not a pure number string)`);
+        throw AppError.BadRequest(
+          `Invalid ${label} (not a pure number string)`
+        );
       }
-  
+
       return parseInt(trimmed, 10);
     }
-  
+
     throw AppError.BadRequest(`Invalid ${label} format`);
   }
 
@@ -115,22 +115,15 @@ export class Util {
       console.log("---------------------3");
       console.log(req.params);
       console.log("---------------------4");
-      
+
       const check = Util.checkObjectHasMissingFields(req.params);
       if (!check.valid) {
         throw AppError.BadRequest(
           `Missing required fields in params: ${check.missing.join(", ")}`
         );
       }
-      console.log("---------------------5");
-      console.log(req.params);
-      console.log("---------------------6");
-
+      
       result.params = Util.parseIdFields(req.params);
-
-      console.log("---------------------7");
-      console.log(result.params);
-      console.log("---------------------8");
     }
 
     if (require.query) {
