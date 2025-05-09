@@ -55,25 +55,23 @@ export class RouteService {
 
   async create(comId: number, data: Route) {
     console.log("--------------1");
-    
+
     if (!Util.ValidCompany(comId, data.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
     console.log("--------------2");
     console.log(data.route_date_id);
-    
+
     const date = await this.routeDateRepository.getById(data.route_date_id);
     console.log("--------------3");
     console.log(date);
-    
-    
+
     if (!date) {
       console.log("--------------3.1");
-      
+
       throw AppError.NotFound("Date not found");
     }
     console.log("--------------4");
-    
 
     return this.routeRepository.create(data);
   }
@@ -133,5 +131,10 @@ export class RouteService {
     }
 
     return filteredRoutes;
+  }
+
+  async getRoutesUsingLocation(comId: number, locationId: number) {
+    const locationStr = locationId.toString();
+    return await this.routeRepository.findRoutesByLocation(comId, locationStr);
   }
 }

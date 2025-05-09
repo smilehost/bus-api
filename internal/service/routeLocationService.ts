@@ -101,4 +101,7 @@ export class RouteLocationService {
 
     return this.routeLocationRepository.delete(locationId);
   }
+
+    // สร้าง service count ตัวเองที่ถูก route ดึงไปใช้ ใว่มีกี่ route ที่ดึงไปใช้ รับ com_id รับ location_id โดยการ query route ทั้งหมด where com_id แล้ว chenk
+  // return route ที่ใช้ location นั้นอยู่
 }
