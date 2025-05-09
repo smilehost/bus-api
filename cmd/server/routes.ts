@@ -29,7 +29,11 @@ export const Routes = (prisma: PrismaClient) => {
   );
   const authRoutes = new AuthRoutes(prisma);
   const ticketRemainRoute = new TicketRemainRoute(prisma,routeTimeRoutes.repo);
-  const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes,ticketRemainRoute);
+  const routeTicketRoutes = new RouteTicketRoutes(
+    prisma,routeRoutes.repo,
+    routeRoutes.service,
+    ticketRemainRoute
+  );
   const accountRoutes = new AccountRoutes(prisma);
 
   router.use("/route", routeRoutes.routing());

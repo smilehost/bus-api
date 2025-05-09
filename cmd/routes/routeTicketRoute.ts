@@ -5,6 +5,8 @@ import { RouteTicketService } from "../../internal/service/routeTicketService";
 import { RouteTicketController } from "../../internal/controller/routeTicketController";
 import { RouteRoutes } from "../routes/routeRoutes";
 import { TicketRemainRoute } from "./ticketRemainRoute";
+import { RouteRepository } from "../../internal/repository/routeRepository";
+import { RouteService } from "../../internal/service/routeService";
 
 export class RouteTicketRoutes {
   private readonly router: Router;
@@ -15,7 +17,8 @@ export class RouteTicketRoutes {
 
   constructor(
     prisma: PrismaClient, 
-    routeRoutes: RouteRoutes,
+    routeRepo:RouteRepository,
+    routeService:RouteService,
     ticketRemain:TicketRemainRoute) 
   {
     
@@ -24,8 +27,9 @@ export class RouteTicketRoutes {
     this.repo = new RouteTicketRepository(prisma);
     this.service = new RouteTicketService(
       this.repo,
-      routeRoutes.repo,
-      routeRoutes.service
+      routeRepo,
+      routeService,
+      ticketRemain.service
     );
     this.controller = new RouteTicketController(this.service);
     this.setupRoutes();
