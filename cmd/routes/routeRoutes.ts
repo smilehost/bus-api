@@ -5,6 +5,7 @@ import { RouteService } from "../../internal/service/routeService";
 import { RouteController } from "../../internal/controller/routeController";
 import { RouteDateRepository } from "../../internal/repository/routeDateRepository";
 import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
+import { RouteLocationRepository } from "../../internal/repository/routeLocationRepository";
 
 export class RouteRoutes {
   public readonly router: Router;
@@ -14,13 +15,13 @@ export class RouteRoutes {
 
   constructor(
     prisma: PrismaClient,
-    dateRepo: RouteDateRepository,
-    timeRepo: RouteTimeRepository
+    dateRepo: RouteDateRepository
   ) {
     this.router = Router();
+    const locationRepo = new RouteLocationRepository(prisma)
 
     this.repo = new RouteRepository(prisma);
-    this.service = new RouteService(this.repo, dateRepo, timeRepo);
+    this.service = new RouteService(this.repo, dateRepo, locationRepo);
     this.controller = new RouteController(this.service);
     this.setupRoutes();
   }
@@ -42,4 +43,5 @@ export class RouteRoutes {
   public routing(): Router {
     return this.router;
   }
+
 }

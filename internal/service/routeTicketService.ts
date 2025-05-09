@@ -178,6 +178,7 @@ export class RouteTicketService {
 
         return fixTicket;
       }
+      
       return await this.routeTicketRepository.getTicketPricingByLocation(
         ticketId,
         String(startId),
@@ -202,6 +203,7 @@ export class RouteTicketService {
       const ticketsWithPrices = await Promise.all(
         tickets.map(async (ticket) => ({
           ...ticket,
+          locations: await this.routeService.getStartEndLocation(route),
           prices: await getPrices(ticket.route_ticket_id, ticket.route_ticket_type),
           ticket_remain: await getRemaining(ticket,route.route_time_id)
         }))

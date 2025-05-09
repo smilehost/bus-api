@@ -17,10 +17,10 @@ export const Routes = (prisma: PrismaClient) => {
   const comRepo = new CompanyRepository(prisma);
   const routeDateRoutes = new RouteDateRoutes(prisma);
   const routeTimeRoutes = new RouteTimeRoutes(prisma, comRepo);
+
   const routeRoutes = new RouteRoutes(
     prisma,
-    routeDateRoutes.repo,
-    routeTimeRoutes.repo
+    routeDateRoutes.repo
   );
   const routeLocationRoutes = new RouteLocationRoutes(
     prisma,

@@ -1,15 +1,15 @@
 import { Route } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteDateRepository } from "../repository/routeDateRepository";
-import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteLocationRepository } from "../repository/routeLocationRepository";
 
 export class RouteService {
   constructor(
     private readonly routeRepository: RouteRepository,
     private readonly routeDateRepository: RouteDateRepository,
-    private readonly routeTimeRepository: RouteTimeRepository
+    private readonly loactionRepository: RouteLocationRepository
   ) {}
 
   async getByPagination(
@@ -127,5 +127,23 @@ export class RouteService {
   async getRoutesUsingLocation(comId: number, locationId: number) {
     const locationStr = locationId.toString();
     return await this.routeRepository.findRoutesByLocation(comId, locationStr);
+  }
+
+  async getStartEndLocation(route:Route){
+    const routeLocation = route.route_array.split(",")
+    const start = Number(routeLocation[0])
+    const stop = Number(routeLocation.pop())
+
+    const startLocation = await this.loactionRepository.getById(start)
+    const stopLocation = await this.loactionRepository.getById(stop)
+
+    if (!startLocation || !stopLocation){
+      throw AppError.NotFound("can't find start or stop location in Route")
+    }
+
+    return {
+      startLocation:startLocation,
+      stopLocation:stopLocation
+    }
   }
 }
