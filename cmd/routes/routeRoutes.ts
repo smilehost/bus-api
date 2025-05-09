@@ -4,7 +4,6 @@ import { RouteRepository } from "../../internal/repository/routeRepository";
 import { RouteService } from "../../internal/service/routeService";
 import { RouteController } from "../../internal/controller/routeController";
 import { RouteDateRepository } from "../../internal/repository/routeDateRepository";
-import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
 import { RouteLocationRepository } from "../../internal/repository/routeLocationRepository";
 
 export class RouteRoutes {

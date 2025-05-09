@@ -44,6 +44,7 @@ export const Routes = (prisma: PrismaClient) => {
   router.use("/routeTicket", routeTicketRoutes.routing());
   router.use("/accounts", accountRoutes.routing());
   router.use("/ticketRemain", ticketRemainRoute.routing());
+  router.use("/member", routeTimeRoutes.routing());
 
   return router;
 };
