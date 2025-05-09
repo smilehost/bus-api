@@ -1,4 +1,4 @@
-import { RouteTicket, RouteTicketPrice } from "../../cmd/models";
+import { Route, RouteTicket, RouteTicketPrice } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteTicketPriceType } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
@@ -6,12 +6,15 @@ import { RouteTicketRepository } from "../repository/routeTicketRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 import { RouteService } from "./routeService";
+import { TicketRemainService } from "./ticketRemainService";
+import { GetRemainByRouteTimeDTO } from "../../cmd/dto";
 
 export class RouteTicketService {
   constructor(
     private readonly routeTicketRepository: RouteTicketRepository,
     private readonly routeRepository: RouteRepository,
     private readonly routeService:RouteService,
+    private readonly ticketRemainService:TicketRemainService,
   ) {}
 
   async getAllTicketsByRouteId(comId: number, routeId: number) {
@@ -167,8 +170,18 @@ export class RouteTicketService {
         String(stopId)
       );
     };
+
+    const getRemaining = async (ticket:RouteTicket,routeTimeId:number)=>{
+      const ticketTime:GetRemainByRouteTimeDTO = {
+        ticket_id:ticket.route_ticket_id,
+        ticket_remain_date:date,
+        route_time_id:routeTimeId,
+      }
+      const remaining = await this.ticketRemainService.getRemainByRouteTime(ticketTime)
+      return remaining
+    }
   
-    const processRoute = async (route: any): Promise<RouteTicket[]> => {
+    const processRoute = async (route: Route): Promise<RouteTicket[]> => {
       const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
       if (!tickets.length) return [];
   
@@ -176,6 +189,7 @@ export class RouteTicketService {
         tickets.map(async (ticket) => ({
           ...ticket,
           prices: await getPrices(ticket.route_ticket_id, ticket.route_ticket_type),
+          ticket_remain: await getRemaining(ticket,route.route_time_id)
         }))
       );
   

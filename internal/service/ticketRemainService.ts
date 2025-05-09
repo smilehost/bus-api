@@ -1,13 +1,12 @@
-import { AccountRepository } from "../repository/accountRepository";
-import { Account } from "../../cmd/models";
 import { AppError } from "../utils/appError";
-import { Util } from "../utils/util";
 import { TicketRemainRepository } from "../repository/ticketRemainRepository";
 import { GetRemainByRouteTimeDTO, GetRemainNumberDTO } from "../../cmd/dto";
+import { RouteTimeRepository } from "../repository/routeTimeRepository";
 
 export class TicketRemainService {
   constructor(
-    private readonly ticketRemainRepository: TicketRemainRepository
+    private readonly ticketRemainRepository: TicketRemainRepository,
+    private readonly timeRepository: RouteTimeRepository
   ) {}
 
   async getById(comId: number, ticket_remain_id: string) {
@@ -45,13 +44,20 @@ export class TicketRemainService {
   }
 
   async getRemainByRouteTime(dto: GetRemainByRouteTimeDTO) {
-    const times = dto.ticket_remain_time.split(",").map((t) => t.trim());
+    const routeTime = await this.timeRepository.getById(dto.route_time_id)
+    if(!routeTime){
+      throw AppError.NotFound("route time not found")
+    }
 
-    const remains = await this.ticketRemainRepository.findByTicketIdDateAndTimes(
+    const times = routeTime.route_time_array.split(",").map((t) => t.trim());
+
+    const remains = await this.ticketRemainRepository.findRemainByDate(
       dto.ticket_id,
       dto.ticket_remain_date,
-      times
     );
+
+    remains.filter((remain)=>
+      times.includes(remain.ticket_remain_time))
 
     const remainMap = new Map(
       remains.map((remain) => [remain.ticket_remain_time, remain])

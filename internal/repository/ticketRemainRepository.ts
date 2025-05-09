@@ -38,19 +38,15 @@ export class TicketRemainRepository {
     }
   }
 
-  async findByTicketIdDateAndTimes(
+  async findRemainByDate(
     ticket_id: number,
     date: string,
-    times: string[]
   ) {
     try {
       return await this.prisma.ticket_remain.findMany({
         where: {
           ticket_remain_route_ticket_id: ticket_id,
           ticket_remain_date: date,
-          ticket_remain_time: {
-            in: times,
-          },
         },
       });
     } catch (error) {

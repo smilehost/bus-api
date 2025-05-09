@@ -1,3 +1,5 @@
+import { RouteTime } from "./models";
+
 export interface JwtPayloadUser {
   account_id: number;
   account_role: string;
@@ -16,6 +18,6 @@ export interface GetRemainNumberDTO {
 
 export interface GetRemainByRouteTimeDTO {
   ticket_id: number;
-  ticket_remain_date: string; // หรือใช้ Date ถ้าต้องการ parse เป็น Date object
-  ticket_remain_time: string; // ถ้าจะแยกเวลาเป็น array แนะนำให้ใช้ string[]
+  ticket_remain_date: string;
+  route_time_id: number; // หรือใช้ Date ถ้าต้องการ parse เป็น Date object
 }
