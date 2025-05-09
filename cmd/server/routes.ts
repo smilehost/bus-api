@@ -18,7 +18,7 @@ export const Routes = (prisma: PrismaClient) => {
   const routeDateRoutes = new RouteDateRoutes(prisma);
   const routeTimeRoutes = new RouteTimeRoutes(prisma,comRepo);
   const routeRoutes = new RouteRoutes(prisma,routeDateRoutes.repo,routeTimeRoutes.repo);
-  const routeLocationRoutes = new RouteLocationRoutes(prisma,comRepo);
+  const routeLocationRoutes = new RouteLocationRoutes(prisma,comRepo,routeRoutes.service);
   const authRoutes = new AuthRoutes(prisma);
   const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes);
   const ticketRemainRoute = new TicketRemainRoute(prisma);

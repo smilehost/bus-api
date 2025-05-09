@@ -5,6 +5,8 @@ import { RouteLocationService } from "../../internal/service/routeLocationServic
 import { LocationController } from "../../internal/controller/routeLocationController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
+import { RouteService } from "../../internal/service/routeService";
+
 export class RouteLocationRoutes {
   private readonly router: Router;
   
@@ -12,11 +14,11 @@ export class RouteLocationRoutes {
   public service: RouteLocationService;
   public controller: LocationController;
 
-  constructor(prisma: PrismaClient,comRepo:CompanyRepository) {
+  constructor(prisma: PrismaClient,comRepo:CompanyRepository,routeService:RouteService) {
     this.router = Router();
     
     this.repo = new RouteLocationRepository(prisma);
-    this.service = new RouteLocationService(this.repo, comRepo);
+    this.service = new RouteLocationService(this.repo, comRepo,routeService);
     this.controller = new LocationController(this.service);
     this.setupRoutes();
   }

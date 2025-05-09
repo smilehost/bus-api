@@ -3,11 +3,13 @@ import { RouteLocationRepository } from "../repository/routeLocationRepository";
 import { CompanyRepository } from "../repository/companyRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
+import { RouteService } from "./routeService";
 
 export class RouteLocationService {
   constructor(
     private readonly routeLocationRepository: RouteLocationRepository,
-    private readonly companyRepository: CompanyRepository
+    private readonly companyRepository: CompanyRepository,
+    private readonly routeService: RouteService,
   ) {}
 
   async getAll(comId: number) {
@@ -94,14 +96,19 @@ export class RouteLocationService {
     if (!existing) {
       throw AppError.NotFound("Route location not found");
     }
-
+  
     if (!Util.ValidCompany(comId, existing.route_location_com_id)) {
       throw AppError.Forbidden("Route location: Company ID does not match");
     }
-
+  
+    const routes = await this.routeService.getRoutesUsingLocation(comId, locationId);
+  
+    if (routes.length > 0) {
+      throw AppError.BadRequest(
+        `ไม่สามารถลบจุดจอดนี้ได้ เนื่องจากถูกใช้งานอยู่ใน ${routes.length} เส้นทาง`
+      );
+    }
+  
     return this.routeLocationRepository.delete(locationId);
   }
-
-    // สร้าง service count ตัวเองที่ถูก route ดึงไปใช้ ใว่มีกี่ route ที่ดึงไปใช้ รับ com_id รับ location_id โดยการ query route ทั้งหมด where com_id แล้ว chenk
-  // return route ที่ใช้ location นั้นอยู่
 }
