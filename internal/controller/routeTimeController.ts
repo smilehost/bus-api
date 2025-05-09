@@ -93,9 +93,12 @@ export class TimeController {
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteTimeRequest>(req, {
-        body: true,
-      });
+      const { com_id, body } = Util.extractRequestContext<RouteTimeRequest>(
+        req,
+        {
+          body: true,
+        }
+      );
 
       const result = await this.routeTimeService.create(com_id, body);
 

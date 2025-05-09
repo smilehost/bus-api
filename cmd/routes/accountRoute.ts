@@ -23,9 +23,18 @@ export class AccountRoutes {
 
   private setupRoutes(): void {
     this.router.get("/all", this.controller.getAll.bind(this.controller));
-    this.router.get("/:account_id", this.controller.getById.bind(this.controller));
-    this.router.put("/:account_id", this.controller.update.bind(this.controller)); // update can't change account_status and account_password
-    this.router.delete("/:account_id", this.controller.delete.bind(this.controller));
+    this.router.get(
+      "/:account_id",
+      this.controller.getById.bind(this.controller)
+    );
+    this.router.put(
+      "/:account_id",
+      this.controller.update.bind(this.controller)
+    ); // update can't change account_status and account_password
+    this.router.delete(
+      "/:account_id",
+      this.controller.delete.bind(this.controller)
+    );
   }
 
   public routing(): Router {
@@ -44,7 +53,11 @@ export const Account = (prisma: PrismaClient) => {
   router.get("/all", controller.getAll.bind(controller));
   router.get("/:account_id", controller.getById.bind(controller));
   router.put("/:account_id", controller.update.bind(controller)); // update can't change account_status and account_password
-  router.delete("/:account_id",authorizeRoles('1'),controller.delete.bind(controller));
+  router.delete(
+    "/:account_id",
+    authorizeRoles("1"),
+    controller.delete.bind(controller)
+  );
 
   return router;
 };

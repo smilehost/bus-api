@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { RouteTime } from "../../cmd/models"; // หรือใช้ Prisma model ก็ได้
+import { RouteTime } from "../../cmd/models";
 
 export class RouteTimeRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -82,7 +82,7 @@ export class RouteTimeRepository {
     try {
       return await this.prisma.route_time.update({
         where: { route_time_id: id },
-        data : {
+        data: {
           route_time_name: data.route_time_name,
           route_time_array: data.route_time_array,
           route_time_com_id: data.route_time_com_id,

@@ -1,19 +1,7 @@
 import express from "express";
 import cors from "cors";
-import fs from "fs";
-import https from "https";
 import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
-import dotenv from "dotenv";
-dotenv.config();
-
-import path from "path";
-
-const keyPath = path.resolve(process.cwd(), "certs", "key.pem");
-const certPath = path.resolve(process.cwd(), "certs", "cert.pem");
-
-const key = fs.readFileSync(keyPath);
-const cert = fs.readFileSync(certPath);
 
 const app = express();
 const port = process.env.PORT ?? 3000;
@@ -30,7 +18,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello Secure World!!!!--++60");
+  res.send("Hello Secure World!!!!!!3");
 });
 
 app.get("/areYouPay", (req, res) => {
@@ -44,7 +32,6 @@ app.get("/areYouPay", (req, res) => {
 
 app.use("/api", Routes(prisma));
 
-// ✅ HTTPS server
-https.createServer({ key, cert }, app).listen(port, () => {
-  console.log(`✅ Server running at https://localhost:${port}`);
+app.listen(port, () => {
+  console.log(`🚀 Server listening at http://localhost:${port}`);
 });

@@ -39,7 +39,8 @@ export interface Route {
   route_date_id: number;
   route_time_id: number;
   route_array: string;
-  route_time?: RouteTime; // optional relation
+  route_time?: RouteTime;
+  route_date?: RouteDate;
 }
 
 export interface RouteDate {
@@ -55,6 +56,7 @@ export interface RouteDate {
   route_date_sat: number;
   route_date_sun: number;
   route_date_com_id: number;
+  routes?: Route[];
 }
 
 export interface RouteLocation {
@@ -70,7 +72,7 @@ export interface RouteTime {
   route_time_name: string;
   route_time_array: string;
   route_time_com_id: number;
-  route?: Route[]; // optional relation
+  route?: Route[];
 }
 
 export interface Transaction {
@@ -101,6 +103,7 @@ export interface RouteTicket {
   route_ticket_route_id: number;
   route_ticket_amount: number;
   route_ticket_type: string;
+  route_ticket_price?: RouteTicketPrice[];
 }
 
 export interface RouteTicketPrice {
@@ -111,10 +114,19 @@ export interface RouteTicketPrice {
   route_ticket_price_type_id: number;
   route_ticket_price_ticket_id: number;
   route_ticket_price_route_id: number;
+  route_ticket?: RouteTicket;
 }
 
 export interface RouteTicketPriceType {
   route_ticket_price_type_id: number;
   route_ticket_price_type_name: string;
   route_ticket_price_type_com_id: number;
+}
+
+export interface TicketRemain {
+  ticket_remain_id: string;
+  ticket_remain_date: string;
+  ticket_remain_time: string;
+  ticket_remain_number: number;
+  ticket_remain_route_ticket_id: number;
 }
