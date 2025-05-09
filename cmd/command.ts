@@ -32,7 +32,6 @@ yargs(hideBin(process.argv))
       const service = new AuthService(repo);
 
       try {
-        
         const { password, admin } = await service.createAdmin(
           argv.comid,
           argv.name,

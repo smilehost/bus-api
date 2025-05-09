@@ -216,6 +216,7 @@ export class RouteTicketController {
         com_id,
         body
       );
+      
       res.status(201).json({
         message: "Ticket price type created successfully",
         result,

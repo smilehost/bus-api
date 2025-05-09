@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { RouteTicketService } from "../service/routeTicketService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
