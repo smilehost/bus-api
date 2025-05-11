@@ -1,5 +1,3 @@
-import { RouteTime } from "./models";
-
 export interface JwtPayloadUser {
   account_id: number;
   account_role: string;

@@ -22,11 +22,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/areYouPay", (req, res) => {
-  const { monney } = req.query;
+  const { money } = req.query as { money: string };
 
   res.json({
     message: `Pay Successfully`,
-    amonut: monney,
+    amount: money,
   });
 });
 

@@ -11,26 +11,24 @@ import { AuthRoutes } from "../routes/AuthRoute";
 import { RouteTicketRoutes } from "../routes/routeTicketRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
 
-export const Routes = (prisma: PrismaClient) => {
+export const Routes = (prisma: PrismaClient): Router => {
   const router = Router();
 
   const comRepo = new CompanyRepository(prisma);
   const routeDateRoutes = new RouteDateRoutes(prisma);
   const routeTimeRoutes = new RouteTimeRoutes(prisma, comRepo);
 
-  const routeRoutes = new RouteRoutes(
-    prisma,
-    routeDateRoutes.repo
-  );
+  const routeRoutes = new RouteRoutes(prisma, routeDateRoutes.repo);
   const routeLocationRoutes = new RouteLocationRoutes(
     prisma,
     comRepo,
     routeRoutes.service
   );
   const authRoutes = new AuthRoutes(prisma);
-  const ticketRemainRoute = new TicketRemainRoute(prisma,routeTimeRoutes.repo);
+  const ticketRemainRoute = new TicketRemainRoute(prisma, routeTimeRoutes.repo);
   const routeTicketRoutes = new RouteTicketRoutes(
-    prisma,routeRoutes.repo,
+    prisma,
+    routeRoutes.repo,
     routeRoutes.service,
     ticketRemainRoute
   );
