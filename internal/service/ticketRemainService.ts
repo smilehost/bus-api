@@ -44,20 +44,19 @@ export class TicketRemainService {
   }
 
   async getRemainByRouteTime(dto: GetRemainByRouteTimeDTO) {
-    const routeTime = await this.timeRepository.getById(dto.route_time_id)
-    if(!routeTime){
-      throw AppError.NotFound("route time not found")
+    const routeTime = await this.timeRepository.getById(dto.route_time_id);
+    if (!routeTime) {
+      throw AppError.NotFound("route time not found");
     }
 
     const times = routeTime.route_time_array.split(",").map((t) => t.trim());
 
     const remains = await this.ticketRemainRepository.findRemainByDate(
       dto.ticket_id,
-      dto.ticket_remain_date,
+      dto.ticket_remain_date
     );
 
-    remains.filter((remain)=>
-      times.includes(remain.ticket_remain_time))
+    remains.filter((remain) => times.includes(remain.ticket_remain_time));
 
     const remainMap = new Map(
       remains.map((remain) => [remain.ticket_remain_time, remain])
