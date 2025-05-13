@@ -18,6 +18,14 @@ export class CompanyService {
     return company;
   }
 
+  async create(data: Company) {
+    const existing = await this.companyRepository.getByName(data.com_name);
+    if (existing) {
+      throw AppError.Conflict("Company already exists");
+    }
+    return this.companyRepository.create(data);
+  }
+
   async update(com_id: number, data: Company) {
     console.log(data);
     

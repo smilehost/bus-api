@@ -25,3 +25,19 @@ export interface RouteTicketWithPrices {
   route_ticket_type: string;
   route_ticket_price: RouteTicketPrice[];
 }
+
+export interface TransactionTicketDto {
+  ticket_time: string;
+  ticket_type: string;
+  ticket_price: string;
+}
+
+export interface CreateTransactionDto {
+  transaction_lat: string;
+  transaction_long: string;
+  transaction_payment_method_id: number;
+  transaction_amount: string;
+  transaction_pax: number;
+  member_phone: string;
+  tickets: TransactionTicketDto[];
+}

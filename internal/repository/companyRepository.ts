@@ -26,12 +26,36 @@ export class CompanyRepository {
     }
   }
 
+  async getByName(com_name: string) {
+    try {
+      return await this.prisma.company.findFirst({
+        where: { com_name },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async create(data: Company) {
+    try {
+      return await this.prisma.company.create({
+        data: {
+          com_prefix: data.com_prefix,
+          com_name: data.com_name,
+          com_status: data.com_status,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async update(com_id: number, data: Company) {
     try {
       console.log("------------4");
       console.log(data);
       console.log("------------5");
-      
+
       return await this.prisma.company.update({
         where: { com_id },
         data,

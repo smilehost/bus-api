@@ -10,7 +10,6 @@ import { RouteLocationRoutes } from "../routes/routeLocationRoute";
 import { AuthRoutes } from "../routes/AuthRoute";
 import { RouteTicketRoutes } from "../routes/routeTicketRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
-import { RouteMemberRoute } from "../routes/memberRoute";
 import { CompanyRoutes } from "../routes/companyRoute";
 
 export const Routes = (prisma: PrismaClient): Router => {
@@ -48,6 +47,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/accounts", accountRoutes.routing());
   router.use("/ticketRemain", ticketRemainRoute.routing());
   router.use("/company", companyRoutes.routing());
+  router.use("/transaction", companyRoutes.routing());
 
   return router;
 };

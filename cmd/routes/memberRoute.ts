@@ -5,7 +5,7 @@ import { MemberService } from "../../internal/service/memberService";
 import { MemberController } from "../../internal/controller/memberController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 
-export class RouteMemberRoute {
+export class MemberRoute {
   private readonly router: Router;
 
   public repo: MemberRepository;
