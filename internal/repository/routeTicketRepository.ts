@@ -195,27 +195,54 @@ export class RouteTicketRepository {
           },
         });
 
-        // 2. จัดการรายการราคาทั้งหมด
+        // 2. วนลูปรายการราคาทั้งหมด
         for (const priceItem of data.route_ticket_price) {
-          await tx.route_ticket_price.update({
-            where: {
-              route_ticket_price_id: parseInt(priceItem.route_ticket_price_id),
-            },
-            data: {
-              route_ticket_price_ticket_id: id,
-              route_ticket_price_type_id: priceItem.route_ticket_price_type_id,
-              route_ticket_location_start: String(
-                priceItem.route_ticket_location_start
-              ),
-              route_ticket_location_stop: String(
-                priceItem.route_ticket_location_stop
-              ),
-              price: String(priceItem.price),
-              route_ticket_price_route_id: parseInt(
-                priceItem.route_ticket_price_route_id
-              ),
-            },
-          });
+          const isNew = !priceItem.route_ticket_price_id;
+
+          if (isNew) {
+            // ✅ CREATE ใหม่
+            await tx.route_ticket_price.create({
+              data: {
+                route_ticket_price_ticket_id: id,
+                route_ticket_price_type_id:
+                  priceItem.route_ticket_price_type_id,
+                route_ticket_location_start: String(
+                  priceItem.route_ticket_location_start
+                ),
+                route_ticket_location_stop: String(
+                  priceItem.route_ticket_location_stop
+                ),
+                price: String(priceItem.price),
+                route_ticket_price_route_id: parseInt(
+                  priceItem.route_ticket_price_route_id
+                ),
+              },
+            });
+          } else {
+            // ✅ UPDATE
+            await tx.route_ticket_price.update({
+              where: {
+                route_ticket_price_id: parseInt(
+                  priceItem.route_ticket_price_id ?? "0"
+                ),
+              },
+              data: {
+                route_ticket_price_ticket_id: id,
+                route_ticket_price_type_id:
+                  priceItem.route_ticket_price_type_id,
+                route_ticket_location_start: String(
+                  priceItem.route_ticket_location_start
+                ),
+                route_ticket_location_stop: String(
+                  priceItem.route_ticket_location_stop
+                ),
+                price: String(priceItem.price),
+                route_ticket_price_route_id: parseInt(
+                  priceItem.route_ticket_price_route_id
+                ),
+              },
+            });
+          }
         }
 
         return updatedTicket;

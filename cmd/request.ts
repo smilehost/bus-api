@@ -11,7 +11,7 @@ export interface RouteTicketPrice {
   route_ticket_location_stop: number; // FK → route_location
   price: number;
   route_ticket_price_route_id: string; // FK → route (ระบุเป็น string เพราะในตัวอย่างเป็นพวก "281.19")
-  route_ticket_price_id: string; // uniq_id (string ในตัวอย่าง)
+  route_ticket_price_id?: string; // uniq_id (string ในตัวอย่าง)
 }
 
 export interface RouteTicketWithPrices {
