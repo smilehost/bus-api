@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { Route } from "../../cmd/models";
+import { PrismaClient, route } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class RouteRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAll(comId: number): Promise<Route[]> {
+  async getAll(comId: number): Promise<route[]> {
     try {
       return await this.prisma.route.findMany({
         where: { route_com_id: comId },
@@ -47,7 +46,7 @@ export class RouteRepository {
     skip: number,
     take: number,
     search: string
-  ): Promise<[Route[], number]> {
+  ): Promise<[route[], number]> {
     try {
       const where = {
         route_com_id: comId,
@@ -87,7 +86,7 @@ export class RouteRepository {
     }
   }
 
-  async create(data: Route) {
+  async create(data: route) {
     try {
       return await this.prisma.route.create({
         data: {
@@ -106,7 +105,7 @@ export class RouteRepository {
     }
   }
 
-  async update(routeId: number, data: Route) {
+  async update(routeId: number, data: route) {
     try {
       return await this.prisma.route.update({
         where: { route_id: routeId },

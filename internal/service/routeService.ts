@@ -1,9 +1,9 @@
-import { Route } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteDateRepository } from "../repository/routeDateRepository";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteLocationRepository } from "../repository/routeLocationRepository";
+import { route } from "@prisma/client";
 
 export class RouteService {
   constructor(
@@ -53,7 +53,7 @@ export class RouteService {
     return route;
   }
 
-  async create(comId: number, data: Route) {
+  async create(comId: number, data: route) {
     if (!Util.ValidCompany(comId, data.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
@@ -67,7 +67,7 @@ export class RouteService {
     return this.routeRepository.create(data);
   }
 
-  async update(comId: number, routeId: number, data: Route) {
+  async update(comId: number, routeId: number, data: route) {
     const existingRoute = await this.routeRepository.getById(routeId);
     if (!existingRoute) {
       throw AppError.NotFound("Route not found");
@@ -129,7 +129,7 @@ export class RouteService {
     return await this.routeRepository.findRoutesByLocation(comId, locationStr);
   }
 
-  async getStartEndLocation(route:Route){
+  async getStartEndLocation(route:route){
     const routeLocation = route.route_array.split(",")
     const start = Number(routeLocation[0])
     const stop = Number(routeLocation.pop())
