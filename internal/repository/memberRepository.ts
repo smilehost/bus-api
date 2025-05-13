@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { member, PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class MemberRepository {
@@ -29,17 +29,13 @@ export class MemberRepository {
     }
   }
 
-  async create(data: {
-    member_com_id: number;
-    member_phone: string;
-    member_date: string;
-  }) {
+  async create(data: member) {
     try {
       return await this.prisma.member.create({
         data: {
           member_com_id: data.member_com_id,
           member_phone: data.member_phone,
-          member_date: new Date().toISOString(), // <-- แปลง datetime เป็น string ISO
+          member_date_time: new Date(),
         },
       });
     } catch (error) {
@@ -47,14 +43,7 @@ export class MemberRepository {
     }
   }
 
-  async update(
-    id: number,
-    data: {
-      member_com_id: number;
-      member_phone: string;
-      member_date: string;
-    }
-  ) {
+  async update(id: number, data: member) {
     try {
       return await this.prisma.member.update({
         where: { member_id: id },

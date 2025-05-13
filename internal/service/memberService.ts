@@ -1,4 +1,4 @@
-import { Member } from "../../cmd/models";
+import { member } from "@prisma/client";
 import { CompanyRepository } from "../repository/companyRepository";
 import { MemberRepository } from "../repository/memberRepository";
 import { AppError } from "../utils/appError";
@@ -27,7 +27,7 @@ export class MemberService {
     return member;
   }
 
-  async create(comId: number, data: Member) {
+  async create(comId: number, data: member) {
     const company = await this.companyRepository.getById(data.member_com_id);
     if (!company) {
       throw AppError.NotFound("Company not found");
@@ -36,7 +36,7 @@ export class MemberService {
     return this.memberRepository.create(data);
   }
 
-  async update(comId: number, memberId: number, data: Member) {
+  async update(comId: number, memberId: number, data: member) {
     const company = await this.companyRepository.getById(data.member_com_id);
     if (!company) {
       throw AppError.NotFound("Company not found");

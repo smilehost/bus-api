@@ -19,7 +19,7 @@ const com_id = 1;
 const mockMember = {
   member_com_id: com_id,
   member_phone: "0812345678",
-  member_date: new Date().toISOString(),
+  member_date_time: new Date(),
 };
 
 (async () => {

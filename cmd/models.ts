@@ -20,7 +20,7 @@ export interface Member {
   member_id: number;
   member_com_id: number;
   member_phone: string;
-  member_date: string;
+  member_date_time: string;
 }
 
 export interface PaymentMethod {
