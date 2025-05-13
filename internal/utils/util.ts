@@ -112,9 +112,6 @@ export class Util {
       if (!req.params || Object.keys(req.params).length === 0) {
         throw AppError.BadRequest("Missing required params");
       }
-      console.log("---------------------3");
-      console.log(req.params);
-      console.log("---------------------4");
 
       const check = Util.checkObjectHasMissingFields(req.params);
       if (!check.valid) {
@@ -122,7 +119,7 @@ export class Util {
           `Missing required fields in params: ${check.missing.join(", ")}`
         );
       }
-      
+
       result.params = Util.parseIdFields(req.params);
     }
 

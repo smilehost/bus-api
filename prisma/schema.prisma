@@ -102,7 +102,7 @@ model route_time {
 model transaction {
   transaction_id                Int    @id @default(autoincrement())
   transaction_com_id            Int
-  transaction_datetime          String @db.VarChar(300)
+  transaction_date_time         String @db.VarChar(300)
   transaction_lat               String @db.VarChar(300)
   transaction_long              String @db.VarChar(300)
   transaction_payment_method_id Int
@@ -166,4 +166,17 @@ model ticket_remain {
   ticket_remain_route_ticket_id Int
 
   @@index([ticket_remain_route_ticket_id], map: "ticket_remain_route_ticket_id")
+}
+
+model ticket {
+  ticket_id             Int    @id @default(autoincrement())
+  ticket_transaction_id Int
+  ticket_date           String @db.VarChar(300)
+  ticket_time           String @db.VarChar(300)
+  ticket_type           String @db.VarChar(300)
+  ticket_price          String @db.VarChar(300)
+  ticket_status         String @db.VarChar(300)
+  ticket_uuid           String @db.VarChar(300)
+
+  @@index([ticket_transaction_id], map: "ticket_transaction_id")
 }

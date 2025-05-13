@@ -11,6 +11,7 @@ import { AuthRoutes } from "../routes/AuthRoute";
 import { RouteTicketRoutes } from "../routes/routeTicketRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
 import { RouteMemberRoute } from "../routes/memberRoute";
+import { CompanyRoutes } from "../routes/companyRoute";
 
 export const Routes = (prisma: PrismaClient): Router => {
   const router = Router();
@@ -18,7 +19,6 @@ export const Routes = (prisma: PrismaClient): Router => {
   const comRepo = new CompanyRepository(prisma);
   const routeDateRoutes = new RouteDateRoutes(prisma);
   const routeTimeRoutes = new RouteTimeRoutes(prisma, comRepo);
-  const routeMemberRoute = new RouteMemberRoute(prisma, comRepo);
 
   const routeRoutes = new RouteRoutes(prisma, routeDateRoutes.repo);
   const routeLocationRoutes = new RouteLocationRoutes(
@@ -26,6 +26,9 @@ export const Routes = (prisma: PrismaClient): Router => {
     comRepo,
     routeRoutes.service
   );
+
+
+  const companyRoutes = new CompanyRoutes(prisma);
   const authRoutes = new AuthRoutes(prisma);
   const ticketRemainRoute = new TicketRemainRoute(prisma, routeTimeRoutes.repo);
   const routeTicketRoutes = new RouteTicketRoutes(
@@ -44,6 +47,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/routeTicket", routeTicketRoutes.routing());
   router.use("/accounts", accountRoutes.routing());
   router.use("/ticketRemain", ticketRemainRoute.routing());
+  router.use("/company", companyRoutes.routing());
 
   return router;
 };
