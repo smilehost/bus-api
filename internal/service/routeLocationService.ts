@@ -1,9 +1,9 @@
-import { RouteLocation } from "../../cmd/models";
 import { RouteLocationRepository } from "../repository/routeLocationRepository";
 import { CompanyRepository } from "../repository/companyRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 import { RouteService } from "./routeService";
+import { route_location } from "@prisma/client";
 
 export class RouteLocationService {
   constructor(
@@ -56,7 +56,7 @@ export class RouteLocationService {
     return location;
   }
 
-  async create(comId: number, data: RouteLocation) {
+  async create(comId: number, data: route_location) {
     const company = await this.companyRepository.getById(
       data.route_location_com_id
     );
@@ -71,7 +71,7 @@ export class RouteLocationService {
     return this.routeLocationRepository.create(data);
   }
 
-  async update(comId: number, locationId: number, data: RouteLocation) {
+  async update(comId: number, locationId: number, data: route_location) {
     const company = await this.companyRepository.getById(
       data.route_location_com_id
     );
