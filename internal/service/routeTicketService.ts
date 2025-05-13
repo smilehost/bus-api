@@ -1,4 +1,4 @@
-import { Route, RouteTicket, RouteTicketPriceType } from "../../cmd/models";
+import {   } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteTicketRepository } from "../repository/routeTicketRepository";
@@ -7,6 +7,7 @@ import { Util } from "../utils/util";
 import { RouteService } from "./routeService";
 import { TicketRemainService } from "./ticketRemainService";
 import { GetRemainByRouteTimeDTO } from "../../cmd/dto";
+import { route, route_ticket, route_ticket_price_type } from "@prisma/client";
 
 export class RouteTicketService {
   constructor(
@@ -139,7 +140,7 @@ export class RouteTicketService {
     return ticketPriceTypes;
   }
 
-  async createPriceType(comId: number, data: RouteTicketPriceType) {
+  async createPriceType(comId: number, data: route_ticket_price_type) {
     if (data.route_ticket_price_type_com_id !== comId) {
       throw AppError.Forbidden(
         "Company ID does not match for price type creation"
@@ -186,7 +187,7 @@ export class RouteTicketService {
       );
     };
 
-    const getRemaining = async (ticket:RouteTicket,routeTimeId:number)=>{
+    const getRemaining = async (ticket:route_ticket,routeTimeId:number)=>{
       const ticketTime:GetRemainByRouteTimeDTO = {
         ticket_id:ticket.route_ticket_id,
         ticket_remain_date:date,
@@ -196,7 +197,7 @@ export class RouteTicketService {
       return remaining
     }
   
-    const processRoute = async (route: Route): Promise<RouteTicket[]> => {
+    const processRoute = async (route: route): Promise<route_ticket[]> => {
       const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
       if (!tickets.length) return [];
 

@@ -4,7 +4,7 @@ import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
+import { route_ticket_price_type } from "@prisma/client";
 
 export class RouteTicketController {
   constructor(private readonly routeTicketService: RouteTicketService) {}
@@ -208,7 +208,7 @@ export class RouteTicketController {
 
   async createPriceType(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteTicketPriceType>(
+      const { com_id, body } = Util.extractRequestContext<route_ticket_price_type>(
         req,
         { body: true }
       );

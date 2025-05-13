@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, route_ticket_price_type } from "@prisma/client";
 import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
 import { AppError } from "../utils/appError";
 
 export class RouteTicketRepository {
@@ -272,7 +271,7 @@ export class RouteTicketRepository {
     }
   }
 
-  async createPriceType(comId: number, data: RouteTicketPriceType) {
+  async createPriceType(comId: number, data: route_ticket_price_type) {
     try {
       return await this.prisma.route_ticket_price_type.create({
         data: {
