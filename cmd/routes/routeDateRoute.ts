@@ -43,7 +43,6 @@ export class RouteDateRoutes {
   }
 }
 
-// For backward compatibility
 export const RouteDate = (prisma: PrismaClient) => {
   const routeDateRoutes = new RouteDateRoutes(prisma);
   return routeDateRoutes.routing();

@@ -45,7 +45,6 @@ export class AuthRoutes {
   }
 }
 
-// For backward compatibility
 export const Auth = (prisma: PrismaClient) => {
   const authRoutes = new AuthRoutes(prisma);
   return authRoutes.routing();

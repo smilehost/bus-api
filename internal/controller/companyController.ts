@@ -11,8 +11,6 @@ export class CompanyController {
 
   async getAll(req: Request, res: Response) {
     try {
-      console.log("------------1");
-
       const result = await this.companyService.getAll();
       res
         .status(200)
@@ -24,11 +22,7 @@ export class CompanyController {
 
   async getById(req: Request, res: Response) {
     try {
-      console.log("------------2");
-
       const com_id = Util.parseId(req.params.com_id, "com_id");
-
-      console.log("------------3");
 
       const result = await this.companyService.getById(com_id);
       res

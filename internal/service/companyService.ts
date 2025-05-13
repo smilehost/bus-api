@@ -27,8 +27,6 @@ export class CompanyService {
   }
 
   async update(com_id: number, data: company) {
-    console.log(data);
-    
     const existing = await this.companyRepository.getById(com_id);
     if (!existing) {
       throw AppError.NotFound("Company not found");

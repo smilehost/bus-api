@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { TicketRemainRepository } from "../../internal/repository/ticketRemainRepository";
-
 import { TicketRemainController } from "../../internal/controller/ticketRemainController";
 import { TicketRemainService } from "../../internal/service/ticketRemainService";
 import { RouteTimeRepository } from "../../internal/repository/routeTimeRepository";
@@ -13,11 +12,11 @@ export class TicketRemainRoute {
   public service: TicketRemainService;
   public controller: TicketRemainController;
 
-  constructor(prisma: PrismaClient,timeRepo:RouteTimeRepository) {
+  constructor(prisma: PrismaClient, timeRepo: RouteTimeRepository) {
     this.router = Router();
 
     this.repo = new TicketRemainRepository(prisma);
-    this.service = new TicketRemainService(this.repo,timeRepo);
+    this.service = new TicketRemainService(this.repo, timeRepo);
     this.controller = new TicketRemainController(this.service);
     this.setupRoutes();
   }

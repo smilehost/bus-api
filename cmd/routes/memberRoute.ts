@@ -12,17 +12,16 @@ export class MemberRoute {
   public service: MemberService;
   public controller: MemberController;
 
-  constructor(prisma: PrismaClient,comRepo: CompanyRepository) {
+  constructor(prisma: PrismaClient, comRepo: CompanyRepository) {
     this.router = Router();
 
     this.repo = new MemberRepository(prisma);
-    this.service = new MemberService(this.repo,comRepo);
+    this.service = new MemberService(this.repo, comRepo);
     this.controller = new MemberController(this.service);
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
-  }
+  private setupRoutes(): void {}
 
   public routing(): Router {
     return this.router;

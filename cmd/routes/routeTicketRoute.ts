@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { RouteTicketRepository } from "../../internal/repository/routeTicketRepository";
 import { RouteTicketService } from "../../internal/service/routeTicketService";
 import { RouteTicketController } from "../../internal/controller/routeTicketController";
-import { RouteRoutes } from "../routes/routeRoutes";
 import { TicketRemainRoute } from "./ticketRemainRoute";
 import { RouteRepository } from "../../internal/repository/routeRepository";
 import { RouteService } from "../../internal/service/routeService";
@@ -16,12 +15,11 @@ export class RouteTicketRoutes {
   public controller: RouteTicketController;
 
   constructor(
-    prisma: PrismaClient, 
-    routeRepo:RouteRepository,
-    routeService:RouteService,
-    ticketRemain:TicketRemainRoute) 
-  {
-    
+    prisma: PrismaClient,
+    routeRepo: RouteRepository,
+    routeService: RouteService,
+    ticketRemain: TicketRemainRoute
+  ) {
     this.router = Router();
 
     this.repo = new RouteTicketRepository(prisma);
@@ -82,4 +80,3 @@ export class RouteTicketRoutes {
     return this.router;
   }
 }
-

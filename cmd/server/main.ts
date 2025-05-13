@@ -33,5 +33,5 @@ app.get("/areYouPay", (req, res) => {
 app.use("/api", Routes(prisma));
 
 app.listen(port, () => {
-  console.log(`🚀 Server listening at http://localhost:${port}`);
+  console.log(`Server listening at http://localhost:${port}`);
 });

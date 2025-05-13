@@ -21,8 +21,6 @@ export class AccountRepository {
         where: { account_id: id },
       });
     } catch (error) {
-      console.log(error);
-
       throw AppError.fromPrismaError(error);
     }
   }
