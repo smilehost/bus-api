@@ -29,7 +29,7 @@ const choices = {
   "5": "เลือกวัน",
 };
 
-app.get("/areYouPay/:choice", (req, res) => {
+app.get("/api/areYouPay/:choice", (req, res) => {
   const { choice } = req.params as { choice: keyof typeof choices };
   const day = req.query.day;
   const money = Number(req.query.money); // แปลงเป็น number
