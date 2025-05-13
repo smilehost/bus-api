@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { RouteTimeService } from "../service/routeTimeService";
-import { RouteTime } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTimeRequest } from "../../cmd/request";
+import { route_time } from "@prisma/client";
 
 export class TimeController {
   constructor(private readonly routeTimeService: RouteTimeService) {}
@@ -120,7 +120,7 @@ export class TimeController {
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        RouteTime,
+        route_time,
         { route_time_id: number }
       >(req, {
         body: true,

@@ -1,9 +1,9 @@
 import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { CompanyRepository } from "../repository/companyRepository";
-import { RouteTime } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTimeRequest } from "../../cmd/request";
+import { route_time } from "@prisma/client";
 
 export class RouteTimeService {
   constructor(
@@ -78,7 +78,9 @@ export class RouteTimeService {
       );
     }
 
-    const routeTime: RouteTime = {
+    type CreateRouteTimeDto = Omit<route_time, "route_time_id">;
+
+    const routeTime: CreateRouteTimeDto = {
       route_time_name: data.route_time_name,
       route_time_array: data.route_time_array.join(","),
       route_time_com_id: data.route_time_com_id,
@@ -90,7 +92,7 @@ export class RouteTimeService {
   async update(
     comId: number,
     routeTimeId: number,
-    updateData: Partial<RouteTime>
+    updateData: Partial<route_time>
   ) {
     const existing = await this.routeTimeRepository.getById(routeTimeId);
 
