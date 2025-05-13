@@ -1,4 +1,3 @@
-import {   } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteTicketRepository } from "../repository/routeTicketRepository";
