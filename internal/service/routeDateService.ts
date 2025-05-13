@@ -1,4 +1,4 @@
-import { RouteDate } from "../../cmd/models";
+import { route_date } from "@prisma/client";
 import { RouteDateRepository } from "../repository/routeDateRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
@@ -50,7 +50,7 @@ export class RouteDateService {
     return routeDate;
   }
 
-  create(comId: number, data: RouteDate) {
+  create(comId: number, data: route_date) {
     if (!Util.ValidCompany(comId, data.route_date_com_id)) {
       throw AppError.Forbidden("Company ID does not match");
     }
@@ -62,7 +62,7 @@ export class RouteDateService {
     return this.routeDateRepository.create(data);
   }
 
-  async update(comId: number, id: number, data: RouteDate) {
+  async update(comId: number, id: number, data: route_date) {
     const routeDate = await this.routeDateRepository.getById(id);
     if (!routeDate) {
       throw AppError.NotFound("Route date not found");
@@ -92,7 +92,7 @@ export class RouteDateService {
     return this.routeDateRepository.delete(id);
   }
 
-  validDateFormat(date: RouteDate) {
+  validDateFormat(date: route_date) {
     const days = [
       date.route_date_sun,
       date.route_date_mon,

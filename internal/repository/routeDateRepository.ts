@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { RouteDate } from "../../cmd/models";
+import { PrismaClient, route_date } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class RouteDateRepository {
@@ -25,7 +24,7 @@ export class RouteDateRepository {
     skip: number,
     take: number,
     search: string
-  ): Promise<[RouteDate[], number]> {
+  ): Promise<[route_date[], number]> {
     try {
       const where = {
         route_date_com_id: comId,
@@ -62,7 +61,7 @@ export class RouteDateRepository {
     }
   }
 
-  async create(data: RouteDate) {
+  async create(data: route_date) {
     try {
       return await this.prisma.route_date.create({
         data: {
@@ -84,7 +83,7 @@ export class RouteDateRepository {
     }
   }
 
-  async update(id: number, data: Partial<RouteDate>) {
+  async update(id: number, data: Partial<route_date>) {
     try {
       return await this.prisma.route_date.update({
         where: { route_date_id: id },
