@@ -21,12 +21,37 @@ app.get("/", (req, res) => {
   res.send("Hello Secure World!!!!!!3");
 });
 
-app.get("/areYouPay", (req, res) => {
-  const { money } = req.query as { money: string };
+const choices = {
+  "1": "วันนี้",
+  "2": "สัปดาห์นี้",
+  "3": "เดือนนี้",
+  "4": "ปีนี้",
+  "5": "เลือกวัน",
+};
+
+app.get("/areYouPay/:choice", (req, res) => {
+  const { choice } = req.params as { choice: keyof typeof choices };
+  const day = req.query.day;
+  const money = Number(req.query.money); // แปลงเป็น number
+
+  if (!choices[choice]) {
+    res.status(400).json({ message: "Invalid choice" });
+  }
+
+  if (choice === "5" && !day) {
+    res
+      .status(400)
+      .json({ message: "Missing 'day' parameter for custom choice" });
+  }
+
+  const total = isNaN(money) ? 1000 : money;
+  const cash = total / 2;
+  const promtpay = total / 2;
 
   res.json({
-    message: `Pay Successfully`,
-    amount: money,
+    total,
+    cash,
+    promtpay,
   });
 });
 
