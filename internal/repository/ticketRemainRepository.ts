@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ticket_remain } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { TicketRemain } from "../../cmd/models";
+
 
 export class TicketRemainRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -82,7 +82,7 @@ export class TicketRemainRepository {
     }
   }
 
-  async createRemain(data: TicketRemain) {
+  async createRemain(data: ticket_remain) {
     try {
       return await this.prisma.ticket_remain.create({
         data,
