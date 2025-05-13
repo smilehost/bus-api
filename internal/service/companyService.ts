@@ -1,5 +1,5 @@
 // path: internal/service/companyService.ts
-import { Company } from "../../cmd/models";
+import { company } from "@prisma/client";
 import { CompanyRepository } from "../repository/companyRepository";
 import { AppError } from "../utils/appError";
 
@@ -18,7 +18,7 @@ export class CompanyService {
     return company;
   }
 
-  async create(data: Company) {
+  async create(data: company) {
     const existing = await this.companyRepository.getByName(data.com_name);
     if (existing) {
       throw AppError.Conflict("Company already exists");
@@ -26,7 +26,7 @@ export class CompanyService {
     return this.companyRepository.create(data);
   }
 
-  async update(com_id: number, data: Company) {
+  async update(com_id: number, data: company) {
     console.log(data);
     
     const existing = await this.companyRepository.getById(com_id);

@@ -1,7 +1,6 @@
 // path: internal/repository/companyRepository.ts
-import { PrismaClient } from "@prisma/client";
+import { company, PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { Company } from "../../cmd/models";
 
 export class CompanyRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -36,7 +35,7 @@ export class CompanyRepository {
     }
   }
 
-  async create(data: Company) {
+  async create(data: company) {
     try {
       return await this.prisma.company.create({
         data: {
@@ -50,12 +49,8 @@ export class CompanyRepository {
     }
   }
 
-  async update(com_id: number, data: Company) {
+  async update(com_id: number, data: company) {
     try {
-      console.log("------------4");
-      console.log(data);
-      console.log("------------5");
-
       return await this.prisma.company.update({
         where: { com_id },
         data,

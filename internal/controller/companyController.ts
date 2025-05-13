@@ -4,7 +4,7 @@ import { CompanyService } from "../service/companyService";
 import { AppError } from "../utils/appError";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
-import { Company } from "../../cmd/models";
+import { company } from "@prisma/client";
 
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -45,7 +45,7 @@ export class CompanyController {
   }
   async create(req: Request, res: Response) {
     try {
-      const body = req.body as Company;
+      const body = req.body as company;
 
       const result = await this.companyService.create(body);
 
@@ -63,7 +63,7 @@ export class CompanyController {
   async update(req: Request, res: Response) {
     try {
       const { body, params } = Util.extractRequestContext<
-        Company,
+        company,
         { com_id: number }
       >(req, {
         body: true,

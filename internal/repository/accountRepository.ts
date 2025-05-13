@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { account, PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { Account } from "../../cmd/models";
 
 export class AccountRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAll(comId: number): Promise<Account[]> {
+  async getAll(comId: number): Promise<account[]> {
     try {
       return await this.prisma.account.findMany({
         where: { account_com_id: comId },
@@ -16,17 +15,19 @@ export class AccountRepository {
     }
   }
 
-  async getById(id: number): Promise<Account | null> {
+  async getById(id: number): Promise<account | null> {
     try {
       return await this.prisma.account.findUnique({
         where: { account_id: id },
       });
     } catch (error) {
+      console.log(error);
+
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async update(id: number, data: Partial<Account>) {
+  async update(id: number, data: Partial<account>) {
     try {
       return await this.prisma.account.update({
         where: { account_id: id },
