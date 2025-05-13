@@ -11,6 +11,7 @@ export class TransactionController {
 
   async create(req: Request, res: Response) {
     try {
+      
       const { com_id, body } = Util.extractRequestContext<CreateTransactionDto>(req, {
         body: true,
       });

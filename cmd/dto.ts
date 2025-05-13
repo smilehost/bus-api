@@ -19,3 +19,19 @@ export interface GetRemainByRouteTimeDTO {
   ticket_remain_date: string;
   route_time_id: number; // หรือใช้ Date ถ้าต้องการ parse เป็น Date object
 }
+
+export interface TransactionTicketDto {
+  ticket_time: string;
+  ticket_type: string;
+  ticket_price: string;
+}
+
+export interface CreateTransactionDto {
+  transaction_lat: string;
+  transaction_long: string;
+  transaction_payment_method_id: number;
+  transaction_amount: string;
+  transaction_pax: number;
+  member_phone: string;
+  tickets: TransactionTicketDto[];
+}

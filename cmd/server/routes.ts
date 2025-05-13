@@ -11,6 +11,7 @@ import { AuthRoutes } from "../routes/AuthRoute";
 import { RouteTicketRoutes } from "../routes/routeTicketRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
 import { CompanyRoutes } from "../routes/companyRoute";
+import { TransactionRoute } from "../routes/transactionRoute";
 
 export const Routes = (prisma: PrismaClient): Router => {
   const router = Router();
@@ -26,7 +27,6 @@ export const Routes = (prisma: PrismaClient): Router => {
     routeRoutes.service
   );
 
-
   const companyRoutes = new CompanyRoutes(prisma);
   const authRoutes = new AuthRoutes(prisma);
   const ticketRemainRoute = new TicketRemainRoute(prisma, routeTimeRoutes.repo);
@@ -37,6 +37,7 @@ export const Routes = (prisma: PrismaClient): Router => {
     ticketRemainRoute
   );
   const accountRoutes = new AccountRoutes(prisma);
+  const transactionRoutes = new TransactionRoute(prisma, comRepo);
 
   router.use("/route", routeRoutes.routing());
   router.use("/routeDates", routeDateRoutes.routing());
@@ -47,7 +48,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/accounts", accountRoutes.routing());
   router.use("/ticketRemain", ticketRemainRoute.routing());
   router.use("/company", companyRoutes.routing());
-  router.use("/transaction", companyRoutes.routing());
+  router.use("/transaction", transactionRoutes.routing());
 
   return router;
 };

@@ -1,44 +1,56 @@
 // path: internal/repository/transactionRepository.ts
 import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
+import { CreateTransactionDto } from "../../cmd/dto";
 
 export class TransactionRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async createTransactionWithTickets(data: {
-    transaction: {
-      transaction_com_id: number;
-      transaction_date_time: string;
-      transaction_lat: string;
-      transaction_long: string;
-      transaction_payment_method_id: number;
-      transaction_amount: string;
-      transaction_pax: number;
-      transaction_member_id: number;
-    };
-    tickets: {
-      ticket_time: string;
-      ticket_type: string;
-      ticket_price: string;
-    }[];
-  }) {
+  async createAllInOneTransaction(
+    com_id: number,
+    payload: CreateTransactionDto
+  ) {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        const transaction = await tx.transaction.create({
-          data: data.transaction,
+        // 1. สร้าง member ใหม่เสมอ
+        const member = await tx.member.create({
+          data: {
+            member_phone: String(payload.member_phone),
+            member_date_time: new Date(),
+            member_com_id: com_id,
+          },
         });
 
-        const ticketData = data.tickets.map((t) => ({
+        // 2. สร้าง transaction
+        const transaction = await tx.transaction.create({
+          data: {
+            transaction_com_id: com_id,
+            transaction_date_time: new Date(),
+            transaction_lat: payload.transaction_lat,
+            transaction_long: payload.transaction_long,
+            transaction_payment_method_id:
+              payload.transaction_payment_method_id,
+            transaction_amount: payload.transaction_amount,
+            transaction_pax: payload.transaction_pax,
+            transaction_member_id: member.member_id,
+          },
+        });
+
+        // 3. เตรียม tickets
+        const ticketData = payload.tickets.map((t) => ({
           ticket_transaction_id: transaction.transaction_id,
-          ticket_date: new Date().toISOString().split("T")[0],
+          ticket_date: new Date().toISOString(),
           ticket_time: t.ticket_time,
           ticket_type: t.ticket_type,
           ticket_price: t.ticket_price,
           ticket_status: "active",
           ticket_uuid: crypto.randomUUID(),
         }));
-
-        const tickets = await tx.ticket.createMany({ data: ticketData });
+      
+        // 4. สร้าง tickets
+        await tx.ticket.createMany({
+          data: ticketData,
+        });
 
         return {
           transaction,

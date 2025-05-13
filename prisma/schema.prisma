@@ -29,10 +29,10 @@ model company {
 }
 
 model member {
-  member_id     Int    @id @default(autoincrement())
-  member_com_id Int
-  member_phone  String @db.VarChar(300)
-  member_date   String @db.VarChar(300)
+  member_id        Int      @id @default(autoincrement())
+  member_com_id    Int
+  member_phone     String   @db.VarChar(300)
+  member_date_time DateTime @db.Timestamp(0)
 
   @@index([member_com_id], map: "member_com_id")
 }
@@ -100,13 +100,13 @@ model route_time {
 }
 
 model transaction {
-  transaction_id                Int    @id @default(autoincrement())
+  transaction_id                Int      @id @default(autoincrement())
   transaction_com_id            Int
-  transaction_date_time         String @db.VarChar(300)
-  transaction_lat               String @db.VarChar(300)
-  transaction_long              String @db.VarChar(300)
+  transaction_date_time         DateTime @db.Timestamp(0)
+  transaction_lat               String   @db.VarChar(300)
+  transaction_long              String   @db.VarChar(300)
   transaction_payment_method_id Int
-  transaction_amount            String @db.VarChar(300)
+  transaction_amount            String   @db.VarChar(300)
   transaction_pax               Int
   transaction_member_id         Int
 
