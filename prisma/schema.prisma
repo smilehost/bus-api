@@ -109,10 +109,12 @@ model transaction {
   transaction_amount            String   @db.VarChar(300)
   transaction_pax               Int
   transaction_member_id         Int
+  transaction_route_id          Int
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_member_id], map: "transaction_member_id")
   @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
+  @@index([transaction_route_id], map: "transaction_route_id")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -177,6 +179,8 @@ model ticket {
   ticket_price          String @db.VarChar(300)
   ticket_status         String @db.VarChar(300)
   ticket_uuid           String @db.VarChar(300)
+  ticket_location_start String @db.VarChar(300)
+  ticket_location_stop  String @db.VarChar(300)
 
   @@index([ticket_transaction_id], map: "ticket_transaction_id")
 }
