@@ -100,16 +100,17 @@ model route_time {
 }
 
 model transaction {
-  transaction_id                Int      @id @default(autoincrement())
-  transaction_com_id            Int
-  transaction_date_time         DateTime @db.Timestamp(0)
-  transaction_lat               String   @db.VarChar(300)
-  transaction_long              String   @db.VarChar(300)
-  transaction_payment_method_id Int
-  transaction_amount            String   @db.VarChar(300)
-  transaction_pax               Int
-  transaction_member_id         Int
-  transaction_route_id          Int
+  transaction_id                 Int      @id @default(autoincrement())
+  transaction_com_id             Int
+  transaction_date_time          DateTime @db.Timestamp(0)
+  transaction_lat                String   @db.VarChar(300)
+  transaction_long               String   @db.VarChar(300)
+  transaction_payment_method_id  Int
+  transaction_amount             String   @db.VarChar(300)
+  transaction_pax                Int
+  transaction_member_id          Int
+  transaction_route_id           Int
+  transaction_ticket_discount_id Int
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_member_id], map: "transaction_member_id")
@@ -181,6 +182,7 @@ model ticket {
   ticket_uuid           String @db.VarChar(300)
   ticket_location_start String @db.VarChar(300)
   ticket_location_stop  String @db.VarChar(300)
+  ticket_discount_price Float  @db.Float
 
   @@index([ticket_transaction_id], map: "ticket_transaction_id")
 }
