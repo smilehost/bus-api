@@ -56,10 +56,12 @@ export class TicketRemainService {
       dto.ticket_remain_date
     );
 
-    remains.filter((remain) => times.includes(remain.ticket_remain_time));
+    const filteredRemains = remains.filter((remain) =>
+      times.includes(remain.ticket_remain_time)
+    );
 
     const remainMap = new Map(
-      remains.map((remain) => [remain.ticket_remain_time, remain])
+      filteredRemains.map((remain) => [remain.ticket_remain_time, remain])
     );
 
     return times.map((time) => {
