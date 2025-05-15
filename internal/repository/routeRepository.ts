@@ -59,6 +59,9 @@ export class RouteRepository {
               ],
             }
           : {}),
+          ...(typeof status === "number"
+            ? { route_status: status }
+          : {}),
       };
 
       const [data, total] = await this.prisma.$transaction([
