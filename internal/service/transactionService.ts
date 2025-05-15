@@ -3,19 +3,22 @@ import { CompanyRepository } from "../repository/companyRepository";
 import { MemberRepository } from "../repository/memberRepository";
 import { CreateTicketDto, CreateTransactionDto, CreateTransactionTicketsDto } from "../../cmd/dto";
 import { AppError } from "../utils/appError";
-import { member, transaction } from "@prisma/client";
+import { member, ticket, transaction } from "@prisma/client";
+import { TicketRemainService } from "./ticketRemainService";
 
 export class TransactionService {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly companyRepository: CompanyRepository,
-    private readonly memberRepository: MemberRepository
+    private readonly memberRepository: MemberRepository,
+    private readonly ticketRemainService: TicketRemainService,
   ) {}
 
   async create(com_id: number, payload: CreateTransactionTicketsDto) {
 
     const company = await this.companyRepository.getById(com_id);
     if (!company) throw AppError.NotFound("Company not found");
+
 
     const newTransaction:CreateTransactionDto = {
       transaction_com_id: com_id,
@@ -44,10 +47,17 @@ export class TransactionService {
       newTransaction.transaction_member_id = member.member_id
     }
 
+    const newTickets = await this.createTickets(com_id,payload.tickets) 
+    
+    //return this.transactionRepository.createAllInOneTransaction(com_id, payload);
+  }
+
+
+  private async createTickets(com_id:number,tickets:CreateTicketDto[]){
     const ticketsData:CreateTicketDto[] = []
     const ticketGroups: Record<string, CreateTicketDto[]> = {};
 
-    for (const t of payload.tickets) {
+    for (const t of tickets) {
       const dateStr = t.ticket_date
       if (!ticketGroups[dateStr]) {
         ticketGroups[dateStr] = [];
@@ -62,26 +72,26 @@ export class TransactionService {
       if (latest){
         nextSuffix = latest.ticket_uuid.split('-')[2]
       }
-    }
 
-    // const ticketsData:CreateTicketDto[] = payload.tickets.map(async (t) =>{
-    //   return {
-    //     ticket_date: new Date().toISOString(),
-    //     ticket_time: t.ticket_time,
-    //     ticket_type: t.ticket_type,
-    //     ticket_price: t.ticket_price,
-    //     ticket_status: "active",
-    //     ticket_discount_price:t.ticket_discount_price,
-    //     ticket_location_start:t.ticket_location_start,
-    //     ticket_location_stop:t.ticket_location_stop,
-    //     ticket_uuid:"",
-    //   } as CreateTicketDto
-    // });
-    
-    //return this.transactionRepository.createAllInOneTransaction(com_id, payload);
+      for (const ticket of tickets){
+        
+        nextSuffix = this.incrementAlphaNum(nextSuffix);
+        ticketsData.push({
+        ticket_date: new Date().toISOString(),
+        ticket_time: ticket.ticket_time,
+        ticket_type: ticket.ticket_type,
+        ticket_price: ticket.ticket_price,
+        ticket_status: "active",
+        ticket_discount_price:ticket.ticket_discount_price,
+        ticket_location_start:ticket.ticket_location_start,
+        ticket_location_stop:ticket.ticket_location_stop,
+        ticket_uuid:`${prefix}-${nextSuffix}`,
+        } as CreateTicketDto)
+      }
+    }
   }
 
-  getPrefix(com_id: number, travelDate: string){
+  private getPrefix(com_id: number, travelDate: string){
     const date = new Date(travelDate)
     const mmyy = date.toLocaleDateString('en-GB', {
       month: '2-digit',
@@ -91,27 +101,7 @@ export class TransactionService {
     return `${com_id}-${mmyy}`;
   }
 
-  async generateUUID(com_id: string, travelDate: Date){
-    const mmyy = travelDate.toLocaleDateString('en-GB', {
-      month: '2-digit',
-      year: '2-digit',
-    }).replace('/', '');
-
-    const prefix = `${com_id}-${mmyy}`;
-
-    let nextSuffix = '0000'; // default starting point
-    const latest = await this.transactionRepository.getLastTicket(prefix)
-    if (!latest) {
-      return `${prefix}-${nextSuffix}`;
-    }
-
-    const lastSuffix = latest.ticket_uuid.split('-')[2];
-    nextSuffix = this.incrementAlphaNum(lastSuffix);
-
-    return `${prefix}-${nextSuffix}`;
-  }
-
-  incrementAlphaNum(input: string): string {
+  private incrementAlphaNum(input: string): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const arr = input.split('');
   
