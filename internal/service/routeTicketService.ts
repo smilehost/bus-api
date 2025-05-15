@@ -36,7 +36,8 @@ export class RouteTicketService {
     comId: number,
     page: number,
     size: number,
-    search: string
+    search: string,
+    status: number,
   ) {
     const skip = (page - 1) * size;
     const take = size;
@@ -46,7 +47,8 @@ export class RouteTicketService {
       comId,
       skip,
       take,
-      search
+      search,
+      status,
     );
 
     return {

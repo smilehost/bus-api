@@ -77,7 +77,8 @@ export class RouteTicketRepository {
     comId: number,
     skip: number,
     take: number,
-    search: string
+    search: string,
+    status: number|null,
   ): Promise<[any[], number]> {
     try {
       const relatedRouteIds = (
@@ -87,7 +88,7 @@ export class RouteTicketRepository {
         })
       ).map((r) => r.route_id);
 
-      const where = {
+      const where: any = {
         route_ticket_route_id: {
           in: relatedRouteIds,
         },
@@ -99,7 +100,11 @@ export class RouteTicketRepository {
               ],
             }
           : {}),
+          ...(status !== null && status !== undefined
+            ? { route_ticket_status: status }
+          : {}),
       };
+  
 
       const [data, total] = await this.prisma.$transaction([
         this.prisma.route_ticket.findMany({
