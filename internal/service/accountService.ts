@@ -6,6 +6,35 @@ import { account } from "@prisma/client";
 export class AccountService {
   constructor(private readonly accountRepository: AccountRepository) {}
 
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    search: string,
+    status: number
+  ) {
+    search = search.toString();
+
+    const skip = (page - 1) * size;
+    const take = size;
+
+    const [data, total] = await this.accountRepository.getPaginated(
+      comId,
+      skip,
+      take,
+      search,
+      status
+    );
+
+    return {
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      data,
+    };
+  }
+
   async getAll(comId: number): Promise<account[]> {
     return this.accountRepository.getAll(comId);
   }

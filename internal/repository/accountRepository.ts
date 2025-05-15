@@ -15,6 +15,45 @@ export class AccountRepository {
     }
   }
 
+  async getPaginated(
+    comId: number,
+    skip: number,
+    take: number,
+    search: string,
+    status: number | null
+  ): Promise<[account[], number]> {
+    try {
+      const where = {
+        account_com_id: comId,
+        ...(search.trim()
+          ? {
+              OR: [
+                { account_username: { contains: search.toLowerCase() } },
+                { account_name: { contains: search.toLowerCase() } },
+              ],
+            }
+          : {}),
+        ...(typeof status === "number"
+          ? { account_status: status }
+          : {}),
+      };
+
+      const [data, total] = await this.prisma.$transaction([
+        this.prisma.account.findMany({
+          skip,
+          take,
+          where,
+          orderBy: { account_id: "desc" },
+        }),
+        this.prisma.account.count({ where }),
+      ]);
+
+      return [data, total];
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async getById(id: number): Promise<account | null> {
     try {
       return await this.prisma.account.findUnique({
