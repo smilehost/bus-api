@@ -1,3 +1,5 @@
+import { ticket, transaction } from "@prisma/client";
+
 export interface JwtPayloadUser {
   account_id: number;
   account_role: string;
@@ -19,18 +21,15 @@ export interface GetRemainByRouteTimeDTO {
   route_time_id: number;
 }
 
-export interface TransactionTicketDto {
-  ticket_time: string;
-  ticket_type: string;
-  ticket_price: string;
+export type CreateTicketDto = Omit<ticket,'ticket_id'|'ticket_transaction_id'> & {
+  ticket_transaction_id:number|null
 }
 
-export interface CreateTransactionDto {
-  transaction_lat: string;
-  transaction_long: string;
-  transaction_payment_method_id: number;
-  transaction_amount: string;
-  transaction_pax: number;
-  member_phone: string;
-  tickets: TransactionTicketDto[];
+export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transaction_member_id'> & {
+  transaction_member_id:number|null
+};
+
+export interface CreateTransactionTicketsDto extends CreateTransactionDto {
+  member_phone?:string;
+  tickets:CreateTicketDto[];
 }

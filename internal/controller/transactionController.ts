@@ -4,7 +4,7 @@ import { TransactionService } from "../service/transactionService";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
-import { CreateTransactionDto } from "../../cmd/request";
+import { CreateTransactionTicketsDto } from "../../cmd/dto";
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
@@ -12,7 +12,7 @@ export class TransactionController {
   async create(req: Request, res: Response) {
     try {
       
-      const { com_id, body } = Util.extractRequestContext<CreateTransactionDto>(req, {
+      const { com_id, body } = Util.extractRequestContext<CreateTransactionTicketsDto>(req, {
         body: true,
       });
 

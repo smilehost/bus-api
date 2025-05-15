@@ -111,6 +111,7 @@ model transaction {
   transaction_member_id          Int
   transaction_route_id           Int
   transaction_ticket_discount_id Int
+  transaction_status             String   @db.VarChar(300)
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_member_id], map: "transaction_member_id")

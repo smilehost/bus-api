@@ -4,6 +4,7 @@ import { TransactionRepository } from "../../internal/repository/transactionRepo
 import { TransactionService } from "../../internal/service/transactionService";
 import { TransactionController } from "../../internal/controller/transactionController";
 import { CompanyRepository } from "../../internal/repository/companyRepository";
+import { MemberRepository } from "../../internal/repository/memberRepository";
 
 export class TransactionRoute {
   private readonly router: Router;
@@ -16,7 +17,8 @@ export class TransactionRoute {
     this.router = Router();
 
     this.repo = new TransactionRepository(prisma);
-    this.service = new TransactionService(this.repo, comRepo);
+    const memberRepo = new MemberRepository(prisma);
+    this.service = new TransactionService(this.repo, comRepo, memberRepo);
     this.controller = new TransactionController(this.service);
     this.setupRoutes();
   }
