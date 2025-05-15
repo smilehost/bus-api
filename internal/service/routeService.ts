@@ -16,7 +16,8 @@ export class RouteService {
     comId: number,
     page: number,
     size: number,
-    search: string
+    search: string,
+    status:number
   ) {
     search = search.toString();
 
@@ -27,7 +28,8 @@ export class RouteService {
       comId,
       skip,
       take,
-      search
+      search,
+      status
     );
 
     return {

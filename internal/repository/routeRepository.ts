@@ -45,7 +45,8 @@ export class RouteRepository {
     comId: number,
     skip: number,
     take: number,
-    search: string
+    search: string,
+    status:number|null
   ): Promise<[route[], number]> {
     try {
       const where = {

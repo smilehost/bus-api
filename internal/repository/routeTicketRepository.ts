@@ -80,6 +80,7 @@ export class RouteTicketRepository {
     search: string,
     status: number|null,
   ): Promise<[any[], number]> {
+
     try {
       const relatedRouteIds = (
         await this.prisma.route.findMany({
@@ -100,7 +101,7 @@ export class RouteTicketRepository {
               ],
             }
           : {}),
-          ...(status !== null && status !== undefined
+          ...(typeof status === "number"
             ? { route_ticket_status: status }
           : {}),
       };

@@ -13,7 +13,7 @@ export class RouteController {
       const { com_id, query } = Util.extractRequestContext<
         void,
         void,
-        { page: number; size: number; search: string }
+        { page: number; size: number; search: string,status:number }
       >(req, {
         query: true,
       });
@@ -22,7 +22,8 @@ export class RouteController {
         com_id,
         query.page,
         query.size,
-        query.search
+        query.search,
+        query.status,
       );
 
       res.status(200).json({
