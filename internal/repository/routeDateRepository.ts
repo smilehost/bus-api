@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { RouteDate } from "../../cmd/models";
+import { PrismaClient, route_date } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class RouteDateRepository {
@@ -25,7 +24,7 @@ export class RouteDateRepository {
     skip: number,
     take: number,
     search: string
-  ): Promise<[RouteDate[], number]> {
+  ): Promise<[route_date[], number]> {
     try {
       const where = {
         route_date_com_id: comId,
@@ -58,13 +57,11 @@ export class RouteDateRepository {
         where: { route_date_id: id },
       });
     } catch (error) {
-      console.log(error);
-      
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async create(data: RouteDate) {
+  async create(data: route_date) {
     try {
       return await this.prisma.route_date.create({
         data: {
@@ -86,22 +83,22 @@ export class RouteDateRepository {
     }
   }
 
-  async update(id: number, data: Partial<RouteDate>) {
+  async update(id: number, data: Partial<route_date>) {
     try {
       return await this.prisma.route_date.update({
         where: { route_date_id: id },
-        data:{
-          route_date_name:data.route_date_name,
-          route_date_start:data.route_date_name,
-          route_date_end:data.route_date_end,
-          route_date_mon:data.route_date_mon,
-          route_date_tue:data.route_date_tue,
-          route_date_wen:data.route_date_wen,
-          route_date_thu:data.route_date_thu,
-          route_date_fri:data.route_date_fri,
-          route_date_sat:data.route_date_sat,
-          route_date_sun:data.route_date_sun,
-          route_date_com_id:data.route_date_com_id
+        data: {
+          route_date_name: data.route_date_name,
+          route_date_start: data.route_date_name,
+          route_date_end: data.route_date_end,
+          route_date_mon: data.route_date_mon,
+          route_date_tue: data.route_date_tue,
+          route_date_wen: data.route_date_wen,
+          route_date_thu: data.route_date_thu,
+          route_date_fri: data.route_date_fri,
+          route_date_sat: data.route_date_sat,
+          route_date_sun: data.route_date_sun,
+          route_date_com_id: data.route_date_com_id,
         },
       });
     } catch (error) {

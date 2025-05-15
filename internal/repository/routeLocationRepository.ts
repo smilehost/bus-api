@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, route_location } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { RouteLocation } from "../../cmd/models"; // หรือจะใช้ interface โดยตรงจากที่คุณเขียนก็ได้
 
 export class RouteLocationRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -25,7 +24,7 @@ export class RouteLocationRepository {
     skip: number,
     take: number,
     search: string
-  ): Promise<[RouteLocation[], number]> {
+  ): Promise<[route_location[], number]> {
     try {
       const where = {
         route_location_com_id: comId,
@@ -64,7 +63,7 @@ export class RouteLocationRepository {
     }
   }
 
-  async create(data: RouteLocation) {
+  async create(data: route_location) {
     try {
       return await this.prisma.route_location.create({
         data: {
@@ -79,7 +78,7 @@ export class RouteLocationRepository {
     }
   }
 
-  async update(id: number, data: RouteLocation) {
+  async update(id: number, data: route_location) {
     try {
       return await this.prisma.route_location.update({
         where: { route_location_id: id },

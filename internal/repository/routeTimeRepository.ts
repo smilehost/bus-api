@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, route_time } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { RouteTime } from "../../cmd/models"; // หรือใช้ Prisma model ก็ได้
 
 export class RouteTimeRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -25,7 +24,7 @@ export class RouteTimeRepository {
     skip: number,
     take: number,
     search: string
-  ): Promise<[RouteTime[], number]> {
+  ): Promise<[route_time[], number]> {
     try {
       const where = {
         route_time_com_id: comId,
@@ -64,25 +63,19 @@ export class RouteTimeRepository {
     }
   }
 
-  async create(data: RouteTime) {
+  async create(data: Omit<route_time, "route_time_id">) {
     try {
-      return await this.prisma.route_time.create({
-        data: {
-          route_time_name: data.route_time_name,
-          route_time_array: data.route_time_array,
-          route_time_com_id: data.route_time_com_id,
-        },
-      });
+      return await this.prisma.route_time.create({ data });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async update(id: number, data: Partial<RouteTime>) {
+  async update(id: number, data: Partial<route_time>) {
     try {
       return await this.prisma.route_time.update({
         where: { route_time_id: id },
-        data : {
+        data: {
           route_time_name: data.route_time_name,
           route_time_array: data.route_time_array,
           route_time_com_id: data.route_time_com_id,

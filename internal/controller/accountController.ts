@@ -3,9 +3,8 @@ import { AccountService } from "../service/accountService";
 import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
-import { Account } from "../../cmd/models";
 import { JwtPayloadUser } from "../../cmd/dto";
-
+import { account } from "@prisma/client";
 
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
@@ -61,7 +60,7 @@ export class AccountController {
   async update(req: Request, res: Response) {
     try {
       const { com_id, params, body } = Util.extractRequestContext<
-        Account,
+        account,
         { account_id: number }
       >(req, {
         body: true,
@@ -91,8 +90,6 @@ export class AccountController {
 
   async delete(req: Request, res: Response) {
     try {
-      console.log("-----------1");
-
       const { com_id, params } = Util.extractRequestContext<
         void,
         { account_id: number }
@@ -109,8 +106,7 @@ export class AccountController {
       );
 
       res.status(200).json({
-        message: "Account deleted successfully",
-        body: req.body.user,
+        message: "Account deleted successfully"
       });
     } catch (error) {
       if (error instanceof AppError) {

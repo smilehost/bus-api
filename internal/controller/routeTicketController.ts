@@ -4,29 +4,30 @@ import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
 import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
+import { route_ticket_price_type } from "@prisma/client";
 
 export class RouteTicketController {
-  constructor(
-    private readonly routeTicketService: RouteTicketService) {}
+  constructor(private readonly routeTicketService: RouteTicketService) {}
 
-
-  async getTicketPricing(req:Request,res:Response){
+  async getTicketPricing(req: Request, res: Response) {
     try {
-      const { com_id, params} = Util.extractRequestContext<
+      const { com_id, params } = Util.extractRequestContext<
         void,
         { route_ticket_id: number },
-        {ticket_price_type:number}
+        { ticket_price_type: number }
       >(req, {
-        params: true
+        params: true,
       });
 
-      const {ticket,prices} = await this.routeTicketService.getById(com_id,params.route_ticket_id)
+      const { ticket, prices } = await this.routeTicketService.getById(
+        com_id,
+        params.route_ticket_id
+      );
 
       res.status(200).json({
         message: "Ticket retrieved successfully",
-        route_ticket:ticket,
-        route_ticket_price:prices
+        route_ticket: ticket,
+        route_ticket_price: prices,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -207,8 +208,15 @@ export class RouteTicketController {
 
   async createPriceType(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteTicketPriceType>(req, { body: true });
-      const result = await this.routeTicketService.createPriceType(com_id, body);
+      const { com_id, body } = Util.extractRequestContext<route_ticket_price_type>(
+        req,
+        { body: true }
+      );
+      const result = await this.routeTicketService.createPriceType(
+        com_id,
+        body
+      );
+      
       res.status(201).json({
         message: "Ticket price type created successfully",
         result,
@@ -230,7 +238,10 @@ export class RouteTicketController {
         void,
         { route_ticket_price_type_id: number }
       >(req, { params: true });
-      const result = await this.routeTicketService.deletePriceType(com_id, params.route_ticket_price_type_id);
+      const result = await this.routeTicketService.deletePriceType(
+        com_id,
+        params.route_ticket_price_type_id
+      );
       res.status(200).json({
         message: "Ticket price type deleted successfully",
         result,

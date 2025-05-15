@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { Route } from "../../cmd/models";
+import { PrismaClient, route } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class RouteRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAll(comId: number): Promise<Route[]> {
+  async getAll(comId: number): Promise<route[]> {
     try {
       return await this.prisma.route.findMany({
         where: { route_com_id: comId },
@@ -17,37 +16,37 @@ export class RouteRepository {
   }
 
   async getRouteByDay(comId: number, dayOfWeek: number) {
-  const dayColumnMap = [
-    "route_date_sun",
-    "route_date_mon",
-    "route_date_tue",
-    "route_date_wen", // ✅ ตามที่ schema ระบุไว้
-    "route_date_thu",
-    "route_date_fri",
-    "route_date_sat",
-  ];
-  const dayColumn = dayColumnMap[dayOfWeek];
+    const dayColumnMap = [
+      "route_date_sun",
+      "route_date_mon",
+      "route_date_tue",
+      "route_date_wen", // ✅ ตามที่ schema ระบุไว้
+      "route_date_thu",
+      "route_date_fri",
+      "route_date_sat",
+    ];
+    const dayColumn = dayColumnMap[dayOfWeek];
 
-  return this.prisma.route.findMany({
-    where: {
-      route_com_id: comId,
-      route_date: {
-        [dayColumn]: 1,
+    return this.prisma.route.findMany({
+      where: {
+        route_com_id: comId,
+        route_date: {
+          [dayColumn]: 1,
+        },
       },
-    },
-    include: {
-      route_date: true,
-      route_time: true,
-    },
-  });
-}
+      include: {
+        route_date: true,
+        route_time: true,
+      },
+    });
+  }
 
   async getPaginated(
     comId: number,
     skip: number,
     take: number,
     search: string
-  ): Promise<[Route[], number]> {
+  ): Promise<[route[], number]> {
     try {
       const where = {
         route_com_id: comId,
@@ -87,7 +86,7 @@ export class RouteRepository {
     }
   }
 
-  async create(data: Route) {
+  async create(data: route) {
     try {
       return await this.prisma.route.create({
         data: {
@@ -102,13 +101,11 @@ export class RouteRepository {
         },
       });
     } catch (error) {
-      console.log(error);
-      
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async update(routeId: number, data: Route) {
+  async update(routeId: number, data: route) {
     try {
       return await this.prisma.route.update({
         where: { route_id: routeId },
@@ -132,6 +129,29 @@ export class RouteRepository {
     try {
       return await this.prisma.route.delete({
         where: { route_id: routeId },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async findRoutesByLocation(comId: number, locationId: string) {
+    try {
+      return await this.prisma.route.findMany({
+        where: {
+          route_com_id: comId,
+          OR: [
+            { route_array: { equals: locationId } },
+            { route_array: { startsWith: `${locationId},` } },
+            { route_array: { endsWith: `,${locationId}` } },
+            { route_array: { contains: `,${locationId},` } },
+          ],
+        },
+        select: {
+          route_id: true,
+          route_name_th: true,
+          route_array: true,
+        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);

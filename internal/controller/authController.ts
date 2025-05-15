@@ -30,14 +30,13 @@ export class AuthController {
         LOGIN_LIFT_TIME
       );
 
-      res.setHeader('Authorization', `Bearer ${token}`);
+      res.setHeader("Authorization", `Bearer ${token}`);
       // res.cookie("token", token, {2
       //   maxAge: 3600 * 1000 * Number(LOGIN_LIFT_TIME),
       //   httpOnly: true,
       //   secure: true, // ✅ ตอนนี้ใช้ได้แล้ว เพราะเราใช้ HTTPS
       //   sameSite: "none", // ✅ ต้องใช้คู่กับ secure สำหรับ cross-origin
       // });
-
 
       res.status(200).json({ message: "Login successful" });
     } catch (error) {
@@ -105,23 +104,27 @@ export class AuthController {
     }
   }
 
-    async changePassword(req: Request, res: Response) {
-        try {
-            console.log(req.body)
-            const { com_id, body } = Util.extractRequestContext<{userId:number,newPassword:string}>(req, {
-                body: true,
-            });
+  async changePassword(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        userId: number;
+        newPassword: string;
+      }>(req, {
+        body: true,
+      });
 
-            const changer = req.body.user
+      const changer = req.body.user;
 
-            if (!body.userId||!body.newPassword){
-                throw AppError.BadRequest("request id and password")
-            }
+      if (!body.userId || !body.newPassword) {
+        throw AppError.BadRequest("request id and password");
+      }
 
-            const data = await this.authService.changePassword(com_id,
-                                                               body.userId,
-                                                               body.newPassword,
-                                                               changer)
+      const data = await this.authService.changePassword(
+        com_id,
+        body.userId,
+        body.newPassword,
+        changer
+      );
 
       res.status(200).json({
         message: "Change User password successfully",
@@ -138,22 +141,27 @@ export class AuthController {
     }
   }
 
-    async changeStatus(req: Request, res: Response){
-        try {
-            const { com_id, body } = Util.extractRequestContext<{userId:number,newStatus:number}>(req, {
-                body: true,
-            });
+  async changeStatus(req: Request, res: Response) {
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        userId: number;
+        newStatus: number;
+      }>(req, {
+        body: true,
+      });
 
-            const changer = req.body.user
+      const changer = req.body.user;
 
-            if (!body.userId||!body.newStatus){
-                throw AppError.BadRequest("request id and status")
-            }
+      if (!body.userId || !body.newStatus) {
+        throw AppError.BadRequest("request id and status");
+      }
 
-            const data = await this.authService.changeStatus(com_id,
-                                                               body.userId,
-                                                               body.newStatus,
-                                                               changer)
+      const data = await this.authService.changeStatus(
+        com_id,
+        body.userId,
+        body.newStatus,
+        changer
+      );
 
       res.status(200).json({
         message: "Change User status successfully",

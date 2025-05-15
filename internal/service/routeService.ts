@@ -1,15 +1,15 @@
-import { Route } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteDateRepository } from "../repository/routeDateRepository";
-import { RouteTimeRepository } from "../repository/routeTimeRepository";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { RouteLocationRepository } from "../repository/routeLocationRepository";
+import { route } from "@prisma/client";
 
 export class RouteService {
   constructor(
     private readonly routeRepository: RouteRepository,
     private readonly routeDateRepository: RouteDateRepository,
-    private readonly routeTimeRepository: RouteTimeRepository
+    private readonly loactionRepository: RouteLocationRepository
   ) {}
 
   async getByPagination(
@@ -53,32 +53,21 @@ export class RouteService {
     return route;
   }
 
-  async create(comId: number, data: Route) {
-    console.log("--------------1");
-    
+  async create(comId: number, data: route) {
     if (!Util.ValidCompany(comId, data.route_com_id)) {
       throw AppError.Forbidden("Route: Company ID does not match");
     }
-    console.log("--------------2");
-    console.log(data.route_date_id);
-    
+
     const date = await this.routeDateRepository.getById(data.route_date_id);
-    console.log("--------------3");
-    console.log(date);
-    
-    
+
     if (!date) {
-      console.log("--------------3.1");
-      
       throw AppError.NotFound("Date not found");
     }
-    console.log("--------------4");
-    
 
     return this.routeRepository.create(data);
   }
 
-  async update(comId: number, routeId: number, data: Route) {
+  async update(comId: number, routeId: number, data: route) {
     const existingRoute = await this.routeRepository.getById(routeId);
     if (!existingRoute) {
       throw AppError.NotFound("Route not found");
@@ -133,5 +122,28 @@ export class RouteService {
     }
 
     return filteredRoutes;
+  }
+
+  async getRoutesUsingLocation(comId: number, locationId: number) {
+    const locationStr = locationId.toString();
+    return await this.routeRepository.findRoutesByLocation(comId, locationStr);
+  }
+
+  async getStartEndLocation(route:route){
+    const routeLocation = route.route_array.split(",")
+    const start = Number(routeLocation[0])
+    const stop = Number(routeLocation.pop())
+
+    const startLocation = await this.loactionRepository.getById(start)
+    const stopLocation = await this.loactionRepository.getById(stop)
+
+    if (!startLocation || !stopLocation){
+      throw AppError.NotFound("can't find start or stop location in Route")
+    }
+
+    return {
+      startLocation:startLocation,
+      stopLocation:stopLocation
+    }
   }
 }

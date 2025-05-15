@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
-import { RouteTicketService } from "../service/routeTicketService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
-import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
-import { RouteService } from "../service/routeService";
 import { TicketRemainService } from "../service/ticketRemainService";
 
 export class TicketRemainController {
@@ -15,7 +11,9 @@ export class TicketRemainController {
     try {
       const { com_id, params } = Util.extractRequestContext<
         void,
-        { ticket_remain_id: string }
+        {
+          ticket_remain_id: string;
+        }
       >(req, {
         params: true,
       });

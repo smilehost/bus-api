@@ -1,17 +1,19 @@
-import { RouteTicket, RouteTicketPrice } from "../../cmd/models";
 import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
 import { RouteRepository } from "../repository/routeRepository";
 import { RouteTicketRepository } from "../repository/routeTicketRepository";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
 import { RouteService } from "./routeService";
+import { TicketRemainService } from "./ticketRemainService";
+import { GetRemainByRouteTimeDTO } from "../../cmd/dto";
+import { route, route_ticket, route_ticket_price_type } from "@prisma/client";
 
 export class RouteTicketService {
   constructor(
     private readonly routeTicketRepository: RouteTicketRepository,
     private readonly routeRepository: RouteRepository,
     private readonly routeService:RouteService,
+    private readonly ticketRemainService:TicketRemainService,
   ) {}
 
   async getAllTicketsByRouteId(comId: number, routeId: number) {
@@ -24,7 +26,9 @@ export class RouteTicketService {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
-    const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(routeId);
+    const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(
+      routeId
+    );
     return tickets;
   }
 
@@ -73,8 +77,8 @@ export class RouteTicketService {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
-    const prices = await this.routeTicketRepository.getTicketPrices(ticketId)
-    return {ticket,prices}
+    const prices = await this.routeTicketRepository.getTicketPrices(ticketId);
+    return { ticket, prices };
   }
 
   async create(comId: number, data: RouteTicketWithPrices) {
@@ -126,9 +130,8 @@ export class RouteTicketService {
   }
 
   async getTicketPriceType(comId: number) {
-    const ticketPriceTypes = await this.routeTicketRepository.getTicketPriceType(
-      comId
-    );
+    const ticketPriceTypes =
+      await this.routeTicketRepository.getTicketPriceType(comId);
     if (!ticketPriceTypes) {
       throw AppError.NotFound("Ticket price types not found");
     }
@@ -136,9 +139,11 @@ export class RouteTicketService {
     return ticketPriceTypes;
   }
 
-  async createPriceType(comId: number, data: RouteTicketPriceType) {
+  async createPriceType(comId: number, data: route_ticket_price_type) {
     if (data.route_ticket_price_type_com_id !== comId) {
-      throw AppError.Forbidden("Company ID does not match for price type creation");
+      throw AppError.Forbidden(
+        "Company ID does not match for price type creation"
+      );
     }
 
     return this.routeTicketRepository.createPriceType(comId, data);
@@ -148,43 +153,67 @@ export class RouteTicketService {
     return this.routeTicketRepository.deletePriceType(comId, priceTypeId);
   }
 
-  async getTicketsByLocations(com_id: number,startId: number,stopId: number,date: string){
-    const routes = await this.routeService.getRouteByLocations(com_id, startId, stopId, date);
-  
-    const getPrices = async (routeId: number, ticketType: string) => {
+  async getTicketsByLocations(
+    com_id: number,
+    startId: number,
+    stopId: number,
+    date: string
+  ) {
+    const routes = await this.routeService.getRouteByLocations(
+      com_id,
+      startId,
+      stopId,
+      date
+    );
+
+    const getPrices = async (ticketId: number, ticketType: string) => {
       if (ticketType !== "tier") {
-        const fixTicket = await this.routeTicketRepository.getTicketPricingByLocation(routeId);
-        fixTicket.map((ticket)=>{
-          ticket.route_ticket_location_start = String(startId)
-          ticket.route_ticket_location_stop = String(stopId)
-        })
-        return fixTicket
+        const fixTicket =
+          await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
+
+        fixTicket.forEach((ticket) => {
+          ticket.route_ticket_location_start = String(startId);
+          ticket.route_ticket_location_stop = String(stopId);
+        });
+
+        return fixTicket;
       }
+      
       return await this.routeTicketRepository.getTicketPricingByLocation(
-        routeId,
+        ticketId,
         String(startId),
         String(stopId)
       );
     };
+
+    const getRemaining = async (ticket:route_ticket,routeTimeId:number)=>{
+      const ticketTime:GetRemainByRouteTimeDTO = {
+        ticket_id:ticket.route_ticket_id,
+        ticket_remain_date:date,
+        route_time_id:routeTimeId,
+      }
+      const remaining = await this.ticketRemainService.getRemainByRouteTime(ticketTime)
+      return remaining
+    }
   
-    const processRoute = async (route: any): Promise<RouteTicket[]> => {
+    const processRoute = async (route: route): Promise<route_ticket[]> => {
       const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
       if (!tickets.length) return [];
-  
+
       const ticketsWithPrices = await Promise.all(
         tickets.map(async (ticket) => ({
           ...ticket,
-          prices: await getPrices(route.route_id, ticket.route_ticket_type),
+          locations: await this.routeService.getStartEndLocation(route),
+          prices: await getPrices(ticket.route_ticket_id, ticket.route_ticket_type),
+          ticket_remain: await getRemaining(ticket,route.route_time_id)
         }))
       );
-  
+
       return ticketsWithPrices;
     };
-  
+
     const ticketWithPrices = await Promise.all(routes.map(processRoute));
-  
+
     return ticketWithPrices;
   }
-  
-
 }

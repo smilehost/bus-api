@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { RouteService } from "../service/routeService";
-import { Route } from "../../cmd/models";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
+import { route } from "@prisma/client";
 
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
@@ -43,7 +43,7 @@ export class RouteController {
   async getById(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        Route,
+        route,
         { route_id: number }
       >(req, {
         params: true,
@@ -68,12 +68,11 @@ export class RouteController {
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<Route>(req, {
+      const { com_id, body } = Util.extractRequestContext<route>(req, {
         body: true,
       });
 
       const createdRoute = await this.routeService.create(com_id, body);
-      console.log("creatdsfdsfdsfdfdfdsfsdfdsfsdfdfdfdsfdsfedRoute");
 
       res.status(201).json({
         message: "Route created successfully",
@@ -97,7 +96,7 @@ export class RouteController {
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        Route,
+        route,
         { route_id: number }
       >(req, {
         body: true,
@@ -128,7 +127,7 @@ export class RouteController {
   async delete(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        Route,
+        route,
         { route_id: number }
       >(req, {
         params: true,
@@ -149,6 +148,4 @@ export class RouteController {
       ExceptionHandler.internalServerError(res, error);
     }
   }
-
-  
 }
