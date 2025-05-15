@@ -257,6 +257,19 @@ export class RouteTicketRepository {
     }
   }
 
+  async updateStatus(id: number, status:number) {
+    try {
+      return await this.prisma.route_ticket.update({
+        where: { route_ticket_id: id },
+        data: {
+          route_ticket_status: status,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async delete(id: number) {
     try {
       return await this.prisma.$transaction(async (tx) => {

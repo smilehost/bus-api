@@ -111,6 +111,18 @@ export class RouteTicketService {
     return await this.routeTicketRepository.update(ticketId, data);
   }
 
+  async updateStatus(comId: number, ticketId: number, status:number) {
+    if (!(status === 0 || status===1)){
+      throw AppError.BadRequest("status must be 0 or 1")
+    }
+
+    const ticket = await this.routeTicketRepository.getById(ticketId);
+    if (!ticket) {
+      throw AppError.NotFound("Route ticket not found");
+    }
+    return await this.routeTicketRepository.updateStatus(ticketId, status);
+  }
+
   async delete(comId: number, ticketId: number) {
     const ticket = await this.routeTicketRepository.getById(ticketId);
     if (!ticket) {

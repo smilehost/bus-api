@@ -149,6 +149,37 @@ export class RouteTicketController {
     }
   }
 
+  async updateStatus(req: Request, res: Response) {
+    try {
+      const { com_id, body, params } = Util.extractRequestContext<
+        {route_ticket_id:number,route_ticket_status:number},
+        { route_ticket_id: number }
+      >(req, {
+        body: true,
+        params: true,
+      });
+      console.log(body,params)
+      const result = await this.routeTicketService.updateStatus(
+        com_id,
+        params.route_ticket_id,
+        body.route_ticket_status
+      );
+
+      res.status(200).json({
+        message: "Ticket updated successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async delete(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<

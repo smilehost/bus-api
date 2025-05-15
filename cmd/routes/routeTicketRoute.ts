@@ -52,6 +52,11 @@ export class RouteTicketRoutes {
       "/:route_ticket_id",
       this.controller.update.bind(this.controller)
     );
+    this.router.put(
+      "/:route_ticket_id/status",
+      this.controller.updateStatus.bind(this.controller)
+    );
+
     this.router.delete(
       "/:route_ticket_id",
       this.controller.delete.bind(this.controller)
