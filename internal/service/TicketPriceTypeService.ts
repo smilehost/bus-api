@@ -41,9 +41,8 @@ export class TicketPriceTypeService {
     await this.checkValidPriceType(comId,priceTypeId)
 
     if (!await this.ticketPriceTypeRepository.isPriceTypeUsage(priceTypeId)){
-      throw AppError.NotFound("Ticket price types not found.");
+      throw AppError.Forbidden("This TicketPriceType in used.")
     }
-    //AppError.Forbidden("This TicketPriceType in used.")
     return this.ticketPriceTypeRepository.deletePriceType(priceTypeId);
   }
 

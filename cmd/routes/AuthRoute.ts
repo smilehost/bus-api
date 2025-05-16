@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { AuthService } from "../../internal/service/authService";
 import { AuthRepository } from "../../internal/repository/authRespository";
 import { AuthController } from "../../internal/controller/authController";
-import { authorizeRoles } from "../middleware/authMiddleware";
+import { asyncHandler, authorizeRoles } from "../middleware/authMiddleware";
 
 export class AuthRoutes {
   private readonly router: Router;
@@ -28,11 +28,7 @@ export class AuthRoutes {
       "/register",
       this.controller.register.bind(this.controller)
     );
-    this.router.post(
-      "/changepassword",
-      authorizeRoles("1"),
-      this.controller.changePassword.bind(this.controller)
-    );
+    asyncHandler(this.controller.changePassword.bind(this.controller))
     this.router.post(
       "/changeStatus",
       authorizeRoles("1"),

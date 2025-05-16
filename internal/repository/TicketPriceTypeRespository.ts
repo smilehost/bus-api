@@ -78,7 +78,7 @@ export class TicketPriceTypeRepository {
           route_ticket_price_type_id:priceTypeId
         }
       });
-      return found === undefined
+      return found === null 
 
     } catch (error) {
       throw AppError.fromPrismaError(error);

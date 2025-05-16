@@ -34,8 +34,25 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
       next();
     } catch (err) {
       console.log(err);
-      res.status(403).json({ message: "Forbidden" });
+      if (!res.headersSent) {
+        console.log("📤 Sending error response");
+        res.status(403).json({ message: "Forbidden" });
+      } else {
+        console.log("⚠️ Headers already sent, cannot send response");
+      }
       return;
     }
+  };
+};
+
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    Promise.resolve(fn(req, res, next))
+      .catch((error) => {
+        console.error("Error in controller:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Internal server error" });
+        }
+      });
   };
 };
