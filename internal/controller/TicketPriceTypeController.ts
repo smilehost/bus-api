@@ -55,6 +55,33 @@ export class TicketPriceTypeController {
     }
   }
 
+  async editPriceType(req: Request, res: Response) {
+    try {
+      const { com_id,body, params } = Util.extractRequestContext<
+        {route_ticket_price_type_name:string},
+        { route_ticket_price_type_id: number }
+      >(req, { params: true,body:true });
+
+      const result = await this.ticketPriceTypeService.editPriceType(
+        com_id,
+        params.route_ticket_price_type_id,
+        body.route_ticket_price_type_name
+      );
+      res.status(200).json({
+        message: "Ticket price type deleted successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }
+      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
   async deletePriceType(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<

@@ -29,6 +29,10 @@ export class TicketPriceTypeRoute {
       "/",
       this.controller.createPriceType.bind(this.controller)
     );
+    this.router.put(
+      "/:route_ticket_price_type_id",
+      this.controller.editPriceType.bind(this.controller)
+    );
     this.router.delete(
       "/:route_ticket_price_type_id",
       this.controller.deletePriceType.bind(this.controller)

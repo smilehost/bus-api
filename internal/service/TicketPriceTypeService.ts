@@ -27,7 +27,38 @@ export class TicketPriceTypeService {
     return this.ticketPriceTypeRepository.createPriceType(comId, data);
   }
 
+  async editPriceType(comId: number, priceTypeId: number,priceTypeName:string) {
+    if (priceTypeName===null||priceTypeName===""){
+      throw AppError.BadRequest("priceTypeName can't be empty")
+    }
+
+    await this.checkValidPriceType(comId,priceTypeId)
+
+    return this.ticketPriceTypeRepository.editPriceType(priceTypeId,priceTypeName);
+  }
+
   async deletePriceType(comId: number, priceTypeId: number) {
-    return this.ticketPriceTypeRepository.deletePriceType(comId, priceTypeId);
+    await this.checkValidPriceType(comId,priceTypeId)
+
+    if (!await this.ticketPriceTypeRepository.isPriceTypeUsage(priceTypeId)){
+      throw AppError.NotFound("Ticket price types not found.");
+    }
+    //AppError.Forbidden("This TicketPriceType in used.")
+    return this.ticketPriceTypeRepository.deletePriceType(priceTypeId);
+  }
+
+  private async checkValidPriceType(comId: number, priceTypeId: number){
+    const ticketPriceType = await this.ticketPriceTypeRepository.getTicketPriceTypeById(priceTypeId)
+    if (!ticketPriceType) {
+      throw AppError.NotFound("Ticket price types not found.");
+    }
+
+    if (ticketPriceType.route_ticket_price_type_com_id !== comId) {
+      throw AppError.Forbidden(
+        "Company ID does not match."
+      );
+    }
+
+    return ticketPriceType
   }
 }

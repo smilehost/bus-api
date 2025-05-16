@@ -19,6 +19,18 @@ export class TicketPriceTypeRepository {
     }
   }
 
+  async getTicketPriceTypeById(ticketPriceTypeId: number) {
+    try {
+      return await this.prisma.route_ticket_price_type.findUnique({
+        where: {
+          route_ticket_price_type_id:ticketPriceTypeId,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async createPriceType(comId: number, data: route_ticket_price_type) {
     try {
       return await this.prisma.route_ticket_price_type.create({
@@ -32,14 +44,42 @@ export class TicketPriceTypeRepository {
     }
   }
 
-  async deletePriceType(comId: number, priceTypeId: number) {
+  async editPriceType( priceTypeId: number,priceTypename:string) {
     try {
-      return await this.prisma.route_ticket_price_type.deleteMany({
+      return await this.prisma.route_ticket_price_type.update({
         where: {
           route_ticket_price_type_id: priceTypeId,
-          route_ticket_price_type_com_id: comId,
+        },
+        data:{
+          route_ticket_price_type_name:priceTypename
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async deletePriceType( priceTypeId: number) {
+    try {
+      return await this.prisma.route_ticket_price_type.delete({
+        where: {
+          route_ticket_price_type_id: priceTypeId,
         },
       });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async isPriceTypeUsage(priceTypeId:number){
+    try {
+      const found = await this.prisma.route_ticket_price.findFirst({
+        where:{
+          route_ticket_price_type_id:priceTypeId
+        }
+      });
+      return found === undefined
+
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
