@@ -151,11 +151,7 @@ export class AuthController {
         body: true,
       });
 
-      const changer = req.body.user;
-
-      if (!body.userId || !body.newStatus) {
-        throw AppError.BadRequest("request id and status");
-      }
+      const changer = (req as any).user;
 
       const data = await this.authService.changeStatus(
         com_id,

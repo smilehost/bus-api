@@ -139,4 +139,10 @@ export class Util {
 
     return result;
   }
+
+  static isVaildStatus(status:number){
+    if (!(status === 0 || status===1)){
+      throw AppError.BadRequest("status must be 0 or 1")
+    }
+  }
 }
