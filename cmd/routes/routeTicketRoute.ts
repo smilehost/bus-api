@@ -62,18 +62,6 @@ export class RouteTicketRoutes {
       this.controller.delete.bind(this.controller)
     );
 
-    this.router.get(
-      "/priceType",
-      this.controller.getTicketPriceType.bind(this.controller)
-    );
-    this.router.post(
-      "/priceType",
-      this.controller.createPriceType.bind(this.controller)
-    );
-    this.router.delete(
-      "/priceType/:route_ticket_price_type_id",
-      this.controller.deletePriceType.bind(this.controller)
-    );
 
     this.router.post(
       "/getRouteTicketsByLocations",

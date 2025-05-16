@@ -6,7 +6,7 @@ import { Util } from "../utils/util";
 import { RouteService } from "./routeService";
 import { TicketRemainService } from "./ticketRemainService";
 import { GetRemainByRouteTimeDTO } from "../../cmd/dto";
-import { route, route_ticket, route_ticket_price_type } from "@prisma/client";
+import { route, route_ticket } from "@prisma/client";
 
 export class RouteTicketService {
   constructor(
@@ -143,29 +143,6 @@ export class RouteTicketService {
     return await this.routeTicketRepository.delete(ticketId);
   }
 
-  async getTicketPriceType(comId: number) {
-    const ticketPriceTypes =
-      await this.routeTicketRepository.getTicketPriceType(comId);
-    if (!ticketPriceTypes) {
-      throw AppError.NotFound("Ticket price types not found");
-    }
-
-    return ticketPriceTypes;
-  }
-
-  async createPriceType(comId: number, data: route_ticket_price_type) {
-    if (data.route_ticket_price_type_com_id !== comId) {
-      throw AppError.Forbidden(
-        "Company ID does not match for price type creation"
-      );
-    }
-
-    return this.routeTicketRepository.createPriceType(comId, data);
-  }
-
-  async deletePriceType(comId: number, priceTypeId: number) {
-    return this.routeTicketRepository.deletePriceType(comId, priceTypeId);
-  }
 
   async getTicketsByLocations(
     com_id: number,
