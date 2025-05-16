@@ -33,8 +33,9 @@ export class CompanyController {
         res
           .status(error.statusCode)
           .json({ error: error.name, message: error.message });
-      }
-      ExceptionHandler.internalServerError(res, error);
+        }else{
+          ExceptionHandler.internalServerError(res, error);
+        }
     }
   }
   async create(req: Request, res: Response) {
@@ -49,8 +50,9 @@ export class CompanyController {
         res
           .status(error.statusCode)
           .json({ error: error.name, message: error.message });
-      }
-      ExceptionHandler.internalServerError(res, error);
+        }else{
+          ExceptionHandler.internalServerError(res, error);
+        }
     }
   }
 
@@ -72,8 +74,9 @@ export class CompanyController {
         res
           .status(error.statusCode)
           .json({ error: error.name, message: error.message });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -91,8 +94,9 @@ export class CompanyController {
         res
           .status(error.statusCode)
           .json({ error: error.name, message: error.message });
-      }
-      ExceptionHandler.internalServerError(res, error);
+        }else{
+          ExceptionHandler.internalServerError(res, error);
+        }
     }
   }
 }

@@ -34,8 +34,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -68,8 +69,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -92,8 +94,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -123,8 +126,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -154,8 +158,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -183,8 +188,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -212,8 +218,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -245,8 +252,9 @@ export class RouteTicketController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }
