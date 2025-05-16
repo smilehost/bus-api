@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyJwt } from "../../internal/utils/jwt";
+import { AppError } from "../../internal/utils/appError";
+import { ExceptionHandler } from "../../internal/utils/exception";
 
 interface JwtPayload {
   account_id: number;
@@ -30,16 +32,11 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
 
       // how to use this
       // const user = (req as any).user;
-
+      console.log(req.body)
       next();
-    } catch (err) {
-      console.log(err);
-      if (!res.headersSent) {
-        console.log("📤 Sending error response");
-        res.status(403).json({ message: "Forbidden" });
-      } else {
-        console.log("⚠️ Headers already sent, cannot send response");
-      }
+    } catch (error) {
+      console.log(error);
+      res.status(403).json({ message: "Forbidden" });
       return;
     }
   };
@@ -56,3 +53,5 @@ export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunctio
       });
   };
 };
+
+

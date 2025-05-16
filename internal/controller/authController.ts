@@ -112,8 +112,7 @@ export class AuthController {
       }>(req, {
         body: true,
       });
-
-      const changer = req.body.user;
+      const changer = (req as any).user;
 
       if (!body.userId || !body.newPassword) {
         throw AppError.BadRequest("request id and password");
@@ -136,8 +135,10 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
+      
     }
   }
 
