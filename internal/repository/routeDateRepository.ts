@@ -89,7 +89,7 @@ export class RouteDateRepository {
         where: { route_date_id: id },
         data: {
           route_date_name: data.route_date_name,
-          route_date_start: data.route_date_name,
+          route_date_start: data.route_date_start,
           route_date_end: data.route_date_end,
           route_date_mon: data.route_date_mon,
           route_date_tue: data.route_date_tue,
