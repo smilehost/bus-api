@@ -43,7 +43,9 @@ export class AppError extends Error {
 
   static fromPrismaError(error: unknown): AppError {
     if (error instanceof Prisma.PrismaClientValidationError) {
-      const fieldMatch = RegExp(/Argument `(\w+)` is missing/).exec(error.message);
+      const fieldMatch = RegExp(/Argument `(\w+)` is missing/).exec(
+        error.message
+      );
 
       if (fieldMatch) {
         const missingField = fieldMatch[1];

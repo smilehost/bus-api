@@ -1,12 +1,41 @@
 import { AccountRepository } from "../repository/accountRepository";
-import { Account } from "../../cmd/models";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
+import { account } from "@prisma/client";
 
 export class AccountService {
   constructor(private readonly accountRepository: AccountRepository) {}
 
-  async getAll(comId: number): Promise<Account[]> {
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    search: string,
+    status: number
+  ) {
+    search = search.toString();
+
+    const skip = (page - 1) * size;
+    const take = size;
+
+    const [data, total] = await this.accountRepository.getPaginated(
+      comId,
+      skip,
+      take,
+      search,
+      status
+    );
+
+    return {
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      data,
+    };
+  }
+
+  async getAll(comId: number): Promise<account[]> {
     return this.accountRepository.getAll(comId);
   }
 
@@ -21,7 +50,7 @@ export class AccountService {
     return account;
   }
 
-  async update(comId: number, accountId: number, data: Account) {
+  async update(comId: number, accountId: number, data: account) {
     const existing = await this.accountRepository.getById(accountId);
 
     if (!existing) {
@@ -33,7 +62,7 @@ export class AccountService {
     }
 
     // เช็คเฉพาะ field ที่ถูกเปลี่ยน และอยู่ในรายการต้องห้าม
-    const forbiddenFields: (keyof Account)[] = [
+    const forbiddenFields: (keyof account)[] = [
       "account_id",
       "account_username",
       "account_password",
@@ -56,7 +85,7 @@ export class AccountService {
       }
     }
 
-    const sanitized: Partial<Account> = {
+    const sanitized: Partial<account> = {
       account_name: data.account_name,
       account_role: data.account_role,
     };
@@ -64,10 +93,10 @@ export class AccountService {
     return this.accountRepository.update(accountId, sanitized);
   }
 
-  async delete(comId: number, account_id: number, accountId: number) {
-    const accountToDelete = await this.accountRepository.getById(accountId);
-    const requesterAccount = await this.accountRepository.getById(account_id);
-
+  async delete(comId: number, user_account_id: number, target_account_id: number) {
+    const requesterAccount = await this.accountRepository.getById(user_account_id);
+    const accountToDelete = await this.accountRepository.getById(target_account_id);
+    
     if (!accountToDelete) {
       throw AppError.NotFound("Account to delete not found");
     }
@@ -93,6 +122,6 @@ export class AccountService {
       );
     }
 
-    return this.accountRepository.delete(accountId);
+    return this.accountRepository.delete(target_account_id);
   }
 }

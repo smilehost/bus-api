@@ -29,7 +29,9 @@ export class Util {
     }
 
     if (typeof input === "number") {
-      if (isNaN(input)) throw AppError.BadRequest(`Invalid ${label} (NaN)`);
+      if (!Number.isInteger(input)) {
+        throw AppError.BadRequest(`Invalid ${label} (not an integer)`);
+      }
       return input;
     }
 
@@ -37,11 +39,13 @@ export class Util {
       const trimmed = input.trim();
       if (trimmed === "") throw AppError.BadRequest(`Empty ${label} value`);
 
-      const parsed = parseInt(trimmed, 10);
-      if (isNaN(parsed)) {
-        throw AppError.BadRequest(`Invalid ${label} (not a number)`);
+      if (!/^\d+$/.test(trimmed)) {
+        throw AppError.BadRequest(
+          `Invalid ${label} (not a pure number string)`
+        );
       }
-      return parsed;
+
+      return parseInt(trimmed, 10);
     }
 
     throw AppError.BadRequest(`Invalid ${label} format`);
@@ -108,6 +112,7 @@ export class Util {
       if (!req.params || Object.keys(req.params).length === 0) {
         throw AppError.BadRequest("Missing required params");
       }
+
       const check = Util.checkObjectHasMissingFields(req.params);
       if (!check.valid) {
         throw AppError.BadRequest(
@@ -133,5 +138,11 @@ export class Util {
     }
 
     return result;
+  }
+
+  static isVaildStatus(status:number){
+    if (!(status === 0 || status===1)){
+      throw AppError.BadRequest("status must be 0 or 1")
+    }
   }
 }
