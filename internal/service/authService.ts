@@ -79,7 +79,7 @@ export class AuthService {
 
     if (
       user.account_id !== changer.account_id &&
-      changer.account_role === "1"
+      user.account_role === "1"
     ) {
       throw AppError.Forbidden("can't change other admin password");
     }
