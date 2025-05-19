@@ -45,8 +45,9 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -64,8 +65,9 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -99,8 +101,9 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -112,8 +115,7 @@ export class AuthController {
       }>(req, {
         body: true,
       });
-
-      const changer = req.body.user;
+      const changer = (req as any).user;
 
       if (!body.userId || !body.newPassword) {
         throw AppError.BadRequest("request id and password");
@@ -136,8 +138,10 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
+      
     }
   }
 
@@ -150,11 +154,7 @@ export class AuthController {
         body: true,
       });
 
-      const changer = req.body.user;
-
-      if (!body.userId || !body.newStatus) {
-        throw AppError.BadRequest("request id and status");
-      }
+      const changer = (req as any).user;
 
       const data = await this.authService.changeStatus(
         com_id,
@@ -173,8 +173,9 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }

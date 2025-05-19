@@ -28,7 +28,11 @@ export class AuthRoutes {
       "/register",
       this.controller.register.bind(this.controller)
     );
-    asyncHandler(this.controller.changePassword.bind(this.controller))
+    this.router.post(
+      "/changepassword",
+      authorizeRoles("1"),
+      this.controller.changePassword.bind(this.controller)
+    );
     this.router.post(
       "/changeStatus",
       authorizeRoles("1"),

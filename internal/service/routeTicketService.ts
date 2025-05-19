@@ -112,9 +112,7 @@ export class RouteTicketService {
   }
 
   async updateStatus(comId: number, ticketId: number, status:number) {
-    if (!(status === 0 || status===1)){
-      throw AppError.BadRequest("status must be 0 or 1")
-    }
+    Util.isVaildStatus(status)
 
     const ticket = await this.routeTicketRepository.getById(ticketId);
     if (!ticket) {
