@@ -23,6 +23,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/cmd ./cmd
+COPY --from=builder /app/ ./nginx.conf
 
 EXPOSE 8000
 
