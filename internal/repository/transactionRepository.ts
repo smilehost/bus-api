@@ -1,28 +1,34 @@
 // path: internal/repository/transactionRepository.ts
 import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
-import { CreateTransactionDto } from "../../cmd/dto";
+import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
 
 export class TransactionRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async createAllInOneTransaction(
-    com_id: number,
-    payload: CreateTransactionDto
+  async makeTransaction(
+    transaction: CreateTransactionDto,
+    tickets:CreateTicketDto[]
   ) {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        // 1. สร้าง member ใหม่เสมอ
+        const createdTransaction = await tx.transaction.create({
+          data:transaction
+        })
+        const createdTickets = await tx.ticket.createMany({
+          data: tickets.map(ticket => ({
+            ...ticket,
+            ticket_transaction_id: createdTransaction.transaction_id
+          }))
+        })
 
-        // 2. สร้าง transaction
-
-        // 3. เตรียม tickets
-      
-        // 4. สร้าง tickets
-
-        return 1 as any
+        return {
+          ...createdTransaction,
+          tickets:createdTickets
+        }
       });
     } catch (error) {
+      console.log(error)
       throw AppError.fromPrismaError(error);
     }
   }
@@ -42,4 +48,17 @@ export class TransactionRepository {
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
-}}
+  }
+
+  async getRouteTicketById(routeTicketId:number){
+    try {
+      return await this.prisma.route_ticket.findUnique({
+        where:{
+          route_ticket_id:routeTicketId
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+}
