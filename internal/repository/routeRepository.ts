@@ -41,13 +41,13 @@ export class RouteRepository {
     });
   }
 
-  async getPaginated(
+async getPaginated(
     comId: number,
     skip: number,
     take: number,
     search: string,
     status:number|null
-  ): Promise<[route[], number]> {
+  ): Promise<[any[], number]> {
     try {
       const where = {
         route_com_id: comId,
@@ -64,7 +64,8 @@ export class RouteRepository {
           : {}),
       };
 
-      const [data, total] = await this.prisma.$transaction([
+      // First get the routes
+      const [routes, total] = await this.prisma.$transaction([
         this.prisma.route.findMany({
           skip,
           take,
@@ -74,7 +75,35 @@ export class RouteRepository {
         this.prisma.route.count({ where }),
       ]);
 
-      return [data, total];
+      // Get the route IDs
+      const routeIds = routes.map(route => route.route_id);
+
+      // Get the count of tickets for each route
+      const ticketCounts = await this.prisma.route_ticket.groupBy({
+        by: ['route_ticket_route_id'],
+        where: {
+          route_ticket_route_id: {
+            in: routeIds
+          }
+        },
+        _count: {
+          route_ticket_id: true
+        }
+      });
+
+      // Create a map of route ID to ticket count
+      const ticketCountMap = new Map<number, number>();
+      ticketCounts.forEach(count => {
+        ticketCountMap.set(count.route_ticket_route_id, count._count.route_ticket_id);
+      });
+
+      // Add the ticket count to each route
+      const routesWithTicketCount = routes.map(route => ({
+        ...route,
+        route_ticket_count: ticketCountMap.get(route.route_id) || 0
+      }));
+
+      return [routesWithTicketCount, total];
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
