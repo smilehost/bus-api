@@ -11,7 +11,7 @@ export interface RegisterAccount {
   role: string;
 }
 
-const LOGIN_LIFT_TIME = Number(process.env.LOGIN_LIFT_TIME) || 8760;
+const LOGIN_LIFT_TIME = Number(process.env.LOGIN_LIFT_TIME) || 168;
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
