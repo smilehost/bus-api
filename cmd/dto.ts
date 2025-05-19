@@ -33,3 +33,11 @@ export interface CreateTransactionTicketsDto extends CreateTransactionDto {
   member_phone?:string;
   tickets:CreateTicketDto[];
 }
+
+export interface ShiftingRemainDto {
+  date: string;
+  time: string;
+  routeTicketId: number; 
+  maxTicket:number;
+  amount: number;
+}
