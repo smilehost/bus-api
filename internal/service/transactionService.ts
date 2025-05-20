@@ -35,11 +35,20 @@ export class TransactionService {
       transaction_date_time: new Date(),
     } 
 
+    let newMember:member|null = null
+    if(payload.member_phone){
+      newMember = {
+        member_id:0,
+        member_com_id:com_id,
+        member_date_time:new Date(),
+        member_phone:payload.member_phone
+      }
+    }
+
     const newTickets = await this.createTickets(com_id,payload.tickets) 
     
-    return this.transactionRepository.makeTransaction(newTransaction,newTickets);
+    return this.transactionRepository.makeTransaction(newTransaction,newTickets,newMember);
   }
-
 
   private async createTickets(com_id:number,tickets:CreateTicketDto[]){
     const ticketsData:CreateTicketDto[] = []
@@ -50,7 +59,6 @@ export class TransactionService {
       if (!ticketGroups[dateStr]) {
         ticketGroups[dateStr] = [];
       }
-      console.log(dateStr,"****")
       ticketGroups[dateStr].push(t);
     }
 
@@ -76,6 +84,38 @@ export class TransactionService {
     }
 
     return ticketsData
+  }
+
+  async CheckingByPolling(com_id:number,transactionId:number){
+    const transaction = await this.transactionRepository.getById(transactionId)
+    if (!transaction) throw AppError.NotFound("Not fond transaction")
+    if (transaction.transaction_com_id != com_id) {
+      throw AppError.Forbidden("com_id Not match")
+    }
+
+    const status = transaction.transaction_status
+    if(status != "COMPLETE"){
+      return {
+        status:status,
+        transaction:{}
+      }
+    }
+
+    return {
+      status:status,
+      transaction:transaction
+    }
+  }
+
+  async TransactionCallback(transaction_id:number,status:string){
+    if(status === "Cancelled"){
+      await this.transactionRepository.changeStatusById(transaction_id,"CANCELED")
+    }
+
+    if(status === "Success"){
+      await this.decreaseRemain(transaction_id)
+      await this.transactionRepository.changeStatusById(transaction_id,"COMPLETE")
+    }
   }
 
   private getPrefix(com_id: number, travelDate: string){
@@ -105,26 +145,21 @@ export class TransactionService {
     return chars[0] + arr.join(''); // prepend if overflow
   }
 
-  // private async decreaseRemain(){
-  //   const routeTicket = await this.transactionRepository.getRouteTicketById(ticket.ticket_route_ticket_id)
-  //   if (!routeTicket) throw AppError.NotFound("RouteTikcet not found");
 
-  //   this.ticketRemainService.decreaseTicketRemain({
-  //     date:newTicket.ticket_date,
-  //     time:newTicket.ticket_time,
-  //     routeTicketId:routeTicket.route_ticket_id,
-  //     maxTicket:routeTicket.route_ticket_amount
-  //   } as ShiftingRemainDto)
+  private async decreaseRemain(transactionId:number){
+    const tickets = await this.transactionRepository.getTicketByTransactionId(transactionId)
 
-  // if(payload.member_phone){
-  //   const newMember:member = {
-  //     member_id:0,
-  //     member_com_id:com_id,
-  //     member_date_time:new Date(),
-  //     member_phone:payload.member_phone
-  //   }
-  //   const member = await this.memberRepository.create(newMember)
-  //   newTransaction.transaction_member_id = member.member_id
-  // }
-  // }
+    for(const ticket of tickets){
+      const routeTicket = await this.transactionRepository.getRouteTicketById(ticket.ticket_route_ticket_id)
+      if(!routeTicket) throw AppError.NotFound("routeTicket Not fond")
+
+      this.ticketRemainService.decreaseTicketRemain({
+        date:ticket.ticket_date,
+        time:ticket.ticket_time,
+        routeTicketId:routeTicket.route_ticket_id,
+        maxTicket:routeTicket.route_ticket_amount
+      } as ShiftingRemainDto)
+    }
+  }
+
 }
