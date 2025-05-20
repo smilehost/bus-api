@@ -58,27 +58,15 @@ export class RouteTicketRepository {
     }
   }
 
-  async getTicketPriceType(id: number) {
-    try {
-      return await this.prisma.route_ticket_price_type.findMany({
-        where: {
-          route_ticket_price_type_com_id: id,
-        },
-        orderBy: {
-          route_ticket_price_type_id: "asc",
-        },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
 
   async getPaginated(
     comId: number,
     skip: number,
     take: number,
-    search: string
+    search: string,
+    status: number|null,
   ): Promise<[any[], number]> {
+
     try {
       const relatedRouteIds = (
         await this.prisma.route.findMany({
@@ -87,7 +75,7 @@ export class RouteTicketRepository {
         })
       ).map((r) => r.route_id);
 
-      const where = {
+      const where: any = {
         route_ticket_route_id: {
           in: relatedRouteIds,
         },
@@ -99,7 +87,11 @@ export class RouteTicketRepository {
               ],
             }
           : {}),
+          ...(typeof status === "number"
+            ? { route_ticket_status: status }
+          : {}),
       };
+  
 
       const [data, total] = await this.prisma.$transaction([
         this.prisma.route_ticket.findMany({
@@ -251,6 +243,19 @@ export class RouteTicketRepository {
     }
   }
 
+  async updateStatus(id: number, status:number) {
+    try {
+      return await this.prisma.route_ticket.update({
+        where: { route_ticket_id: id },
+        data: {
+          route_ticket_status: status,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async delete(id: number) {
     try {
       return await this.prisma.$transaction(async (tx) => {
@@ -271,29 +276,4 @@ export class RouteTicketRepository {
     }
   }
 
-  async createPriceType(comId: number, data: route_ticket_price_type) {
-    try {
-      return await this.prisma.route_ticket_price_type.create({
-        data: {
-          route_ticket_price_type_name: data.route_ticket_price_type_name,
-          route_ticket_price_type_com_id: comId,
-        },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
-
-  async deletePriceType(comId: number, priceTypeId: number) {
-    try {
-      return await this.prisma.route_ticket_price_type.deleteMany({
-        where: {
-          route_ticket_price_type_id: priceTypeId,
-          route_ticket_price_type_com_id: comId,
-        },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
 }

@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { AuthService } from "../../internal/service/authService";
 import { AuthRepository } from "../../internal/repository/authRespository";
 import { AuthController } from "../../internal/controller/authController";
-import { authorizeRoles } from "../middleware/authMiddleware";
+import { asyncHandler, authorizeRoles } from "../middleware/authMiddleware";
 
 export class AuthRoutes {
   private readonly router: Router;

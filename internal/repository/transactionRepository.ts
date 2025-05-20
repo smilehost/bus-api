@@ -1,64 +1,64 @@
-// // path: internal/repository/transactionRepository.ts
-// import { PrismaClient } from "@prisma/client";
-// import { AppError } from "../utils/appError";
-// import { CreateTransactionDto } from "../../cmd/dto";
+// path: internal/repository/transactionRepository.ts
+import { PrismaClient } from "@prisma/client";
+import { AppError } from "../utils/appError";
+import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
 
-// export class TransactionRepository {
-//   constructor(private readonly prisma: PrismaClient) {}
+export class TransactionRepository {
+  constructor(private readonly prisma: PrismaClient) {}
 
-//   async createAllInOneTransaction(
-//     com_id: number,
-//     payload: CreateTransactionDto
-//   ) {
-//     try {
-//       return await this.prisma.$transaction(async (tx) => {
-//         // 1. สร้าง member ใหม่เสมอ
-//         const member = await tx.member.create({
-//           data: {
-//             member_phone: String(payload.member_phone),
-//             member_date_time: new Date(),
-//             member_com_id: com_id,
-//           },
-//         });
+  async makeTransaction(
+    transaction: CreateTransactionDto,
+    tickets:CreateTicketDto[]
+  ) {
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const createdTransaction = await tx.transaction.create({
+          data:transaction
+        })
+        const createdTickets = await tx.ticket.createMany({
+          data: tickets.map(ticket => ({
+            ...ticket,
+            ticket_transaction_id: createdTransaction.transaction_id
+          }))
+        })
 
-//         // 2. สร้าง transaction
-//         const transaction = await tx.transaction.create({
-//           data: {
-//             transaction_com_id: com_id,
-//             transaction_date_time: new Date(),
-//             transaction_lat: payload.transaction_lat,
-//             transaction_long: payload.transaction_long,
-//             transaction_payment_method_id:
-//               payload.transaction_payment_method_id,
-//             transaction_amount: payload.transaction_amount,
-//             transaction_pax: payload.transaction_pax,
-//             transaction_member_id: member.member_id,
-//           },
-//         });
+        return {
+          ...createdTransaction,
+          tickets:createdTickets
+        }
+      });
+    } catch (error) {
+      console.log(error)
+      throw AppError.fromPrismaError(error);
+    }
+  }
 
-//         // 3. เตรียม tickets
-//         const ticketData = payload.tickets.map((t) => ({
-//           ticket_transaction_id: transaction.transaction_id,
-//           ticket_date: new Date().toISOString(),
-//           ticket_time: t.ticket_time,
-//           ticket_type: t.ticket_type,
-//           ticket_price: t.ticket_price,
-//           ticket_status: "active",
-//           ticket_uuid: crypto.randomUUID(),
-//         }));
-      
-//         // 4. สร้าง tickets
-//         await tx.ticket.createMany({
-//           data: ticketData,
-//         });
+  async getLastTicket(prefix:string){
+    try {
+      return await this.prisma.ticket.findFirst({
+        where: {
+          ticket_uuid: {
+            startsWith: prefix,
+          },
+        },
+        orderBy: {
+          ticket_uuid: 'desc',
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
 
-//         return {
-//           transaction,
-//           tickets: ticketData,
-//         };
-//       });
-//     } catch (error) {
-//       throw AppError.fromPrismaError(error);
-//     }
-//   }
-// }
+  async getRouteTicketById(routeTicketId:number){
+    try {
+      return await this.prisma.route_ticket.findUnique({
+        where:{
+          route_ticket_id:routeTicketId
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+}

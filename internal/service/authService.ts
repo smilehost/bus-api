@@ -79,7 +79,7 @@ export class AuthService {
 
     if (
       user.account_id !== changer.account_id &&
-      changer.account_role === "1"
+      user.account_role === "1"
     ) {
       throw AppError.Forbidden("can't change other admin password");
     }
@@ -97,6 +97,8 @@ export class AuthService {
     newStatus: number,
     changer: { account_id: number; account_role: string }
   ) {
+    Util.isVaildStatus(newStatus)
+    
     const user = await this.authRepository.getUserById(account_id);
     if (!user) {
       throw AppError.NotFound("User not found");
@@ -108,7 +110,7 @@ export class AuthService {
 
     if (
       user.account_id !== changer.account_id &&
-      changer.account_role === "1"
+      user.account_role === "1"
     ) {
       throw AppError.Forbidden("can't change other admin status");
     }

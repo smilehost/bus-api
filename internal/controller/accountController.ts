@@ -9,6 +9,40 @@ import { account } from "@prisma/client";
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
+  async getByPagination(req: Request, res: Response) {
+    try {
+      const { com_id, query } = Util.extractRequestContext<
+        void,
+        void,
+        { page: number; size: number; search: string, status: number }
+      >(req, {
+        query: true,
+      });
+
+      const result = await this.accountService.getByPagination(
+        com_id,
+        query.page,
+        query.size,
+        query.search,
+        query.status
+      );
+
+      res.status(200).json({
+        message: "Accounts retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
   async getAll(req: Request, res: Response) {
     try {
       const { com_id } = Util.extractRequestContext(req);
@@ -24,8 +58,9 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -52,8 +87,9 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -83,8 +119,9 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -114,8 +151,9 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }

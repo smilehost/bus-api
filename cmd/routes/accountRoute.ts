@@ -22,6 +22,7 @@ export class AccountRoutes {
   }
 
   private setupRoutes(): void {
+    this.router.get("/", this.controller.getByPagination.bind(this.controller));
     this.router.get("/all", this.controller.getAll.bind(this.controller));
     this.router.get(
       "/:account_id",
@@ -50,6 +51,7 @@ export const Account = (prisma: PrismaClient) => {
   const controller = new AccountController(service);
 
   router.get("/all", controller.getAll.bind(controller));
+  router.get("/", controller.getByPagination.bind(controller));
   router.get("/:account_id", controller.getById.bind(controller));
   router.put("/:account_id", controller.update.bind(controller));
   router.delete(
