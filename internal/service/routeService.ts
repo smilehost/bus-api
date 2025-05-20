@@ -105,6 +105,11 @@ export class RouteService {
 
     // 1. ดึง routes ที่มี route_date_id ว่างในวันนั้น (ต้อง join route_date)
     const routes = await this.routeRepository.getRouteByDay(comId, dayOfWeek);
+    console.log("--------------1");
+    
+    console.log(routes);
+    console.log("--------------2");
+    
 
     const start = String(startLocationId);
     const end = String(endLocationId);

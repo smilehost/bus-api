@@ -32,6 +32,22 @@ export class RouteTicketRepository {
     }
   }
 
+    async getAllTicketsByRouteIdForGetTicketsByLocations(routeId: number) {
+    try {
+      return await this.prisma.route_ticket.findMany({
+        where: {
+          route_ticket_route_id: routeId,
+          route_ticket_status: 1,
+        },
+        orderBy: {
+          route_ticket_id: "desc",
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async getTicketPricingByLocation(
     ticketId: number,
     startId?: string,

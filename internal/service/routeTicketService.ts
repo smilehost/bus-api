@@ -186,7 +186,7 @@ export class RouteTicketService {
     }
   
     const processRoute = async (route: route): Promise<route_ticket[]> => {
-      const tickets = await this.routeTicketRepository.getAllTicketsByRouteId(route.route_id);
+      const tickets = await this.routeTicketRepository.getAllTicketsByRouteIdForGetTicketsByLocations(route.route_id);
       if (!tickets.length) return [];
 
       const ticketsWithPrices = await Promise.all(
