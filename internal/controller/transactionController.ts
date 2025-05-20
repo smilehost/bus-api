@@ -17,19 +17,72 @@
 
 //       const result = await this.transactionService.create(com_id, body);
 
-//       res.status(201).json({
-//         message: "Transaction created successfully",
-//         result,
-//       });
-//     } catch (error) {
-//       if (error instanceof AppError) {
-//         res.status(error.statusCode).json({
-//           error: error.name,
-//           message: error.message,
-//         });
-//       }else {
-//           ExceptionHandler.internalServerError(res, error);
-//       }
-//     }
-//   }
-// }
+      res.status(201).json({
+        message: "Transaction created successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else {
+          ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
+  async CheckingByPolling(req: Request, res: Response){
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        void,{
+          transaction_id: number;
+        }>(req, {
+        params: true,
+      });
+
+      const result = await this.transactionService.CheckingByPolling(com_id, params.transaction_id);
+
+      res.status(201).json({
+        message: "Transaction created successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else {
+          ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
+  async transactionCallback(req: Request, res: Response){
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        transaction_id:number,
+        status:string
+      }>(req, {
+        body: true,
+      });
+
+      await this.transactionService.TransactionCallback(body.transaction_id,body.status);
+
+      res.status(200).json({
+        message: "ok"
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else {
+          ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+}

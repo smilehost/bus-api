@@ -28,9 +28,10 @@
 //     this.setupRoutes();
 //   }
 
-//   private setupRoutes(): void {
-//     this.router.post("/", this.controller.create.bind(this.controller));
-//   }
+  private setupRoutes(): void {
+    this.router.post("/", this.controller.create.bind(this.controller));
+    this.router.post("/pollTransactionStatus/:transaction_id", this.controller.CheckingByPolling.bind(this.controller));
+  }
 
 //   public routing(): Router {
 //     return this.router;
