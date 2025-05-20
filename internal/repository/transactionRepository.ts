@@ -3,85 +3,85 @@ import { member, PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError";
 import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
 
-// export class TransactionRepository {
-//   constructor(private readonly prisma: PrismaClient) {}
+export class TransactionRepository {
+  constructor(private readonly prisma: PrismaClient) {}
 
   async makeTransaction(
     transaction: CreateTransactionDto,
-    tickets:CreateTicketDto[],
-    member:member|null
+    tickets: CreateTicketDto[],
+    member: member | null
   ) {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        if(member){
+        if (member) {
           const createdMember = await tx.member.create({
-            data:member
-          })
-          transaction.transaction_member_id = createdMember.member_id
+            data: member,
+          });
+          transaction.transaction_member_id = createdMember.member_id;
         }
 
         const createdTransaction = await tx.transaction.create({
-          data:transaction
-        })
+          data: transaction,
+        });
 
         const createdTickets = await tx.ticket.createMany({
-          data: tickets.map(ticket => ({
+          data: tickets.map((ticket) => ({
             ...ticket,
-            ticket_transaction_id: createdTransaction.transaction_id
-          }))
-        })
+            ticket_transaction_id: createdTransaction.transaction_id,
+          })),
+        });
 
-//         return {
-//           ...createdTransaction,
-//           tickets:createdTickets
-//         }
-//       });
-//     } catch (error) {
-//       console.log(error)
-//       throw AppError.fromPrismaError(error);
-//     }
-//   }
+        return {
+          ...createdTransaction,
+          tickets: createdTickets,
+        };
+      });
+    } catch (error) {
+      console.log(error);
+      throw AppError.fromPrismaError(error);
+    }
+  }
 
-  async getById(transaction_id:number){
+  async getById(transaction_id: number) {
     try {
       return await this.prisma.transaction.findUnique({
-        where:{
-          transaction_id:transaction_id
-        }
+        where: {
+          transaction_id: transaction_id,
+        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async getTicketByTransactionId(transaction_id:number){
+  async getTicketByTransactionId(transaction_id: number) {
     try {
       return await this.prisma.ticket.findMany({
-        where:{
-          ticket_transaction_id:transaction_id
-        }
-      })
+        where: {
+          ticket_transaction_id: transaction_id,
+        },
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async changeStatusById(transaction_id:number,status:string){
+  async changeStatusById(transaction_id: number, status: string) {
     try {
       return await this.prisma.transaction.update({
-        where:{
-          transaction_id:transaction_id
+        where: {
+          transaction_id: transaction_id,
         },
-        data:{
-          transaction_status:status
-        }
-      })
+        data: {
+          transaction_status: status,
+        },
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async getLastTicket(prefix:string){
+  async getLastTicket(prefix: string) {
     try {
       return await this.prisma.ticket.findFirst({
         where: {
@@ -90,7 +90,7 @@ import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
           },
         },
         orderBy: {
-          ticket_uuid: 'desc',
+          ticket_uuid: "desc",
         },
       });
     } catch (error) {
@@ -98,15 +98,15 @@ import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
     }
   }
 
-//   async getRouteTicketById(routeTicketId:number){
-//     try {
-//       return await this.prisma.route_ticket.findUnique({
-//         where:{
-//           route_ticket_id:routeTicketId
-//         }
-//       });
-//     } catch (error) {
-//       throw AppError.fromPrismaError(error);
-//     }
-//   }
-// }
+  async getRouteTicketById(routeTicketId: number) {
+    try {
+      return await this.prisma.route_ticket.findUnique({
+        where: {
+          route_ticket_id: routeTicketId,
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+}
