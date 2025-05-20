@@ -30,6 +30,7 @@ export class RouteRepository {
     return this.prisma.route.findMany({
       where: {
         route_com_id: comId,
+        route_status: 1,
         route_date: {
           [dayColumn]: 1,
         },
@@ -41,12 +42,12 @@ export class RouteRepository {
     });
   }
 
-async getPaginated(
+  async getPaginated(
     comId: number,
     skip: number,
     take: number,
     search: string,
-    status:number|null
+    status: number | null
   ): Promise<[any[], number]> {
     try {
       const where = {
@@ -59,9 +60,7 @@ async getPaginated(
               ],
             }
           : {}),
-          ...(typeof status === "number"
-            ? { route_status: status }
-          : {}),
+        ...(typeof status === "number" ? { route_status: status } : {}),
       };
 
       // First get the routes
@@ -76,31 +75,34 @@ async getPaginated(
       ]);
 
       // Get the route IDs
-      const routeIds = routes.map(route => route.route_id);
+      const routeIds = routes.map((route) => route.route_id);
 
       // Get the count of tickets for each route
       const ticketCounts = await this.prisma.route_ticket.groupBy({
-        by: ['route_ticket_route_id'],
+        by: ["route_ticket_route_id"],
         where: {
           route_ticket_route_id: {
-            in: routeIds
-          }
+            in: routeIds,
+          },
         },
         _count: {
-          route_ticket_id: true
-        }
+          route_ticket_id: true,
+        },
       });
 
       // Create a map of route ID to ticket count
       const ticketCountMap = new Map<number, number>();
-      ticketCounts.forEach(count => {
-        ticketCountMap.set(count.route_ticket_route_id, count._count.route_ticket_id);
+      ticketCounts.forEach((count) => {
+        ticketCountMap.set(
+          count.route_ticket_route_id,
+          count._count.route_ticket_id
+        );
       });
 
       // Add the ticket count to each route
-      const routesWithTicketCount = routes.map(route => ({
+      const routesWithTicketCount = routes.map((route) => ({
         ...route,
-        route_ticket_count: ticketCountMap.get(route.route_id) || 0
+        route_ticket_count: ticketCountMap.get(route.route_id) || 0,
       }));
 
       return [routesWithTicketCount, total];
