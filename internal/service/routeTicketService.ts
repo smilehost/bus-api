@@ -155,18 +155,25 @@ export class RouteTicketService {
       date
     );
 
+    console.log("-----------1");
+    
     const getPrices = async (ticketId: number, ticketType: string) => {
       if (ticketType !== "tier") {
         const fixTicket =
-          await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
-
+        await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
+        
         fixTicket.forEach((ticket) => {
           ticket.route_ticket_location_start = String(startId);
           ticket.route_ticket_location_stop = String(stopId);
         });
+        
+        console.log("-----------2");
+        console.log(fixTicket);
+        
 
         return fixTicket;
       }
+      console.log("-----------3");
       
       return await this.routeTicketRepository.getTicketPricingByLocation(
         ticketId,
