@@ -12,8 +12,8 @@ export class RouteTicketService {
   constructor(
     private readonly routeTicketRepository: RouteTicketRepository,
     private readonly routeRepository: RouteRepository,
-    private readonly routeService:RouteService,
-    private readonly ticketRemainService:TicketRemainService,
+    private readonly routeService: RouteService,
+    private readonly ticketRemainService: TicketRemainService
   ) {}
 
   async getAllTicketsByRouteId(comId: number, routeId: number) {
@@ -37,7 +37,7 @@ export class RouteTicketService {
     page: number,
     size: number,
     search: string,
-    status: number,
+    status: number
   ) {
     const skip = (page - 1) * size;
     const take = size;
@@ -48,7 +48,7 @@ export class RouteTicketService {
       skip,
       take,
       search,
-      status,
+      status
     );
 
     return {
@@ -111,8 +111,8 @@ export class RouteTicketService {
     return await this.routeTicketRepository.update(ticketId, data);
   }
 
-  async updateStatus(comId: number, ticketId: number, status:number) {
-    Util.isVaildStatus(status)
+  async updateStatus(comId: number, ticketId: number, status: number) {
+    Util.isVaildStatus(status);
 
     const ticket = await this.routeTicketRepository.getById(ticketId);
     if (!ticket) {
@@ -141,7 +141,6 @@ export class RouteTicketService {
     return await this.routeTicketRepository.delete(ticketId);
   }
 
-
   async getTicketsByLocations(
     com_id: number,
     startId: number,
@@ -155,26 +154,19 @@ export class RouteTicketService {
       date
     );
 
-    console.log("-----------1");
-    
     const getPrices = async (ticketId: number, ticketType: string) => {
       if (ticketType !== "tier") {
         const fixTicket =
-        await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
-        
+          await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
+
         fixTicket.forEach((ticket) => {
           ticket.route_ticket_location_start = String(startId);
           ticket.route_ticket_location_stop = String(stopId);
         });
-        
-        console.log("-----------2");
-        console.log(fixTicket);
-        
 
         return fixTicket;
       }
-      console.log("-----------3");
-      
+
       return await this.routeTicketRepository.getTicketPricingByLocation(
         ticketId,
         String(startId),
@@ -182,34 +174,47 @@ export class RouteTicketService {
       );
     };
 
-    const getRemaining = async (ticket:route_ticket,routeTimeId:number)=>{
-      const ticketTime:GetRemainByRouteTimeDTO = {
-        ticket_id:ticket.route_ticket_id,
-        ticket_remain_date:date,
-        route_time_id:routeTimeId,
-      }
-      const remaining = await this.ticketRemainService.getRemainByRouteTime(ticketTime)
-      return remaining
-    }
-  
+    const getRemaining = async (ticket: route_ticket, routeTimeId: number) => {
+      const ticketTime: GetRemainByRouteTimeDTO = {
+        ticket_id: ticket.route_ticket_id,
+        ticket_remain_date: date,
+        route_time_id: routeTimeId,
+      };
+      const remaining = await this.ticketRemainService.getRemainByRouteTime(
+        ticketTime
+      );
+      return remaining;
+    };
+
     const processRoute = async (route: route): Promise<route_ticket[]> => {
-      const tickets = await this.routeTicketRepository.getAllTicketsByRouteIdForGetTicketsByLocations(route.route_id);
+      const tickets =
+        await this.routeTicketRepository.getAllTicketsByRouteIdForGetTicketsByLocations(
+          route.route_id
+        );
       if (!tickets.length) return [];
 
       const ticketsWithPrices = await Promise.all(
         tickets.map(async (ticket) => ({
           ...ticket,
           locations: await this.routeService.getStartEndLocation(route),
-          prices: await getPrices(ticket.route_ticket_id, ticket.route_ticket_type),
-          ticket_remain: await getRemaining(ticket,route.route_time_id)
+          prices: await getPrices(
+            ticket.route_ticket_id,
+            ticket.route_ticket_type
+          ),
+          ticket_remain: await getRemaining(ticket, route.route_time_id),
         }))
       );
 
       return ticketsWithPrices;
     };
 
-    const ticketWithPrices = await Promise.all(routes.map(processRoute));
+    const ticketWithPrices = await Promise.all(
+      routes.map(async (route) => {
+        const tickets = await processRoute(route);
+        return tickets;
+      })
+    );
 
-    return ticketWithPrices;
+    return ticketWithPrices.flat();
   }
 }
