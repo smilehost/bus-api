@@ -51,13 +51,12 @@ export class TransactionService {
       };
     }
 
-    //const newTickets = await this.createTickets(com_id, payload.tickets);
     const transaction = await this.transactionRepository.makeTransaction(
       newTransaction,
       newMember
     );
 
-    const urlWebView = this.PaymentMethodService.getPaymentWebviewLink(
+    const urlWebView = await this.PaymentMethodService.getPaymentWebviewLink(
       transaction.transaction_id,
       transaction.transaction_payment_method_id,
       Number(transaction.transaction_amount)
@@ -71,12 +70,12 @@ export class TransactionService {
 
   async confirmAndPrint(comId: number, transactionId: number,newTickets:CreateTicketDto[], slipImage: any) {
     if (slipImage || slipImage.buffer) {
-      this.saveSilp(comId,slipImage,transactionId)
+      await this.saveSilp(comId,slipImage,transactionId)
     }
 
-    await this.createTickets(comId,transactionId,newTickets) 
+    const tickets = await this.createTickets(comId,transactionId,newTickets) 
     await this.decreaseRemain(newTickets)
-    return await this.transactionRepository.getTicketByTransactionId(transactionId)
+    return tickets
   }
 
   private async createTickets(com_id: number,transactionId:number, tickets: CreateTicketDto[]) {
@@ -124,16 +123,15 @@ export class TransactionService {
     }
 
     const status = transaction.transaction_status;
-    if (status != "COMPLETE") {
+    if (status === "SUCCESS") {
       return {
         status: status,
-        transaction: {},
+        transaction: transaction,
       };
     }
-
     return {
       status: status,
-      transaction: transaction,
+      transaction: {},
     };
   }
 
@@ -148,17 +146,17 @@ export class TransactionService {
   }
 
   private async transactionCallback(transaction_id: number, status: string) {
-    if (status === "Cancelled") {
+    if (status === "CANCELLED") {
       await this.transactionRepository.changeStatusById(
         transaction_id,
         "CANCELED"
       );
     }
 
-    if (status === "Success") {
+    if (status === "SUCCESS") {
       await this.transactionRepository.changeStatusById(
         transaction_id,
-        "COMPLETE"
+        "SUCCESS"
       );
     }
   }
@@ -205,6 +203,7 @@ export class TransactionService {
         time: ticket.ticket_time,
         routeTicketId: routeTicket.route_ticket_id,
         maxTicket: routeTicket.route_ticket_amount,
+        amount:1
       } as ShiftingRemainDto);
     }
   }
@@ -229,17 +228,11 @@ export class TransactionService {
     const dirPath = path.join('SilpImages', String(comId), String(year), month, day);
     const filePath = path.join(dirPath, fileName);
 
-    try {
-      if (!fsSync.existsSync(dirPath)) {
-        fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
-      }
-      await fs.writeFile(path.resolve(filePath), slipImage.buffer);
-      
-      return filePath
-    } catch (error: any) {
-      console.error("Error saving slip image:", error);
-      const errorMessage = error.message || 'Unknown error';
-      throw AppError.Internal(`Failed to save slip image: ${errorMessage}`);
+    if (!fsSync.existsSync(dirPath)) {
+      fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
     }
+    await fs.writeFile(path.resolve(filePath), slipImage.buffer);
+    
+    return filePath
   }
 }

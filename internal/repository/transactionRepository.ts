@@ -13,8 +13,10 @@ export class TransactionRepository {
     try {
       return await this.prisma.$transaction(async (tx) => {
         if (member) {
+          console.log(member)
+          const { member_id, ...memberData } = member;
           const createdMember = await tx.member.create({
-            data: member,
+            data: memberData,
           });
           transaction.transaction_member_id = createdMember.member_id;
         }
@@ -33,8 +35,13 @@ export class TransactionRepository {
   
   async createTikcets(tickets:ticket[]){
     try {
-      return await this.prisma.ticket.createMany({
-        data:tickets
+      return await this.prisma.$transaction(async (tx)=>{
+        const ticketsData:ticket[] = [] 
+        for(const ticket of tickets){
+          const newTicket = await tx.ticket.create({data:ticket})
+          ticketsData.push(newTicket)
+        }
+        return ticketsData
       })
     } catch (error) {
       throw AppError.fromPrismaError(error);

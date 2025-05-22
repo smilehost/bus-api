@@ -59,13 +59,7 @@ export class TransactionController {
 
   async transactionCallbackGateWay(req: Request, res: Response){
     try {
-      const { com_id, body } = Util.extractRequestContext<{
-        transaction_id:number,
-        status:string
-      }>(req, {body: true,});
-
-      await this.transactionService.transactionCallbackGateWay(body.transaction_id,body.status);
-
+      await this.transactionService.transactionCallbackGateWay(req.body.transaction_id,req.body.status);
       res.status(200).json({
         message: "ok"
       });
@@ -103,14 +97,14 @@ export class TransactionController {
 
   async confirmAndPrint(req: Request, res: Response) {
     try {
+      if (typeof req.body.ticketData === 'string') {
+        req.body = JSON.parse(req.body.ticketData);
+      }      
       const { com_id, body,params } = Util.extractRequestContext<
         CreateTicketDto[],{
           transaction_id: number;
         }
-      >(req, {
-        body:true,
-        params: true,
-      });
+      >(req, {body:true,params: true,});
 
       // Get the file from the request (handled by multer middleware)
       if (!req.file) {
