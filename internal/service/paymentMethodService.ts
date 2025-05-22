@@ -23,10 +23,6 @@ export class PaymentMethodService {
     return paymentMethod;
   }
 
-  async getActivePaymentMethods() {
-    return await this.paymentMethodRepository.getActivePaymentMethods();
-  }
-
   async updatePaymentMethod(id: number, data: Partial<Omit<payment_method, 'payment_method_id'>>) {
     const paymentMethod = await this.paymentMethodRepository.getById(id);
     if (!paymentMethod) {
@@ -57,5 +53,24 @@ export class PaymentMethodService {
       throw AppError.NotFound(`Payment method with ID ${id} not found`);
     }
     return await this.paymentMethodRepository.updateStatus(id, 0);
+  }
+
+  async getPaymentWebviewLink(transactionId:number,paymentMethodId:number,price:number){
+    const paymentMethod = await this.paymentMethodRepository.getById(paymentMethodId);
+    if (!paymentMethod) {
+      throw AppError.NotFound(`Payment method with ID ${paymentMethodId} not found`);
+    }
+
+    if (paymentMethod.payment_method_type ==="STATIC"){
+      return paymentMethod.payment_method_url
+    }
+
+    if (paymentMethod.payment_method_type === "GATE_WAY"){
+      const url = new URL(paymentMethod.payment_method_url)
+      url.searchParams.set("device_id",String(transactionId))
+      url.searchParams.set("price",String(price))
+
+      return url
+    }
   }
 }

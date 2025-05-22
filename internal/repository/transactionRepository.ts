@@ -1,5 +1,5 @@
 // path: internal/repository/transactionRepository.ts
-import { member, PrismaClient } from "@prisma/client";
+import { member, PrismaClient, ticket } from "@prisma/client";
 import { AppError } from "../utils/appError";
 import { CreateTicketDto, CreateTransactionDto } from "../../cmd/dto";
 
@@ -8,7 +8,6 @@ export class TransactionRepository {
 
   async makeTransaction(
     transaction: CreateTransactionDto,
-    tickets: CreateTicketDto[],
     member: member | null
   ) {
     try {
@@ -24,20 +23,20 @@ export class TransactionRepository {
           data: transaction,
         });
 
-        const createdTickets = await tx.ticket.createMany({
-          data: tickets.map((ticket) => ({
-            ...ticket,
-            ticket_transaction_id: createdTransaction.transaction_id,
-          })),
-        });
-
-        return {
-          ...createdTransaction,
-          tickets: createdTickets,
-        };
+        return createdTransaction
       });
     } catch (error) {
       console.log(error);
+      throw AppError.fromPrismaError(error);
+    }
+  }
+  
+  async createTikcets(tickets:ticket[]){
+    try {
+      return await this.prisma.ticket.createMany({
+          data: tickets
+        });
+    } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }

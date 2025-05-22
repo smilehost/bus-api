@@ -15,6 +15,8 @@ import { TicketPriceTypeRoute } from "../routes/ticketPriceTypeRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
 import { MemberRoute } from "../routes/memberRoute";
 import { TransactionRoute } from "../routes/transactionRoute";
+import { PaymentMethodRepository } from "../../internal/repository/PaymentMethodRepository";
+import { PaymentMethodService } from "../../internal/service/paymentMethodService";
 
 export const Routes = (prisma: PrismaClient): Router => {
   const router = Router();
@@ -49,11 +51,14 @@ export const Routes = (prisma: PrismaClient): Router => {
 
   // Transaction
   const memberRoutes = new MemberRoute(prisma, comRepo);
+  const paymentMethodRepo = new PaymentMethodRepository(prisma);
+  const paymentMethodService = new PaymentMethodService(paymentMethodRepo);
   const transactionRoutes = new TransactionRoute(
     prisma,
     comRepo,
     memberRoutes.repo,
-    ticketRemainRoute.service
+    ticketRemainRoute.service,
+    paymentMethodService
   );
 
   // Mount routes

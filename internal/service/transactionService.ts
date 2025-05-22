@@ -10,13 +10,15 @@ import {
 import { AppError } from "../utils/appError";
 import { member, route_ticket, ticket, transaction } from "@prisma/client";
 import { TicketRemainService } from "./ticketRemainService";
+import { PaymentMethodService } from "./paymentMethodService";
 
 export class TransactionService {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly companyRepository: CompanyRepository,
     private readonly memberRepository: MemberRepository,
-    private readonly ticketRemainService: TicketRemainService
+    private readonly ticketRemainService: TicketRemainService,
+    private readonly PaymentMethodService: PaymentMethodService,
   ) {}
 
   async create(com_id: number, payload: CreateTransactionTicketsDto) {
@@ -35,7 +37,7 @@ export class TransactionService {
       transaction_ticket_discount_id: payload.transaction_ticket_discount_id,
       transaction_member_id: null,
       transaction_com_id: 1,
-      transaction_status: "incomplete",
+      transaction_status: "PENDING",
       transaction_date_time: new Date(),
     };
 
@@ -49,13 +51,72 @@ export class TransactionService {
       };
     }
 
-    const newTickets = await this.createTickets(com_id, payload.tickets);
-
-    return this.transactionRepository.makeTransaction(
+    //const newTickets = await this.createTickets(com_id, payload.tickets);
+    const transaction = await this.transactionRepository.makeTransaction(
       newTransaction,
-      newTickets,
       newMember
     );
+
+    const urlWebView = this.PaymentMethodService.getPaymentWebviewLink(
+      transaction.transaction_id,
+      transaction.transaction_payment_method_id,
+      Number(transaction.transaction_amount)
+    )
+
+    return {
+      ...transaction,
+      url_web_view:urlWebView
+    }
+  }
+
+  async confirmAndPrint(comId: number, transactionId: number, slipImage: any) {
+    // Validate slip image
+    if (!slipImage || !slipImage.buffer) {
+      throw AppError.BadRequest("Invalid slip image");
+    }
+
+    // Import required modules
+    const fs = require('fs').promises;
+    const path = require('path');
+    const fsSync = require('fs');
+
+    // Create directory structure: SilpImages/comId/year/month/days/
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    
+    // Create timestamp for filename
+    const timestamp = currentDate.getTime();
+    const fileExtension = slipImage.originalname.split('.').pop() || 'jpg';
+    const fileName = `${timestamp}_${transactionId}.${fileExtension}`;
+    
+    // Create directory path
+    const dirPath = path.join('SilpImages', String(comId), String(year), month, day);
+    const filePath = path.join(dirPath, fileName);
+    
+    try {
+      // Create directories recursively if they don't exist
+      if (!fsSync.existsSync(dirPath)) {
+        fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
+      }
+      
+      // Write the file asynchronously
+      await fs.writeFile(path.resolve(filePath), slipImage.buffer);
+      
+      // Update transaction with slip image path if needed
+      // This is optional - you might want to store the slip image path in the database
+      // await this.transactionRepository.updateSlipImagePath(transactionId, filePath);
+      
+      return {
+        success: true,
+        filePath: filePath,
+      };
+    } catch (error: any) {
+      console.error("Error saving slip image:", error);
+      const errorMessage = error.message || 'Unknown error';
+      throw AppError.Internal(`Failed to save slip image: ${errorMessage}`);
+    }
   }
 
   private async createTickets(com_id: number, tickets: CreateTicketDto[]) {
@@ -94,7 +155,7 @@ export class TransactionService {
     return ticketsData;
   }
 
-  async CheckingByPolling(com_id: number, transactionId: number) {
+  async checkingByPolling(com_id: number, transactionId: number) {
     const transaction = await this.transactionRepository.getById(transactionId);
     if (!transaction) throw AppError.NotFound("Not fond transaction");
     if (transaction.transaction_com_id != com_id) {
@@ -115,7 +176,17 @@ export class TransactionService {
     };
   }
 
-  async TransactionCallback(transaction_id: number, status: string) {
+  async transactionCallbackGateWay(transactionId: number, status: string){
+    await this.transactionCallback(transactionId,status)
+    return "ok"
+  }
+
+  async transactionCallbackStatic(transactionId: number, status: string){
+    await this.transactionCallback(transactionId,status)
+    return "ok"
+  }
+
+  private async transactionCallback(transaction_id: number, status: string) {
     if (status === "Cancelled") {
       await this.transactionRepository.changeStatusById(
         transaction_id,

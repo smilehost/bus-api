@@ -6,6 +6,9 @@ import { TransactionController } from "../../internal/controller/transactionCont
 import { CompanyRepository } from "../../internal/repository/companyRepository";
 import { MemberRepository } from "../../internal/repository/memberRepository";
 import { TicketRemainService } from "../../internal/service/ticketRemainService";
+import { PaymentMethodService } from "../../internal/service/paymentMethodService";
+import { PaymentMethodRepository } from "../../internal/repository/PaymentMethodRepository";
+import { uploadSlipImage } from "../middleware/fileUploadMiddleware";
 
 export class TransactionRoute {
   private readonly router: Router;
@@ -18,7 +21,8 @@ export class TransactionRoute {
     prisma: PrismaClient,
     comRepo: CompanyRepository,
     memberRepo: MemberRepository,
-    ticketRemainService: TicketRemainService
+    ticketRemainService: TicketRemainService,
+    paymentMethodService: PaymentMethodService
   ) {
     this.router = Router();
 
@@ -27,7 +31,8 @@ export class TransactionRoute {
       this.repo,
       comRepo,
       memberRepo,
-      ticketRemainService
+      ticketRemainService,
+      paymentMethodService
     );
     this.controller = new TransactionController(this.service);
     this.setupRoutes();
@@ -38,6 +43,11 @@ export class TransactionRoute {
     this.router.post(
       "/pollTransactionStatus/:transaction_id",
       this.controller.CheckingByPolling.bind(this.controller)
+    );
+    this.router.post(
+      "/confirmAndPrint/:transaction_id",
+      uploadSlipImage,
+      this.controller.confirmAndPrint.bind(this.controller)
     );
   }
 

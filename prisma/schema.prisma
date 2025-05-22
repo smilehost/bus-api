@@ -55,6 +55,7 @@ model payment_method {
   payment_method_name   String        @db.VarChar(300)
   payment_method_status Int
   payment_method_url    String        @db.VarChar(300)
+  payment_method_type		String        @db.VarChar(300)
   com_id                Int
   company               company       @relation(fields: [com_id], references: [com_id])
   transactions          transaction[]

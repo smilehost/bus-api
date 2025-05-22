@@ -32,15 +32,7 @@ export class PaymentMethodRepository {
     }
   }
 
-  async getActivePaymentMethods() {
-    try {
-      return await this.prisma.payment_method.findMany({
-        where: { payment_method_status: 1 },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
+  
 
   async update(payment_method_id: number, data: Partial<Omit<payment_method, 'payment_method_id'>>) {
     try {

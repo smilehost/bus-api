@@ -42,7 +42,7 @@ export class TransactionController {
         params: true,
       });
 
-      const result = await this.transactionService.CheckingByPolling(com_id, params.transaction_id);
+      const result = await this.transactionService.checkingByPolling(com_id, params.transaction_id);
 
       res.status(201).json({
         message: "Transaction created successfully",
@@ -69,7 +69,7 @@ export class TransactionController {
         body: true,
       });
 
-      await this.transactionService.TransactionCallback(body.transaction_id,body.status);
+      await this.transactionService.transactionCallbackStatic(body.transaction_id,body.status);
 
       res.status(200).json({
         message: "ok"
@@ -82,6 +82,44 @@ export class TransactionController {
         });
       }else {
           ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
+  async confirmAndPrint(req: Request, res: Response) {
+    try {
+      const { com_id, params } = Util.extractRequestContext<
+        void,
+        {
+          transaction_id: number;
+        }
+      >(req, {
+        params: true,
+      });
+
+      // Get the file from the request (handled by multer middleware)
+      if (!req.file) {
+        throw AppError.BadRequest("Slip image is required");
+      }
+
+      const result = await this.transactionService.confirmAndPrint(
+        com_id,
+        params.transaction_id,
+        req.file
+      );
+
+      res.status(200).json({
+        message: "Slip image uploaded successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      } else {
+        ExceptionHandler.internalServerError(res, error);
       }
     }
   }
