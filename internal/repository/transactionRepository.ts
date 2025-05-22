@@ -34,8 +34,8 @@ export class TransactionRepository {
   async createTikcets(tickets:ticket[]){
     try {
       return await this.prisma.ticket.createMany({
-          data: tickets
-        });
+        data:tickets
+      })
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }

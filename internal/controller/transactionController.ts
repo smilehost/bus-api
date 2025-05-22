@@ -3,7 +3,7 @@ import { TransactionService } from "../service/transactionService";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
-import { CreateTransactionTicketsDto } from "../../cmd/dto";
+import { CreateTicketDto, CreateTransactionTicketsDto } from "../../cmd/dto";
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
@@ -14,7 +14,6 @@ export class TransactionController {
       const { com_id, body } = Util.extractRequestContext<CreateTransactionTicketsDto>(req, {
         body: true,
       });
-
       const result = await this.transactionService.create(com_id, body);
 
       res.status(201).json({
@@ -33,14 +32,12 @@ export class TransactionController {
     }
   }
 
-  async CheckingByPolling(req: Request, res: Response){
+  async checkingByPolling(req: Request, res: Response){
     try {
       const { com_id, params } = Util.extractRequestContext<
         void,{
           transaction_id: number;
-        }>(req, {
-        params: true,
-      });
+        }>(req, {params: true });
 
       const result = await this.transactionService.checkingByPolling(com_id, params.transaction_id);
 
@@ -60,14 +57,32 @@ export class TransactionController {
     }
   }
 
-  async transactionCallback(req: Request, res: Response){
+  async transactionCallbackGateWay(req: Request, res: Response){
     try {
       const { com_id, body } = Util.extractRequestContext<{
         transaction_id:number,
         status:string
-      }>(req, {
-        body: true,
+      }>(req, {body: true,});
+
+      await this.transactionService.transactionCallbackGateWay(body.transaction_id,body.status);
+
+      res.status(200).json({
+        message: "ok"
       });
+    } catch (error) {
+      console.log(error)
+      res.status(200).json({
+        message: "ok"
+      });
+    }
+  }
+
+  async transactionCallbackStatic(req: Request, res: Response){
+    try {
+      const { com_id, body } = Util.extractRequestContext<{
+        transaction_id:number,
+        status:string
+      }>(req, {body: true});
 
       await this.transactionService.transactionCallbackStatic(body.transaction_id,body.status);
 
@@ -88,12 +103,12 @@ export class TransactionController {
 
   async confirmAndPrint(req: Request, res: Response) {
     try {
-      const { com_id, params } = Util.extractRequestContext<
-        void,
-        {
+      const { com_id, body,params } = Util.extractRequestContext<
+        CreateTicketDto[],{
           transaction_id: number;
         }
       >(req, {
+        body:true,
         params: true,
       });
 
@@ -105,6 +120,7 @@ export class TransactionController {
       const result = await this.transactionService.confirmAndPrint(
         com_id,
         params.transaction_id,
+        body,
         req.file
       );
 

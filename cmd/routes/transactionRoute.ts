@@ -42,12 +42,20 @@ export class TransactionRoute {
     this.router.post("/", this.controller.create.bind(this.controller));
     this.router.post(
       "/pollTransactionStatus/:transaction_id",
-      this.controller.CheckingByPolling.bind(this.controller)
+      this.controller.checkingByPolling.bind(this.controller)
     );
     this.router.post(
       "/confirmAndPrint/:transaction_id",
       uploadSlipImage,
       this.controller.confirmAndPrint.bind(this.controller)
+    );
+    this.router.post(
+      "/callback/gateway",
+      this.controller.transactionCallbackGateWay.bind(this.controller)
+    );
+    this.router.post(
+      "/callback/static",
+      this.controller.transactionCallbackStatic.bind(this.controller)
     );
   }
 

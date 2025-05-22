@@ -31,7 +31,6 @@ export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transact
 
 export interface CreateTransactionTicketsDto extends CreateTransactionDto {
   member_phone?:string;
-  tickets:CreateTicketDto[];
 }
 
 export interface ShiftingRemainDto {

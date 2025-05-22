@@ -69,58 +69,18 @@ export class TransactionService {
     }
   }
 
-  async confirmAndPrint(comId: number, transactionId: number, slipImage: any) {
-    // Validate slip image
-    if (!slipImage || !slipImage.buffer) {
-      throw AppError.BadRequest("Invalid slip image");
+  async confirmAndPrint(comId: number, transactionId: number,newTickets:CreateTicketDto[], slipImage: any) {
+    if (slipImage || slipImage.buffer) {
+      this.saveSilp(comId,slipImage,transactionId)
     }
 
-    // Import required modules
-    const fs = require('fs').promises;
-    const path = require('path');
-    const fsSync = require('fs');
-
-    // Create directory structure: SilpImages/comId/year/month/days/
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    
-    // Create timestamp for filename
-    const timestamp = currentDate.getTime();
-    const fileExtension = slipImage.originalname.split('.').pop() || 'jpg';
-    const fileName = `${timestamp}_${transactionId}.${fileExtension}`;
-    
-    // Create directory path
-    const dirPath = path.join('SilpImages', String(comId), String(year), month, day);
-    const filePath = path.join(dirPath, fileName);
-    
-    try {
-      // Create directories recursively if they don't exist
-      if (!fsSync.existsSync(dirPath)) {
-        fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
-      }
-      
-      // Write the file asynchronously
-      await fs.writeFile(path.resolve(filePath), slipImage.buffer);
-      
-      // Update transaction with slip image path if needed
-      // This is optional - you might want to store the slip image path in the database
-      // await this.transactionRepository.updateSlipImagePath(transactionId, filePath);
-      
-      return {
-        success: true,
-        filePath: filePath,
-      };
-    } catch (error: any) {
-      console.error("Error saving slip image:", error);
-      const errorMessage = error.message || 'Unknown error';
-      throw AppError.Internal(`Failed to save slip image: ${errorMessage}`);
-    }
+    await this.createTickets(comId,transactionId,newTickets) 
+    await this.decreaseRemain(newTickets)
+    return await this.transactionRepository.getTicketByTransactionId(transactionId)
   }
 
-  private async createTickets(com_id: number, tickets: CreateTicketDto[]) {
-    const ticketsData: CreateTicketDto[] = [];
+  private async createTickets(com_id: number,transactionId:number, tickets: CreateTicketDto[]) {
+    const ticketsData: ticket[] = [];
     const ticketGroups: Record<string, CreateTicketDto[]> = {};
 
     for (const t of tickets) {
@@ -145,14 +105,15 @@ export class TransactionService {
           ...ticket,
           ticket_status: "active",
           ticket_date: date,
+          ticket_transaction_id:transactionId,
           ticket_uuid: `${prefix}-${nextSuffix}`,
-        } as CreateTicketDto;
+        } as ticket;
 
         ticketsData.push(newTicket);
       }
     }
 
-    return ticketsData;
+    return await this.transactionRepository.createTikcets(ticketsData);
   }
 
   async checkingByPolling(com_id: number, transactionId: number) {
@@ -195,7 +156,6 @@ export class TransactionService {
     }
 
     if (status === "Success") {
-      await this.decreaseRemain(transaction_id);
       await this.transactionRepository.changeStatusById(
         transaction_id,
         "COMPLETE"
@@ -232,10 +192,7 @@ export class TransactionService {
     return chars[0] + arr.join(""); // prepend if overflow
   }
 
-  private async decreaseRemain(transactionId: number) {
-    const tickets = await this.transactionRepository.getTicketByTransactionId(
-      transactionId
-    );
+  private async decreaseRemain(tickets:CreateTicketDto[]) {
 
     for (const ticket of tickets) {
       const routeTicket = await this.transactionRepository.getRouteTicketById(
@@ -249,6 +206,40 @@ export class TransactionService {
         routeTicketId: routeTicket.route_ticket_id,
         maxTicket: routeTicket.route_ticket_amount,
       } as ShiftingRemainDto);
+    }
+  }
+
+  private async saveSilp(comId:number,slipImage:any,transactionId:number){
+    const path = require('path');
+    const fs = require('fs').promises;
+    const fsSync = require('fs');
+
+    // Create directory structure: SilpImages/comId/year/month/days/
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    
+    // Create timestamp for filename
+    const timestamp = currentDate.getTime();
+    const fileExtension = slipImage.originalname.split('.').pop() || 'jpg';
+    const fileName = `${timestamp}_${transactionId}.${fileExtension}`;
+    
+    // Create directory path
+    const dirPath = path.join('SilpImages', String(comId), String(year), month, day);
+    const filePath = path.join(dirPath, fileName);
+
+    try {
+      if (!fsSync.existsSync(dirPath)) {
+        fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
+      }
+      await fs.writeFile(path.resolve(filePath), slipImage.buffer);
+      
+      return filePath
+    } catch (error: any) {
+      console.error("Error saving slip image:", error);
+      const errorMessage = error.message || 'Unknown error';
+      throw AppError.Internal(`Failed to save slip image: ${errorMessage}`);
     }
   }
 }
