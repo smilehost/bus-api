@@ -55,8 +55,8 @@ model payment_method {
   payment_method_name   String        @db.VarChar(300)
   payment_method_status Int
   payment_method_url    String        @db.VarChar(300)
-  payment_method_type		String        @db.VarChar(300)
   com_id                Int
+  payment_method_type   String        @db.VarChar(300)
   company               company       @relation(fields: [com_id], references: [com_id])
   transactions          transaction[]
 
@@ -160,11 +160,15 @@ model transaction {
 }
 
 model ticket_discount {
-  ticket_discount_id    Int           @id @default(autoincrement())
-  ticket_discount_name  String        @db.VarChar(300)
-  ticket_discount_type  Int
-  ticket_discount_value String        @db.VarChar(300)
-  transactions          transaction[]
+  ticket_discount_id     Int           @id @default(autoincrement())
+  ticket_discount_name   String        @db.VarChar(300)
+  ticket_discount_type   Int
+  ticket_discount_status Int
+  ticket_discount_value  String        @db.VarChar(300)
+  ticket_discount_com_id Int
+  transactions           transaction[]
+
+  @@index([ticket_discount_com_id], map: "ticket_discount_com_id")
 }
 
 model route_ticket {

@@ -1,4 +1,4 @@
-import { ticket, transaction } from "@prisma/client";
+import { ticket, ticket_discount, transaction } from "@prisma/client";
 
 export interface JwtPayloadUser {
   account_id: number;
@@ -40,3 +40,5 @@ export interface ShiftingRemainDto {
   maxTicket:number;
   amount: number;
 }
+
+export type createDiscountDto = Omit<ticket_discount,"ticket_discount_id">
