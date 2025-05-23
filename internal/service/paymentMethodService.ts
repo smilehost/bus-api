@@ -7,12 +7,14 @@ export class PaymentMethodService {
     private readonly paymentMethodRepository: PaymentMethodRepository
   ) {}
 
-  async createPaymentMethod(data: Omit<payment_method, 'payment_method_id'>) {
+  async createPaymentMethod(com_id:number,data: Omit<payment_method, 'payment_method_id'>) {
+    data.payment_method_status = 1
+    data.com_id = com_id
     return await this.paymentMethodRepository.create(data);
   }
 
-  async getAllPaymentMethods() {
-    return await this.paymentMethodRepository.getAll();
+  async getAllPaymentMethods(com_id:number) {
+    return await this.paymentMethodRepository.getAll(com_id);
   }
 
   async getPaymentMethodById(id: number) {

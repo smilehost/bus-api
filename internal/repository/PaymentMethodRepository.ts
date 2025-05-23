@@ -14,9 +14,11 @@ export class PaymentMethodRepository {
     }
   }
 
-  async getAll() {
+  async getAll(com_id:number) {
     try {
-      return await this.prisma.payment_method.findMany();
+      return await this.prisma.payment_method.findMany({
+        where:{com_id:com_id}
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
