@@ -1,25 +1,21 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, route_ticket_price_type } from "@prisma/client";
 import { RouteTicketWithPrices } from "../../cmd/request";
-import { RouteTicketPriceType } from "../../cmd/models";
 import { AppError } from "../utils/appError";
 
 export class RouteTicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-
-  async getTicketPrices(route_ticket_id:number){
+  async getTicketPrices(route_ticket_id: number) {
     try {
       return await this.prisma.route_ticket_price.findMany({
         where: {
           route_ticket_price_ticket_id: route_ticket_id,
         },
-        
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
-
 
   async getAllTicketsByRouteId(routeId: number) {
     try {
@@ -29,36 +25,65 @@ export class RouteTicketRepository {
         },
         orderBy: {
           route_ticket_id: "desc",
-        }
+        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async getTicketPricingByLocation(routeId: number,startId:string,stopId:string) {
+  async getAllTicketsByRouteIdForGetTicketsByLocations(routeId: number) {
     try {
       return await this.prisma.route_ticket.findMany({
-        where:{
-          route_ticket_route_id:routeId
-        }
-      })
-
+        where: {
+          route_ticket_route_id: routeId,
+          route_ticket_status: 1,
+        },
+        orderBy: {
+          route_ticket_id: "desc",
+        },
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
 
-  async getTicketPriceType(id: number) {
+  async getTicketPricingByLocation(
+    ticketId: number,
+    startId?: string,
+    stopId?: string
+  ) {
     try {
-      return await this.prisma.route_ticket_price_type.findMany({
-        where: {
-          route_ticket_price_type_com_id: id,
-        },
-        orderBy: {
-          route_ticket_price_type_id: "asc",
+      const query: any = {
+        route_ticket_price_ticket_id: ticketId,
+      };
+
+      if (startId) {
+        query.route_ticket_location_start = startId;
+      }
+
+      if (stopId) {
+        query.route_ticket_location_stop = stopId;
+      }
+
+      const results = await this.prisma.route_ticket_price.findMany({
+        where: query,
+        include: {
+          price_type: {
+            select: {
+              route_ticket_price_type_name: true,
+            },
+          },
         },
       });
+
+      // Flatten `price_type.route_ticket_price_type_name` to top level
+      return results.map((item) => ({
+        ...item,
+        route_ticket_price_type_name:
+          item.price_type?.route_ticket_price_type_name ?? null,
+        price_type: undefined, // optional: remove nested object if not needed
+      }));
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
@@ -68,7 +93,8 @@ export class RouteTicketRepository {
     comId: number,
     skip: number,
     take: number,
-    search: string
+    search: string,
+    status: number | null
   ): Promise<[any[], number]> {
     try {
       const relatedRouteIds = (
@@ -78,7 +104,7 @@ export class RouteTicketRepository {
         })
       ).map((r) => r.route_id);
 
-      const where = {
+      const where: any = {
         route_ticket_route_id: {
           in: relatedRouteIds,
         },
@@ -90,6 +116,7 @@ export class RouteTicketRepository {
               ],
             }
           : {}),
+        ...(typeof status === "number" ? { route_ticket_status: status } : {}),
       };
 
       const [data, total] = await this.prisma.$transaction([
@@ -185,30 +212,70 @@ export class RouteTicketRepository {
           },
         });
 
-        // 2. จัดการรายการราคาทั้งหมด
+        // 2. วนลูปรายการราคาทั้งหมด
         for (const priceItem of data.route_ticket_price) {
-          await tx.route_ticket_price.update({
-            where: {
-              route_ticket_price_id: parseInt(priceItem.route_ticket_price_id),
-            },
-            data: {
-              route_ticket_price_ticket_id: id,
-              route_ticket_price_type_id: priceItem.route_ticket_price_type_id,
-              route_ticket_location_start: String(
-                priceItem.route_ticket_location_start
-              ),
-              route_ticket_location_stop: String(
-                priceItem.route_ticket_location_stop
-              ),
-              price: String(priceItem.price),
-              route_ticket_price_route_id: parseInt(
-                priceItem.route_ticket_price_route_id
-              ),
-            },
-          });
+          const isNew = !priceItem.route_ticket_price_id;
+
+          if (isNew) {
+            // ✅ CREATE ใหม่
+            await tx.route_ticket_price.create({
+              data: {
+                route_ticket_price_ticket_id: id,
+                route_ticket_price_type_id:
+                  priceItem.route_ticket_price_type_id,
+                route_ticket_location_start: String(
+                  priceItem.route_ticket_location_start
+                ),
+                route_ticket_location_stop: String(
+                  priceItem.route_ticket_location_stop
+                ),
+                price: String(priceItem.price),
+                route_ticket_price_route_id: parseInt(
+                  priceItem.route_ticket_price_route_id
+                ),
+              },
+            });
+          } else {
+            // ✅ UPDATE
+            await tx.route_ticket_price.update({
+              where: {
+                route_ticket_price_id: parseInt(
+                  priceItem.route_ticket_price_id ?? "0"
+                ),
+              },
+              data: {
+                route_ticket_price_ticket_id: id,
+                route_ticket_price_type_id:
+                  priceItem.route_ticket_price_type_id,
+                route_ticket_location_start: String(
+                  priceItem.route_ticket_location_start
+                ),
+                route_ticket_location_stop: String(
+                  priceItem.route_ticket_location_stop
+                ),
+                price: String(priceItem.price),
+                route_ticket_price_route_id: parseInt(
+                  priceItem.route_ticket_price_route_id
+                ),
+              },
+            });
+          }
         }
 
         return updatedTicket;
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async updateStatus(id: number, status: number) {
+    try {
+      return await this.prisma.route_ticket.update({
+        where: { route_ticket_id: id },
+        data: {
+          route_ticket_status: status,
+        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
@@ -229,32 +296,6 @@ export class RouteTicketRepository {
         return await tx.route_ticket.delete({
           where: { route_ticket_id: id },
         });
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
-
-  async createPriceType(comId: number, data: RouteTicketPriceType) {
-    try {
-      return await this.prisma.route_ticket_price_type.create({
-        data: {
-          route_ticket_price_type_name: data.route_ticket_price_type_name,
-          route_ticket_price_type_com_id: comId,
-        },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
-
-  async deletePriceType(comId: number, priceTypeId: number) {
-    try {
-      return await this.prisma.route_ticket_price_type.deleteMany({
-        where: {
-          route_ticket_price_type_id: priceTypeId,
-          route_ticket_price_type_com_id: comId,
-        },
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);

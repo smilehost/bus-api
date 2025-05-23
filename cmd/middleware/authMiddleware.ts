@@ -1,6 +1,7 @@
-import "dotenv/config";
 import { Request, Response, NextFunction } from "express";
 import { verifyJwt } from "../../internal/utils/jwt";
+import { AppError } from "../../internal/utils/appError";
+import { ExceptionHandler } from "../../internal/utils/exception";
 
 interface JwtPayload {
   account_id: number;
@@ -9,6 +10,7 @@ interface JwtPayload {
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith("Bearer ")) {
@@ -30,12 +32,26 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
 
       // how to use this
       // const user = (req as any).user;
-
+      console.log(req.body)
       next();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       res.status(403).json({ message: "Forbidden" });
       return;
     }
   };
 };
+
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    Promise.resolve(fn(req, res, next))
+      .catch((error) => {
+        console.error("Error in controller:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Internal server error" });
+        }
+      });
+  };
+};
+
+

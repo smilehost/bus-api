@@ -3,7 +3,7 @@ import { RouteLocationService } from "../service/routeLocationService";
 import { ExceptionHandler } from "../utils/exception";
 import { Util } from "../utils/util";
 import { AppError } from "../utils/appError";
-import { RouteLocation } from "../../cmd/models";
+import { route_location } from "@prisma/client";
 
 export class LocationController {
   constructor(private readonly routeLocationService: RouteLocationService) {}
@@ -24,8 +24,9 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -56,8 +57,9 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -85,14 +87,15 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteLocation>(req, {
+      const { com_id, body } = Util.extractRequestContext<route_location>(req, {
         body: true,
       });
 
@@ -108,15 +111,16 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        RouteLocation,
+        route_location,
         { route_location_id: number }
       >(req, {
         body: true,
@@ -139,8 +143,9 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -164,8 +169,9 @@ export class LocationController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }

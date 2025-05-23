@@ -1,23 +1,13 @@
 import express from "express";
 import cors from "cors";
-import fs from "fs";
-import https from "https";
 import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
-import dotenv from "dotenv";
-dotenv.config();
-
-import path from "path";
-
-const keyPath = path.resolve(process.cwd(), "certs", "key.pem");
-const certPath = path.resolve(process.cwd(), "certs", "cert.pem");
-
-const key = fs.readFileSync(keyPath);
-const cert = fs.readFileSync(certPath);
 
 const app = express();
 const port = process.env.PORT ?? 3000;
 const prisma = new PrismaClient();
+
+app.disable("x-powered-by");
 
 app.use(
   cors({
@@ -30,21 +20,54 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello Secure World!!!!--++60");
+  res.send("Hello Secure World!!!!!!3");
 });
 
+const choices = {
+  "1": "วันนี้",
+  "2": "สัปดาห์นี้",
+  "3": "เดือนนี้",
+  "4": "ปีนี้",
+  "5": "เลือกวัน",
+};
+
 app.get("/areYouPay", (req, res) => {
-  const { monney } = req.query;
+  const { money } = req.query as { money: string };
 
   res.json({
     message: `Pay Successfully`,
-    amonut: monney,
+    amount: money,
   });
 });
 
-app.use("/api", Routes(prisma));
+app.get("/api/areYouPay/:choice", (req, res) => {
+  const { choice } = req.params as { choice: keyof typeof choices };
+  const day = req.query.day;
+  const money = Number(req.query.money); // แปลงเป็น number
 
-// ✅ HTTPS server
-https.createServer({ key, cert }, app).listen(port, () => {
-  console.log(`✅ Server running at https://localhost:${port}`);
+  if (!choices[choice]) {
+    res.status(400).json({ message: "Invalid choice" });
+  }
+
+  if (choice === "5" && !day) {
+    res
+      .status(400)
+      .json({ message: "Missing 'day' parameter for custom choice" });
+  }
+
+  const total = isNaN(money) ? 1000 : money;
+  const cash = total / 2;
+  const promtpay = total / 2;
+
+  res.json({
+    total,
+    cash,
+    promtpay,
+  });
+});
+
+app.use("/", Routes(prisma));
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
 });
