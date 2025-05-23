@@ -8,6 +8,7 @@ pipeline {
         DATABASE_URL = credentials('database_url')
         PRIVATE_KEY = credentials('private_key')
         JWT_SECRET = credentials('jwt_secret')
+        LOGIN_LIFT_TIME = credentials('login_lift_time')
     }
 
     stages {
