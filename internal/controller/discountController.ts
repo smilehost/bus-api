@@ -115,6 +115,36 @@ export class DiscountController {
     }
   }
 
+  async changeStatus(req: Request, res: Response) {
+    try {
+      const { com_id, body, params } = Util.extractRequestContext<
+        {ticket_discount_status:number},
+        { ticket_discount_id: number }
+      >(req, {body: true,params: true,
+      });
+
+      const result = await this.discountService.changeStatus(
+        com_id,
+        params.ticket_discount_id,
+        body.ticket_discount_status
+      );
+
+      res.status(200).json({
+        message: "Discount updated successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      } else {
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
   async delete(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<

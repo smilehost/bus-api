@@ -55,6 +55,28 @@ export class DiscountService {
     return this.discountRepository.update(ticket_discount_id, data);
   }
 
+  async changeStatus(
+    comId: number,
+    ticket_discount_id: number,
+    status:number
+  ) {
+    const discount = await this.discountRepository.getById(ticket_discount_id);
+    if (!discount) {
+      throw AppError.NotFound("Discount not found");
+    }
+
+    if (!Util.ValidCompany(comId, discount.ticket_discount_com_id)) {
+      throw AppError.Forbidden("Discount: Company ID does not match");
+    }
+
+    if (status !== 1 && status !== 0){
+      throw AppError.Forbidden("Invalid Status");
+    }
+
+    discount.ticket_discount_status = status
+    return this.discountRepository.update(ticket_discount_id,discount);
+  }
+
   async deleteById(comId: number, ticket_discount_id: number) {
     const existing = await this.discountRepository.getById(ticket_discount_id);
 

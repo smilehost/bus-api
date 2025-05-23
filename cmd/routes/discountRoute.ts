@@ -33,6 +33,10 @@ export class DiscountRoutes {
       "/:ticket_discount_id",
       this.controller.update.bind(this.controller)
     );
+    this.router.put(
+      "/changeStatus/:ticket_discount_id",
+      this.controller.changeStatus.bind(this.controller)
+    );
     this.router.delete(
       "/:ticket_discount_id",
       this.controller.delete.bind(this.controller)
