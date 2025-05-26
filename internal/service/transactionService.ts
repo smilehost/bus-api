@@ -8,17 +8,18 @@ import {
   ShiftingRemainDto,
 } from "../../cmd/dto";
 import { AppError } from "../utils/appError";
-import { member, route_ticket, ticket, transaction } from "@prisma/client";
+import { member, route_ticket, transaction } from "@prisma/client"; // Removed 'ticket'
 import { TicketRemainService } from "./ticketRemainService";
 import { PaymentMethodService } from "./paymentMethodService";
+import { TicketService } from "./ticketService"; // Added TicketService import
 
 export class TransactionService {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly companyRepository: CompanyRepository,
-    private readonly memberRepository: MemberRepository,
     private readonly ticketRemainService: TicketRemainService,
     private readonly PaymentMethodService: PaymentMethodService,
+    private readonly ticketService: TicketService, // Added TicketService
   ) {}
 
   async create(com_id: number, payload: CreateTransactionTicketsDto) {
@@ -73,46 +74,9 @@ export class TransactionService {
       await this.saveSilp(comId,slipImage,transactionId)
     }
 
-    const tickets = await this.createTickets(comId,transactionId,newTickets) 
-    await this.decreaseRemain(newTickets)
-    return tickets
-  }
-
-  private async createTickets(com_id: number,transactionId:number, tickets: CreateTicketDto[]) {
-    const ticketsData: ticket[] = [];
-    const ticketGroups: Record<string, CreateTicketDto[]> = {};
-
-    for (const t of tickets) {
-      const dateStr = t.ticket_date;
-      if (!ticketGroups[dateStr]) {
-        ticketGroups[dateStr] = [];
-      }
-      ticketGroups[dateStr].push(t);
-    }
-
-    for (const [date, tickets] of Object.entries(ticketGroups)) {
-      const prefix = this.getPrefix(com_id, date);
-      let nextSuffix = "0000"; // default starting point
-      const latest = await this.transactionRepository.getLastTicket(prefix);
-      if (latest) {
-        nextSuffix = latest.ticket_uuid.split("-")[2];
-      }
-
-      for (const ticket of tickets) {
-        nextSuffix = this.incrementAlphaNum(nextSuffix);
-        const newTicket = {
-          ...ticket,
-          ticket_status: "active",
-          ticket_date: date,
-          ticket_transaction_id:transactionId,
-          ticket_uuid: `${prefix}-${nextSuffix}`,
-        } as ticket;
-
-        ticketsData.push(newTicket);
-      }
-    }
-
-    return await this.transactionRepository.createTikcets(ticketsData);
+    const createdTickets = await this.ticketService.createTicketsForTransaction(comId, transactionId, newTickets);
+    await this.decreaseRemain(newTickets); 
+    return createdTickets; 
   }
 
   async checkingByPolling(com_id: number, transactionId: number) {
@@ -161,34 +125,6 @@ export class TransactionService {
     }
   }
 
-  private getPrefix(com_id: number, travelDate: string) {
-    const date = new Date(travelDate);
-    const mmyy = date
-      .toLocaleDateString("en-GB", {
-        month: "2-digit",
-        year: "2-digit",
-      })
-      .replace("/", "");
-
-    return `${com_id}-${mmyy}`;
-  }
-
-  private incrementAlphaNum(input: string): string {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const arr = input.split("");
-
-    for (let i = arr.length - 1; i >= 0; i--) {
-      const index = chars.indexOf(arr[i]);
-      if (index < chars.length - 1) {
-        arr[i] = chars[index + 1];
-        return arr.join("");
-      } else {
-        arr[i] = chars[0];
-      }
-    }
-
-    return chars[0] + arr.join(""); // prepend if overflow
-  }
 
   private async decreaseRemain(tickets:CreateTicketDto[]) {
 
