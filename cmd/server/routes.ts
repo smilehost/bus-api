@@ -79,7 +79,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/ticketPriceType", ticketPriceTypeRoute.routing());
   router.use("/paymentMethod", paymentMethodRoute.routing());
   router.use("/transaction", transactionRoutes.routing());
-  router.use("/tickets", ticketRoutes.routing()); // Added ticket route
+  router.use("/ticket", ticketRoutes.routing()); // Added ticket route
 
   router.use("/ticketdiscount", discountRoutes.routing());
 

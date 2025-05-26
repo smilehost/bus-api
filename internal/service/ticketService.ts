@@ -60,26 +60,27 @@ export class TicketService {
     return ticket;
   }
 
-  async getAllTickets(params: {
-    comId: number;
-    page: number;
-    limit: number;
-    status?: string;
-  }): Promise<{ tickets: ticket[]; total: number;totalPages: number; currentPage: number }> {
-    const { comId, page, limit, status } = params;
+  async getByPagination(
+    comId: number,
+    page: number,
+    size: number,
+    seacrh: string,
+    status?: string,
+  ): Promise<{ tickets: ticket[]; total: number;totalPages: number; currentPage: number }> {
     if (page <= 0) throw AppError.BadRequest("Page must be greater than 0");
-    if (limit <= 0) throw AppError.BadRequest("Limit must be greater than 0");
+    if (size <= 0) throw AppError.BadRequest("Limit must be greater than 0");
 
-    const { tickets, total } = await this.ticketRepository.findAll({
+    const { tickets, total } = await this.ticketRepository.findAll(
       comId,
       page,
-      limit,
+      size,
+      seacrh,
       status,
-    });
+    );
     return { 
         tickets, 
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / size),
         currentPage: page,
     };
   }

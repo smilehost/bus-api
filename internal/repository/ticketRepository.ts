@@ -30,40 +30,55 @@ export class TicketRepository {
     }
   }
 
-  async findAll(params: {
-    comId: number;
-    page: number;
-    limit: number;
-    status?: string;
-  }): Promise<{ tickets: ticket[]; total: number }> {
-    const { comId, page, limit, status } = params;
+  async findAll(
+    comId: number,
+    page: number,
+    size: number,
+    search: string,
+    status?: string,
+  ): Promise<{ tickets: ticket[]; total: number }> {
+    const trimmedSearch = search.trim().toUpperCase();
+  
     const whereCondition: any = {
-      ticket_transaction: {
+      transaction: {
         transaction_com_id: comId,
       },
+      ...(trimmedSearch
+        ? {
+            OR: [
+              { ticket_uuid: { contains: trimmedSearch } },
+            ],
+          }
+        : {}),
     };
-
-    if (status) {
+    
+  
+    console.log(whereCondition)
+    if (!(status==="")) {
       whereCondition.ticket_status = status;
     }
-
+  
     try {
       const tickets = await this.prisma.ticket.findMany({
         where: whereCondition,
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: (page - 1) * size,
+        take: size,
         orderBy: {
-          ticket_id: "desc", // Default ordering, can be parameterized
+          ticket_id: "desc",
         },
       });
+  
       const total = await this.prisma.ticket.count({
         where: whereCondition,
       });
+  
       return { tickets, total };
     } catch (error) {
+      console.log(error)
       throw AppError.fromPrismaError(error);
     }
   }
+  
 
   async findByTransactionId(transaction_id: number): Promise<ticket[]> {
     try {

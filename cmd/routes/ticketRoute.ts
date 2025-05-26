@@ -20,8 +20,10 @@ export class TicketRoute {
   }
 
   private setupRoutes(): void {
-    // Routes for ticket endpoints will be added here
-    // Example: this.router.get("/", this.controller.getAllTickets.bind(this.controller));
+    this.router.get(
+      "/all",
+      this.controller.getByPagination.bind(this.controller)
+    );
   }
 
   public routing(): Router {

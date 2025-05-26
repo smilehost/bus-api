@@ -42,7 +42,7 @@ export class TransactionController {
       const result = await this.transactionService.checkingByPolling(com_id, params.transaction_id);
 
       res.status(201).json({
-        message: "Transaction created successfully",
+        message: "Polling successfully",
         result,
       });
     } catch (error) {
@@ -105,11 +105,6 @@ export class TransactionController {
           transaction_id: number;
         }
       >(req, {body:true,params: true,});
-
-      // Get the file from the request (handled by multer middleware)
-      if (!req.file) {
-        throw AppError.BadRequest("Slip image is required");
-      }
 
       const result = await this.transactionService.confirmAndPrint(
         com_id,
