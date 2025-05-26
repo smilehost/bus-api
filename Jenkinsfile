@@ -12,6 +12,11 @@ pipeline {
     }
 
     stages {
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker ps -a'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
