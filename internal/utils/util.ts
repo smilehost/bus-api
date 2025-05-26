@@ -146,3 +146,21 @@ export class Util {
     }
   }
 }
+
+export function parseIntOrThrow(value: string | undefined | null, fieldName: string): number {
+  if (value === undefined || value === null || value.trim() === "") {
+    throw AppError.BadRequest(`${fieldName} is required and cannot be empty.`);
+  }
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) {
+    throw AppError.BadRequest(`Invalid ${fieldName}: not a number.`);
+  }
+  return parsed;
+}
+
+export function parseStringOrThrow(value: string | undefined | null, fieldName: string): string {
+  if (value === undefined || value === null || value.trim() === "") {
+    throw AppError.BadRequest(`${fieldName} is required and cannot be empty.`);
+  }
+  return value.trim();
+}
