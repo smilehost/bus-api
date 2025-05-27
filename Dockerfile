@@ -16,18 +16,25 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# ✅ ติดตั้ง openssl + neovim + LazyVim dependencies
+# ✅ ติดตั้ง Neovim จาก binary + LazyVim dependencies
 RUN apt-get update && apt-get install -y \
-  openssl \
-  neovim \
   git \
   curl \
   unzip \
+  ripgrep \
+  fd-find \
   && rm -rf /var/lib/apt/lists/*
+
+# ✅ ติดตั้ง Neovim >= 0.8.0 (จาก binary)
+RUN curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz && \
+    tar xzf nvim-linux64.tar.gz && \
+    mv nvim-linux64 /opt/nvim && \
+    ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim && \
+    rm nvim-linux64.tar.gz
 
 # ✅ ติดตั้ง LazyVim
 RUN git clone https://github.com/LazyVim/starter ~/.config/nvim && \
-  rm -rf ~/.config/nvim/.git
+    rm -rf ~/.config/nvim/.git
 
 # ✅ คัดลอกไฟล์จาก builder stage
 COPY --from=builder /app/package*.json ./
