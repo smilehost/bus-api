@@ -6,6 +6,8 @@ Every line of code must comply with established project conventions file structu
 
 The final output must be clean, maintainable, and ready for production.
 
+Coding standarad can view the example in routeLocationRoute, routeLocationController, routeLocationService, routeLocationRepository.
+
 If the coding standard is unclear, infer it from existing code or request guidance.
 
 ## Development Workflow (Two-Phase Process)

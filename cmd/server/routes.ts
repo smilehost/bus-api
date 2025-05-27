@@ -18,6 +18,7 @@ import { TransactionRoute } from "../routes/transactionRoute";
 import { DiscountRoutes } from "../routes/discountRoute";
 import { PaymentMethodRoutes } from "../routes/paymentMethodRoute";
 import { TicketRoute } from "../routes/ticketRoute";
+import { DeviceRoutes } from "../routes/deviceRoute";
 
 
 export const Routes = (prisma: PrismaClient): Router => {
@@ -27,6 +28,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   // Auth & Account
   const authRoutes = new AuthRoutes(prisma);
   const accountRoutes = new AccountRoutes(prisma);
+  const deviceRoutes = new DeviceRoutes(prisma)
 
   // Company
   const companyRoutes = new CompanyRoutes(prisma);
@@ -80,8 +82,8 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/paymentMethod", paymentMethodRoute.routing());
   router.use("/transaction", transactionRoutes.routing());
   router.use("/ticket", ticketRoutes.routing()); // Added ticket route
-
   router.use("/ticketdiscount", discountRoutes.routing());
+  router.use("/device", deviceRoutes.routing());
 
   return router;
 };
