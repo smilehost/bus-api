@@ -60,6 +60,10 @@ export class TicketService {
     return ticket;
   }
 
+  async ticketReschedule(ticket_uuid:string){
+    
+  }
+
   async getByPagination(
     comId: number,
     page: number,

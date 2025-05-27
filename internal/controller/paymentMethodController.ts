@@ -36,10 +36,10 @@ export class PaymentMethodController {
     try {
       const { com_id } = Util.extractRequestContext(req);
       const result = await this.paymentMethodService.getAllPaymentMethods(com_id);
-
+      const data = result.map(({ payment_method_url, ...rest }) => rest)
       res.status(200).json({
         message: "Payment methods retrieved successfully",
-        result,
+        data,
       });
     } catch (error) {
       if (error instanceof AppError) {

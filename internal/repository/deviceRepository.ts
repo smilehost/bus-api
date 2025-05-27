@@ -1,4 +1,4 @@
-import { PrismaClient, device } from "@prisma/client";
+import { PrismaClient, company, device } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class DeviceRepository {
@@ -25,33 +25,52 @@ export class DeviceRepository {
     take: number,
     search?: string,
     status?: number
-  ): Promise<[device[], number]> {
+  ): Promise<(company & { devices: device[] })[]> {
     try {
       const whereConditions: any = {
         device_com_id: comId,
       };
-
+  
       if (search && search.trim()) {
-        whereConditions.OR = [ 
+        whereConditions.OR = [
           { device_serial_number: { contains: search.toUpperCase() } },
         ];
       }
-
-      if (typeof(status) === "number") {
+  
+      if (typeof status === "number") {
         whereConditions.device_status = status;
       }
+  
+      // Fetch devices including full company object
+      const devices = await this.prisma.device.findMany({
+        skip,
+        take,
+        where: whereConditions,
+        include: {
+          company: true,
+        },
+        orderBy: {
+          device_id: "desc",
+        },
+      });
+  
+      const companyMap = new Map<number, (company & { devices: device[] })>();
 
-      const [data, total] = await this.prisma.$transaction([
-        this.prisma.device.findMany({
-          skip,
-          take,
-          where: whereConditions,
-          orderBy: { device_id: "desc" },
-        }),
-        this.prisma.device.count({ where: whereConditions }),
-      ]);
-
-      return [data, total];
+      for (const device of devices) {
+        const { company, ...cleanDevice } = device;
+        const comId = company.com_id;
+  
+        if (!companyMap.has(comId)) {
+          companyMap.set(comId, {
+            ...company,
+            devices: [cleanDevice],
+          });
+        } else {
+          companyMap.get(comId)!.devices.push(cleanDevice);
+        }
+      }
+      
+      return Array.from(companyMap.values());
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }

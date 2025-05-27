@@ -113,7 +113,7 @@ export class TransactionService {
     if (status === "CANCELLED") {
       await this.transactionRepository.changeStatusById(
         transaction_id,
-        "CANCELED"
+        "CANCELLED"
       );
     }
 
