@@ -2,11 +2,13 @@
 import { TicketRepository } from "../repository/ticketRepository";
 import { AppError } from "../utils/appError";
 import { ticket } from "@prisma/client";
-import { CreateTicketDto } from "../../cmd/dto";
+import { CreateTicketDto, ShiftingRemainDto } from "../../cmd/dto";
+import { TicketRemainService } from "./ticketRemainService";
 
 export class TicketService {
   constructor(
     private readonly ticketRepository: TicketRepository,
+    private readonly ticketRemainService: TicketRemainService,
   ) {}
 
   async createTicketsForTransaction(
@@ -60,8 +62,32 @@ export class TicketService {
     return ticket;
   }
 
-  async ticketReschedule(ticket_uuid:string){
+  async ticketReschedule(ticket_uuid:string,newDate:string,newTime:string){
+    const ticket = await this.ticketRepository.findByUUID(ticket_uuid)
+    if (!ticket) {
+      throw AppError.NotFound("Ticket not found");
+    }
+    const oldSchedule:ShiftingRemainDto = {
+      date:ticket.ticket_date,
+      time:ticket.ticket_time,
+      routeTicketId:ticket.ticket_route_ticket_id,
+      maxTicket:ticket.route_ticket.route_ticket_amount,
+      amount:1
+    }
+
+    const newSchedule:ShiftingRemainDto = {
+      date:newDate,
+      time:newTime,
+      routeTicketId:ticket.ticket_route_ticket_id,
+      maxTicket:ticket.route_ticket.route_ticket_amount,
+      amount:1
+    }
+
+    const { ticket_id, ...newTicketData }: ticket = ticket;
     
+
+    const newTicket = await this.ticketRepository.createTicket(newTicketData)
+    await this.ticketRemainService.increaseTicketRemain(oldSchedule)
   }
 
   async getByPagination(

@@ -20,6 +20,32 @@ export class TicketRepository {
     }
   }
 
+  async createTicket(ticket:Omit<ticket,"ticket_id">){
+    try {
+      return await this.prisma.ticket.create({
+        data:ticket
+      })
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async findByUUID(ticket_uuid: string){
+    try {
+      return await this.prisma.ticket.findFirst({
+        where: { ticket_uuid:ticket_uuid },
+        orderBy:{
+          ticket_id:"desc"
+        },
+        include:{
+          route_ticket:true
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async findById(ticket_id: number): Promise<ticket | null> {
     try {
       return await this.prisma.ticket.findUnique({
