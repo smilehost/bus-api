@@ -1,9 +1,22 @@
+# Stage 1: Build
+FROM node:22 AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npx prisma generate
+RUN npm run build
+
 # Stage 2: Runtime
 FROM node:22-slim
 
 WORKDIR /app
 
-# ✅ ติดตั้ง openssl + neovim + lazyvim dependencies
+# ✅ ติดตั้ง openssl + neovim + LazyVim dependencies
 RUN apt-get update && apt-get install -y \
   openssl \
   neovim \
@@ -16,12 +29,13 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/LazyVim/starter ~/.config/nvim && \
   rm -rf ~/.config/nvim/.git
 
+# ✅ คัดลอกไฟล์จาก builder stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/cmd ./cmd
-COPY --from=builder /app/ ./nginx.conf
+COPY --from=builder /app/nginx.conf ./nginx.conf
 
 EXPOSE 8000
 
