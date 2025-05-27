@@ -15,25 +15,29 @@ export class DeviceService {
   ) {
     const skip = (page - 1) * size;
     const take = size;
-
-    const searchString = search ? search.toString() : ""; 
-
-    const [data, total] = await this.deviceRepository.getPaginated(
+  
+    const searchString = search ? search.toString() : "";
+  
+    const data = await this.deviceRepository.getPaginated(
       comId,
       skip,
       take,
-      searchString, // Pass search string
-      status        // Pass status
+      searchString,
+      status
     );
-
+  
+    // Calculate total from all grouped device counts
+    const total = data.reduce((acc, group) => acc + group.devices.length, 0);
+  
     return {
       page,
       size,
       total,
       totalPages: Math.ceil(total / size),
-      data,
+      data, // List of { company, devices }
     };
   }
+  
 
   async getById(comId: number, deviceId: number) {
     const device = await this.deviceRepository.getById(deviceId);
