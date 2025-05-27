@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  //relationMode = "prisma"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model account {
@@ -28,15 +27,15 @@ model company {
   com_name       String                    @db.VarChar(3000)
   com_status     Int
   accounts       account[]
+  devices        device[]
   members        member[]
+  paymentMethods payment_method[]
   routes         route[]
   routeDates     route_date[]
   routeLocations route_location[]
-  routeTimes     route_time[]
-  devices        device[]
   priceTypes     route_ticket_price_type[]
+  routeTimes     route_time[]
   transactions   transaction[]
-  paymentMethods payment_method[]
 }
 
 model member {
@@ -76,9 +75,9 @@ model route {
   route_time    route_time           @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
   route_date    route_date           @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
   company       company              @relation(fields: [route_com_id], references: [com_id])
-  transactions  transaction[]
   routeTickets  route_ticket[]
   ticketPrices  route_ticket_price[]
+  transactions  transaction[]
 
   @@index([route_time_id], map: "route_time_id")
   @@index([route_com_id], map: "route_com_id")
@@ -143,13 +142,13 @@ model transaction {
   transaction_status             String          @db.VarChar(300)
   transaction_note               String          @db.VarChar(300)
   transaction_device_id          Int
-  company                        company         @relation(fields: [transaction_com_id], references: [com_id])
-  member                         member?         @relation(fields: [transaction_member_id], references: [member_id])
-  route                          route           @relation(fields: [transaction_route_id], references: [route_id])
-  paymentMethod                  payment_method  @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
-  device                         device          @relation(fields: [transaction_device_id], references: [device_id])
-  ticketDiscount                 ticket_discount @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id])
   tickets                        ticket[]
+  company                        company         @relation(fields: [transaction_com_id], references: [com_id])
+  device                         device          @relation(fields: [transaction_device_id], references: [device_id])
+  member                         member?         @relation(fields: [transaction_member_id], references: [member_id])
+  paymentMethod                  payment_method  @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
+  route                          route           @relation(fields: [transaction_route_id], references: [route_id])
+  ticketDiscount                 ticket_discount @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id])
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
@@ -164,7 +163,7 @@ model ticket_discount {
   ticket_discount_name   String        @db.VarChar(300)
   ticket_discount_type   Int
   ticket_discount_status Int
-  ticket_discount_value  String        @db.VarChar(300)
+  ticket_discount_value  Float
   ticket_discount_com_id Int
   transactions           transaction[]
 
@@ -196,9 +195,9 @@ model route_ticket_price {
   route_ticket_price_type_id   Int
   route_ticket_price_ticket_id Int
   route_ticket_price_route_id  Int
+  route                        route                   @relation(fields: [route_ticket_price_route_id], references: [route_id])
   route_ticket                 route_ticket            @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
   price_type                   route_ticket_price_type @relation(fields: [route_ticket_price_type_id], references: [route_ticket_price_type_id])
-  route                        route                   @relation(fields: [route_ticket_price_route_id], references: [route_id])
 
   @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
   @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
@@ -209,8 +208,8 @@ model route_ticket_price_type {
   route_ticket_price_type_id     Int                  @id @default(autoincrement())
   route_ticket_price_type_name   String               @db.VarChar(300)
   route_ticket_price_type_com_id Int
-  company                        company              @relation(fields: [route_ticket_price_type_com_id], references: [com_id])
   route_ticket_prices            route_ticket_price[]
+  company                        company              @relation(fields: [route_ticket_price_type_com_id], references: [com_id])
 
   @@index([route_ticket_price_type_com_id], map: "route_ticket_price_type_com_id")
 }
@@ -239,10 +238,10 @@ model ticket {
   ticket_location_stop   Int
   ticket_route_ticket_id Int
   ticket_discount_price  Float          @db.Float
-  transaction            transaction    @relation(fields: [ticket_transaction_id], references: [transaction_id])
-  route_ticket           route_ticket   @relation(fields: [ticket_route_ticket_id], references: [route_ticket_id])
   startLocation          route_location @relation("StartLocation", fields: [ticket_location_start], references: [route_location_id])
   stopLocation           route_location @relation("StopLocation", fields: [ticket_location_stop], references: [route_location_id])
+  route_ticket           route_ticket   @relation(fields: [ticket_route_ticket_id], references: [route_ticket_id])
+  transaction            transaction    @relation(fields: [ticket_transaction_id], references: [transaction_id])
 
   @@index([ticket_transaction_id], map: "ticket_transaction_id")
   @@index([ticket_route_ticket_id], map: "ticket_route_ticket_id")
