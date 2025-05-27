@@ -19,7 +19,7 @@ export class TransactionService {
     private readonly companyRepository: CompanyRepository,
     private readonly ticketRemainService: TicketRemainService,
     private readonly PaymentMethodService: PaymentMethodService,
-    private readonly ticketService: TicketService, // Added TicketService
+    private readonly ticketService: TicketService // Added TicketService
   ) {}
 
   async create(com_id: number, payload: CreateTransactionTicketsDto) {
@@ -61,22 +61,32 @@ export class TransactionService {
       transaction.transaction_id,
       transaction.transaction_payment_method_id,
       Number(transaction.transaction_amount)
-    )
+    );
 
     return {
       ...transaction,
-      url_web_view:urlWebView
-    }
+      url_web_view: urlWebView,
+    };
   }
 
-  async confirmAndPrint(comId: number, transactionId: number,newTickets:CreateTicketDto[], slipImage: any) {
+  async confirmAndPrint(
+    comId: number,
+    transactionId: number,
+    newTickets: CreateTicketDto[],
+    slipImage: any
+  ) {
     if (slipImage || slipImage.buffer) {
-      await this.saveSilp(comId,slipImage,transactionId)
+      await this.saveSilp(comId, slipImage, transactionId);
     }
 
-    const createdTickets = await this.ticketService.createTicketsForTransaction(comId, transactionId, newTickets);
-    await this.decreaseRemain(newTickets); 
-    return createdTickets; 
+    const createdTickets = await this.ticketService.createTicketsForTransaction(
+      comId,
+      transactionId,
+      newTickets
+    );
+
+    await this.decreaseRemain(newTickets);
+    return createdTickets;
   }
 
   async checkingByPolling(com_id: number, transactionId: number) {
@@ -99,14 +109,14 @@ export class TransactionService {
     };
   }
 
-  async transactionCallbackGateWay(transactionId: number, status: string){
-    await this.transactionCallback(transactionId,status)
-    return "ok"
+  async transactionCallbackGateWay(transactionId: number, status: string) {
+    await this.transactionCallback(transactionId, status);
+    return "ok";
   }
 
-  async transactionCallbackStatic(transactionId: number, status: string){
-    await this.transactionCallback(transactionId,status)
-    return "ok"
+  async transactionCallbackStatic(transactionId: number, status: string) {
+    await this.transactionCallback(transactionId, status);
+    return "ok";
   }
 
   private async transactionCallback(transaction_id: number, status: string) {
@@ -125,50 +135,54 @@ export class TransactionService {
     }
   }
 
-
-  private async decreaseRemain(tickets:CreateTicketDto[]) {
-
+  private async decreaseRemain(tickets: CreateTicketDto[]) {
     for (const ticket of tickets) {
       const routeTicket = await this.transactionRepository.getRouteTicketById(
         ticket.ticket_route_ticket_id
       );
       if (!routeTicket) throw AppError.NotFound("routeTicket Not fond");
 
-      this.ticketRemainService.decreaseTicketRemain({
+      await this.ticketRemainService.decreaseTicketRemain({
         date: ticket.ticket_date,
         time: ticket.ticket_time,
         routeTicketId: routeTicket.route_ticket_id,
         maxTicket: routeTicket.route_ticket_amount,
-        amount:1
+        amount: 1,
       } as ShiftingRemainDto);
     }
   }
 
-  private async saveSilp(comId:number,slipImage:any,transactionId:number){
-    const path = require('path');
-    const fs = require('fs').promises;
-    const fsSync = require('fs');
+  private async saveSilp(comId: number, slipImage: any, transactionId: number) {
+    const path = require("path");
+    const fs = require("fs").promises;
+    const fsSync = require("fs");
 
     // Create directory structure: SilpImages/comId/year/month/days/
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+
     // Create timestamp for filename
     const timestamp = currentDate.getTime();
-    const fileExtension = slipImage.originalname.split('.').pop() || 'jpg';
+    const fileExtension = slipImage.originalname.split(".").pop() || "jpg";
     const fileName = `${timestamp}_${transactionId}.${fileExtension}`;
-    
+
     // Create directory path
-    const dirPath = path.join('SilpImages', String(comId), String(year), month, day);
+    const dirPath = path.join(
+      "SilpImages",
+      String(comId),
+      String(year),
+      month,
+      day
+    );
     const filePath = path.join(dirPath, fileName);
 
     if (!fsSync.existsSync(dirPath)) {
       fsSync.mkdirSync(path.resolve(dirPath), { recursive: true });
     }
     await fs.writeFile(path.resolve(filePath), slipImage.buffer);
-    
-    return filePath
+
+    return filePath;
   }
 }

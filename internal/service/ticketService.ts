@@ -5,16 +5,15 @@ import { ticket } from "@prisma/client";
 import { CreateTicketDto } from "../../cmd/dto";
 
 export class TicketService {
-  constructor(
-    private readonly ticketRepository: TicketRepository,
-  ) {}
+  constructor(private readonly ticketRepository: TicketRepository) {}
 
   async createTicketsForTransaction(
     com_id: number,
     transactionId: number,
     ticketsDto: CreateTicketDto[]
   ): Promise<ticket[]> {
-    const ticketsData: Omit<ticket, 'ticket_id'>[] = [];
+
+    const ticketsData: Omit<ticket, "ticket_id">[] = [];
     const ticketGroups: Record<string, CreateTicketDto[]> = {};
 
     for (const t of ticketsDto) {
@@ -32,16 +31,16 @@ export class TicketService {
       if (latestTicket && latestTicket.ticket_uuid) {
         const parts = latestTicket.ticket_uuid.split("-");
         if (parts.length > 2) {
-          nextSuffix = parts[parts.length -1];
+          nextSuffix = parts[parts.length - 1];
         }
       }
 
       for (const ticketDto of dtosInGroup) {
         nextSuffix = this.incrementAlphaNum(nextSuffix);
-        const newTicketObject: Omit<ticket, 'ticket_id'> = {
+        const newTicketObject: Omit<ticket, "ticket_id"> = {
           ...ticketDto, // Spread all fields from CreateTicketDto
           ticket_status: "active", // Override status
-          ticket_date: date,       // Override date (date is string from ticketGroups)
+          ticket_date: date, // Override date (date is string from ticketGroups)
           ticket_transaction_id: transactionId, // Set transaction_id
           ticket_uuid: `${prefix}-${nextSuffix}`, // Set UUID
         };
@@ -60,17 +59,20 @@ export class TicketService {
     return ticket;
   }
 
-  async ticketReschedule(ticket_uuid:string){
-    
-  }
+  async ticketReschedule(ticket_uuid: string) {}
 
   async getByPagination(
     comId: number,
     page: number,
     size: number,
     seacrh: string,
-    status?: string,
-  ): Promise<{ tickets: ticket[]; total: number;totalPages: number; currentPage: number }> {
+    status?: string
+  ): Promise<{
+    tickets: ticket[];
+    total: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
     if (page <= 0) throw AppError.BadRequest("Page must be greater than 0");
     if (size <= 0) throw AppError.BadRequest("Limit must be greater than 0");
 
@@ -79,13 +81,13 @@ export class TicketService {
       page,
       size,
       seacrh,
-      status,
+      status
     );
-    return { 
-        tickets, 
-        total,
-        totalPages: Math.ceil(total / size),
-        currentPage: page,
+    return {
+      tickets,
+      total,
+      totalPages: Math.ceil(total / size),
+      currentPage: page,
     };
   }
 
@@ -107,7 +109,10 @@ export class TicketService {
 
     while (i >= 0) {
       const charIndex = chars.indexOf(arr[i]);
-      if (charIndex === -1) throw new Error("Invalid character in alphanumeric string for increment");
+      if (charIndex === -1)
+        throw new Error(
+          "Invalid character in alphanumeric string for increment"
+        );
 
       if (charIndex < chars.length - 1) {
         arr[i] = chars[charIndex + 1];
