@@ -10,10 +10,10 @@ export class TransactionController {
 
   async create(req: Request, res: Response) {
     try {
-      
-      const { com_id, body } = Util.extractRequestContext<CreateTransactionTicketsDto>(req, {
-        body: true,
-      });
+      const { com_id, body } =
+        Util.extractRequestContext<CreateTransactionTicketsDto>(req, {
+          body: true,
+        });
       const result = await this.transactionService.create(com_id, body);
 
       res.status(201).json({
@@ -26,20 +26,25 @@ export class TransactionController {
           error: error.name,
           message: error.message,
         });
-      }else {
-          ExceptionHandler.internalServerError(res, error);
+      } else {
+        ExceptionHandler.internalServerError(res, error);
       }
     }
   }
 
-  async checkingByPolling(req: Request, res: Response){
+  async checkingByPolling(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        void,{
+        void,
+        {
           transaction_id: number;
-        }>(req, {params: true });
+        }
+      >(req, { params: true });
 
-      const result = await this.transactionService.checkingByPolling(com_id, params.transaction_id);
+      const result = await this.transactionService.checkingByPolling(
+        com_id,
+        params.transaction_id
+      );
 
       res.status(201).json({
         message: "Polling successfully",
@@ -51,37 +56,43 @@ export class TransactionController {
           error: error.name,
           message: error.message,
         });
-      }else {
-          ExceptionHandler.internalServerError(res, error);
+      } else {
+        ExceptionHandler.internalServerError(res, error);
       }
     }
   }
 
-  async transactionCallbackGateWay(req: Request, res: Response){
+  async transactionCallbackGateWay(req: Request, res: Response) {
     try {
-      await this.transactionService.transactionCallbackGateWay(req.body.transaction_id,req.body.status);
+      await this.transactionService.transactionCallbackGateWay(
+        req.body.transaction_id,
+        req.body.status
+      );
       res.status(200).json({
-        message: "ok"
+        message: "ok",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(200).json({
-        message: "ok"
+        message: "ok",
       });
     }
   }
 
-  async transactionCallbackStatic(req: Request, res: Response){
+  async transactionCallbackStatic(req: Request, res: Response) {
     try {
       const { com_id, body } = Util.extractRequestContext<{
-        transaction_id:number,
-        status:string
-      }>(req, {body: true});
+        transaction_id: number;
+        status: string;
+      }>(req, { body: true });
 
-      await this.transactionService.transactionCallbackStatic(body.transaction_id,body.status);
+      await this.transactionService.transactionCallbackStatic(
+        body.transaction_id,
+        body.status
+      );
 
       res.status(200).json({
-        message: "ok"
+        message: "ok",
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -89,22 +100,23 @@ export class TransactionController {
           error: error.name,
           message: error.message,
         });
-      }else {
-          ExceptionHandler.internalServerError(res, error);
+      } else {
+        ExceptionHandler.internalServerError(res, error);
       }
     }
   }
 
   async confirmAndPrint(req: Request, res: Response) {
     try {
-      if (typeof req.body.ticketData === 'string') {
+      if (typeof req.body.ticketData === "string") {
         req.body = JSON.parse(req.body.ticketData);
-      }      
-      const { com_id, body,params } = Util.extractRequestContext<
-        CreateTicketDto[],{
+      }
+      const { com_id, body, params } = Util.extractRequestContext<
+        CreateTicketDto[],
+        {
           transaction_id: number;
         }
-      >(req, {body:true,params: true,});
+      >(req, { body: true, params: true });
 
       const result = await this.transactionService.confirmAndPrint(
         com_id,

@@ -5,7 +5,7 @@ import { AppError } from "../utils/appError";
 export class TicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async createMany(tickets: Omit<ticket, 'ticket_id'>[]): Promise<ticket[]> {
+  async createMany(tickets: Omit<ticket, "ticket_id">[]): Promise<ticket[]> {
     try {
       return await this.prisma.$transaction(async (tx) => {
         const createdTickets: ticket[] = [];
@@ -16,6 +16,7 @@ export class TicketRepository {
         return createdTickets;
       });
     } catch (error) {
+      console.error("Error creating tickets:", error);
       throw AppError.fromPrismaError(error);
     }
   }
@@ -61,29 +62,26 @@ export class TicketRepository {
     page: number,
     size: number,
     search: string,
-    status?: string,
+    status?: string
   ): Promise<{ tickets: ticket[]; total: number }> {
     const trimmedSearch = search.trim().toUpperCase();
-  
+
     const whereCondition: any = {
       transaction: {
         transaction_com_id: comId,
       },
       ...(trimmedSearch
         ? {
-            OR: [
-              { ticket_uuid: { contains: trimmedSearch } },
-            ],
+            OR: [{ ticket_uuid: { contains: trimmedSearch } }],
           }
         : {}),
     };
-    
-  
-    console.log(whereCondition)
-    if (!(status==="")) {
+
+    console.log(whereCondition);
+    if (!(status === "")) {
       whereCondition.ticket_status = status;
     }
-  
+
     try {
       const tickets = await this.prisma.ticket.findMany({
         where: whereCondition,
@@ -93,18 +91,17 @@ export class TicketRepository {
           ticket_id: "desc",
         },
       });
-  
+
       const total = await this.prisma.ticket.count({
         where: whereCondition,
       });
-  
+
       return { tickets, total };
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw AppError.fromPrismaError(error);
     }
   }
-  
 
   async findByTransactionId(transaction_id: number): Promise<ticket[]> {
     try {
@@ -131,6 +128,7 @@ export class TicketRepository {
         },
       });
     } catch (error) {
+      console.error("Error fetching last ticket by prefix:", error);
       throw AppError.fromPrismaError(error);
     }
   }

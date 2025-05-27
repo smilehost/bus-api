@@ -41,6 +41,8 @@ export class TransactionRepository {
         },
       });
     } catch (error) {
+      console.log("1qrewrrewrerewrewrwfsdgfdgfdgfdgfdgdger");
+      
       throw AppError.fromPrismaError(error);
     }
   }
