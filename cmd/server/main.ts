@@ -10,7 +10,8 @@ const prisma = new PrismaClient();
 
 app.disable("x-powered-by");
 
-app.use(express.static(path.join(__dirname)));
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   cors({
@@ -66,7 +67,7 @@ app.get("/qr", (_, res) => {
         </style>
       </head>
       <body>
-        <img src="./qr.jpg" alt="QR Code" />
+        <img src="/qr.jpg" alt="QR Code" />
       </body>
     </html>
   `);
