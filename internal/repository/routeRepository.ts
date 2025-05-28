@@ -27,7 +27,7 @@ export class RouteRepository {
     ];
     const dayColumn = dayColumnMap[dayOfWeek];
 
-    return this.prisma.route.findMany({
+    const routes = await this.prisma.route.findMany({
       where: {
         route_com_id: comId,
         route_status: 1,
@@ -40,6 +40,13 @@ export class RouteRepository {
         route_time: true,
       },
     });
+    const filteredRoutes = routes.filter((route)=>{
+      if (route.route_date.route_date_end === "") return true
+      const endDate = new Date(route.route_date.route_date_end).getTime();
+      return endDate >= Date.now();
+    })
+
+    return filteredRoutes
   }
 
   async getPaginated(
