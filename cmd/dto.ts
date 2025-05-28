@@ -25,7 +25,8 @@ export type CreateTicketDto = Omit<ticket,'ticket_id'|'ticket_transaction_id'> &
   ticket_transaction_id:number|null
 }
 
-export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transaction_member_id'> & {
+export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transaction_member_id'|"transaction_ticket_discount_id"> & {
+  transaction_ticket_discount_id:number|null
   transaction_member_id:number|null
 };
 

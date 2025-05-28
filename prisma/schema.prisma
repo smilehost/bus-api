@@ -128,27 +128,27 @@ model route_time {
 }
 
 model transaction {
-  transaction_id                 Int             @id @default(autoincrement())
+  transaction_id                 Int              @id @default(autoincrement())
   transaction_com_id             Int
-  transaction_date_time          DateTime        @default(now()) @db.Timestamp(0)
-  transaction_lat                String          @db.VarChar(300)
-  transaction_long               String          @db.VarChar(300)
+  transaction_date_time          DateTime         @default(now()) @db.Timestamp(0)
+  transaction_lat                String           @db.VarChar(300)
+  transaction_long               String           @db.VarChar(300)
   transaction_payment_method_id  Int
-  transaction_amount             String          @db.VarChar(300)
+  transaction_amount             String           @db.VarChar(300)
   transaction_pax                Int
   transaction_member_id          Int?
   transaction_route_id           Int
-  transaction_ticket_discount_id Int
-  transaction_status             String          @db.VarChar(300)
-  transaction_note               String          @db.VarChar(300)
+  transaction_ticket_discount_id Int?
+  transaction_status             String           @db.VarChar(300)
+  transaction_note               String           @db.VarChar(300)
   transaction_device_id          Int
   tickets                        ticket[]
-  company                        company         @relation(fields: [transaction_com_id], references: [com_id])
-  device                         device          @relation(fields: [transaction_device_id], references: [device_id])
-  member                         member?         @relation(fields: [transaction_member_id], references: [member_id])
-  paymentMethod                  payment_method  @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
-  route                          route           @relation(fields: [transaction_route_id], references: [route_id])
-  ticketDiscount                 ticket_discount @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id])
+  company                        company          @relation(fields: [transaction_com_id], references: [com_id])
+  device                         device           @relation(fields: [transaction_device_id], references: [device_id])
+  member                         member?          @relation(fields: [transaction_member_id], references: [member_id])
+  paymentMethod                  payment_method   @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
+  route                          route            @relation(fields: [transaction_route_id], references: [route_id])
+  ticketDiscount                 ticket_discount? @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id], onDelete: Restrict)
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
@@ -237,7 +237,7 @@ model ticket {
   ticket_location_start  Int
   ticket_location_stop   Int
   ticket_route_ticket_id Int
-  ticket_discount_price  Float          @db.Float
+  ticket_discount_price  Float
   startLocation          route_location @relation("StartLocation", fields: [ticket_location_start], references: [route_location_id])
   stopLocation           route_location @relation("StopLocation", fields: [ticket_location_stop], references: [route_location_id])
   route_ticket           route_ticket   @relation(fields: [ticket_route_ticket_id], references: [route_ticket_id])

@@ -26,6 +26,11 @@ export class TransactionService {
     const company = await this.companyRepository.getById(com_id);
     if (!company) throw AppError.NotFound("Company not found");
 
+    let discount = payload.transaction_ticket_discount_id
+    if(discount){
+      if(discount<0) discount = null
+    } 
+
     const newTransaction: CreateTransactionDto = {
       transaction_lat: payload.transaction_lat,
       transaction_long: payload.transaction_long,
@@ -35,7 +40,7 @@ export class TransactionService {
       transaction_amount: payload.transaction_amount,
       transaction_pax: payload.transaction_pax,
       transaction_route_id: payload.transaction_route_id,
-      transaction_ticket_discount_id: payload.transaction_ticket_discount_id,
+      transaction_ticket_discount_id:discount,
       transaction_member_id: null,
       transaction_com_id: 1,
       transaction_status: "PENDING",
