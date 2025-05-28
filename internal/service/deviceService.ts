@@ -38,14 +38,10 @@ export class DeviceService {
   }
   
 
-  async getById(comId: number, deviceId: number) {
+  async getById(deviceId: number) {
     const device = await this.deviceRepository.getById(deviceId);
     if (!device) {
       throw AppError.NotFound("Device not found");
-    }
-
-    if (!Util.ValidCompany(comId, device.device_com_id)) {
-      throw AppError.Forbidden("Device: Company ID does not match");
     }
     return device;
   }
@@ -61,15 +57,12 @@ export class DeviceService {
     return this.deviceRepository.create(data);
   }
 
-  async update(comId: number, deviceId: number, data: Partial<device>) {
+  async update( deviceId: number, data: Partial<device>) {
     const existingDevice = await this.deviceRepository.getById(deviceId);
     if (!existingDevice) {
       throw AppError.NotFound("Device not found");
     }
 
-    if (!Util.ValidCompany(comId, existingDevice.device_com_id)) {
-      throw AppError.Forbidden("Device: Company ID does not match");
-    }
 
     if (data.device_com_id && data.device_com_id !== existingDevice.device_com_id) {
         throw AppError.BadRequest("Cannot change company ID of a device.");
@@ -80,26 +73,18 @@ export class DeviceService {
     return this.deviceRepository.update(deviceId, updateData);
   }
 
-  async delete(comId: number, deviceId: number) {
+  async delete(deviceId: number) {
     const existingDevice = await this.deviceRepository.getById(deviceId);
     if (!existingDevice) {
       throw AppError.NotFound("Device not found");
-    }
-
-    if (!Util.ValidCompany(comId, existingDevice.device_com_id)) {
-      throw AppError.Forbidden("Device: Company ID does not match");
     }
     return this.deviceRepository.delete(deviceId);
   }
 
-  async changeStatus(comId: number, deviceId: number, status: number) {
+  async changeStatus(deviceId: number, status: number) {
     const existingDevice = await this.deviceRepository.getById(deviceId);
     if (!existingDevice) {
       throw AppError.NotFound("Device not found");
-    }
-
-    if (!Util.ValidCompany(comId, existingDevice.device_com_id)) {
-      throw AppError.Forbidden("Device: Company ID does not match");
     }
     return this.deviceRepository.changeStatus(deviceId, status);
   }

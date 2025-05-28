@@ -46,12 +46,13 @@ export class DeviceController {
     try {
       const { com_id, body } = Util.extractRequestContext<{
         device_serial_number:string
+        device_com_id:number 
       }>(req, {
         body: true,
       });
 
       const result = await this.deviceService.create(
-        com_id,
+        body.device_com_id,
         body.device_serial_number
       );
 
@@ -80,7 +81,7 @@ export class DeviceController {
         params: true,
       });
 
-      const result = await this.deviceService.getById(com_id, params.device_id);
+      const result = await this.deviceService.getById( params.device_id);
       
       res.status(200).json({
         message: "Device retrieved successfully",
@@ -102,14 +103,13 @@ export class DeviceController {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
         Partial<device>, // Use Partial<device> as not all fields might be updatable
-        { device_id: number }
+        { device_id: number; }
       >(req, {
         body: true,
         params: true,
       });
 
       const result = await this.deviceService.update(
-        com_id,
         params.device_id,
         body
       );
@@ -139,7 +139,7 @@ export class DeviceController {
         params: true,
       });
 
-      await this.deviceService.delete(com_id, params.device_id);
+      await this.deviceService.delete(params.device_id);
 
       res.status(200).json({ 
         message: "Device deleted successfully" 
@@ -167,7 +167,6 @@ export class DeviceController {
       });
 
       const result = await this.deviceService.changeStatus(
-        com_id,
         params.device_id,
         body.status
       );
