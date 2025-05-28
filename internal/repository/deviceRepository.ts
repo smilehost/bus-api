@@ -20,7 +20,6 @@ export class DeviceRepository {
   }
 
   async getPaginated(
-    comId: number,
     skip: number,
     take: number,
     search?: string,
@@ -28,7 +27,7 @@ export class DeviceRepository {
   ): Promise<(company & { devices: device[] })[]> {
     try {
       const whereConditions: any = {
-        device_com_id: comId,
+        //device_com_id: comId,
       };
   
       if (search && search.trim()) {

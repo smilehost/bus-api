@@ -7,7 +7,6 @@ export class DeviceService {
   constructor(private readonly deviceRepository: DeviceRepository) {}
 
   async getByPagination(    
-    comId: number,
     page: number,
     size: number,
     search?: string, 
@@ -19,7 +18,6 @@ export class DeviceService {
     const searchString = search ? search.toString() : "";
   
     const data = await this.deviceRepository.getPaginated(
-      comId,
       skip,
       take,
       searchString,
@@ -66,10 +64,6 @@ export class DeviceService {
     const existingDevice = await this.deviceRepository.getById(deviceId);
     if (!existingDevice) {
       throw AppError.NotFound("Device not found");
-    }
-
-    if (!Util.ValidCompany(comId, existingDevice.device_com_id)) {
-      throw AppError.Forbidden("Device: Company ID does not match");
     }
 
     if (data.device_com_id && data.device_com_id !== existingDevice.device_com_id) {
