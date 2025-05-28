@@ -138,6 +138,7 @@ export class RouteTicketRepository {
               select:{
                 route_name_th:true,
                 route_name_en:true,
+                route_status:true,
               }
             }
           },
