@@ -67,7 +67,7 @@ app.get("/qr", (_, res) => {
         </style>
       </head>
       <body>
-        <img src="/api/qr.jpg" alt="QR Code" />
+        <img src="/qr.jpg" alt="QR Code" />
       </body>
     </html>
   `);
