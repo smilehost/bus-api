@@ -10,8 +10,7 @@ const prisma = new PrismaClient();
 
 app.disable("x-powered-by");
 
-
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/api", express.static(path.join(__dirname, "public")));
 
 app.use(
   cors({
