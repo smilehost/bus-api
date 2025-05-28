@@ -39,7 +39,7 @@ export class PaymentMethodController {
       const data = result.map(({ payment_method_url, ...rest }) => rest)
       res.status(200).json({
         message: "Payment methods retrieved successfully",
-        data,
+        result:data,
       });
     } catch (error) {
       if (error instanceof AppError) {
