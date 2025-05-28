@@ -134,6 +134,12 @@ export class RouteTicketRepository {
             route_ticket_route_id: true,
             route_ticket_amount: true,
             route_ticket_type: true,
+            route:{
+              select:{
+                route_name_th:true,
+                route_name_en:true,
+              }
+            }
           },
         }),
         this.prisma.route_ticket.count({ where }),
