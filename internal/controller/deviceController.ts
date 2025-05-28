@@ -13,12 +13,13 @@ export class DeviceController {
       const { com_id, query } = Util.extractRequestContext<
         void,
         void,
-        { page: number; size: number; search: string; status?: number } 
+        { page: number; size: number; search: string; status?: number; com_id:number } 
       >(req, {
         query: true,
       });
 
       const result = await this.deviceService.getByPagination(
+        query.com_id,
         query.page,
         query.size,
         query.search,
