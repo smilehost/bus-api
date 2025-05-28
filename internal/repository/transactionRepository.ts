@@ -42,7 +42,9 @@ export class TransactionRepository {
         select:{
           transaction_lat:true,
           transaction_long:true,
-          transaction_route_id:true
+          transaction_route_id:true,
+          transaction_amount:true,
+          transaction_payment_method_id:true
         }
       });
     } catch (error) {
