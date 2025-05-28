@@ -69,6 +69,9 @@ export class RouteRepository {
           skip,
           take,
           where,
+          include:{
+            route_date:true
+          },
           orderBy: { route_id: "desc" },
         }),
         this.prisma.route.count({ where }),
