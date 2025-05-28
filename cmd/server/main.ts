@@ -47,6 +47,7 @@ app.get("/qr", (_, res) => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>QR Code</title>
+        <base href="/api/" />
         <style>
           body {
             margin: 0;
@@ -67,7 +68,7 @@ app.get("/qr", (_, res) => {
         </style>
       </head>
       <body>
-        <img src="./public/qr.jpg" alt="QR Code" />
+        <img src="qr.jpg" alt="QR Code" />
       </body>
     </html>
   `);
