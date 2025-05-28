@@ -25,6 +25,9 @@ export class AccountRepository {
     try {
       const where = {
         account_com_id: comId,
+        account_role: {
+          not: "1",
+        },
         ...(search.trim()
           ? {
               OR: [

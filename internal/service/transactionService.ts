@@ -75,7 +75,7 @@ export class TransactionService {
     newTickets: CreateTicketDto[],
     slipImage: any
   ) {
-    if (slipImage || slipImage.buffer) {
+    if (slipImage !== undefined) {
       await this.saveSilp(comId, slipImage, transactionId);
     }
 
