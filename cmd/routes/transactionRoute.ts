@@ -39,7 +39,7 @@ export class TransactionRoute {
 
   private setupRoutes(): void {
     this.router.post("/", this.controller.create.bind(this.controller));
-    this.router.post(
+    this.router.get(
       "/pollTransactionStatus/:transaction_id",
       this.controller.checkingByPolling.bind(this.controller)
     );
