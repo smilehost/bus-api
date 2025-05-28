@@ -135,6 +135,10 @@ export class TransactionService {
     }
   }
 
+  async getTransactionPositions(comId:number){
+    return await this.transactionRepository.getTransactionPositions(comId)
+  }
+
   private async decreaseRemain(tickets: CreateTicketDto[]) {
     for (const ticket of tickets) {
       const routeTicket = await this.transactionRepository.getRouteTicketById(

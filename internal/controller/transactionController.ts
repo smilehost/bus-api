@@ -140,4 +140,26 @@ export class TransactionController {
       }
     }
   }
+
+  async getTransactionPosition(req: Request, res: Response) {
+    try {
+      const { com_id } = Util.extractRequestContext(req,);
+
+      const result = await this.transactionService.getTransactionPositions(com_id);
+
+      res.status(200).json({
+        message: "Slip image uploaded successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      } else {
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
 }

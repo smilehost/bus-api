@@ -56,6 +56,10 @@ export class TransactionRoute {
       "/callback/static",
       this.controller.transactionCallbackStatic.bind(this.controller)
     );
+    this.router.get(
+      "/position",
+      this.controller.getTransactionPosition.bind(this.controller)
+    );
   }
 
   public routing(): Router {

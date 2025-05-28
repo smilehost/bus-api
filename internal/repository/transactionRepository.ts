@@ -33,6 +33,25 @@ export class TransactionRepository {
     }
   }
 
+  async getTransactionPositions(com_id:number){
+    try {
+      return await this.prisma.transaction.findMany({
+        where: {
+          transaction_com_id:com_id,
+        },
+        select:{
+          transaction_lat:true,
+          transaction_long:true,
+          transaction_route_id:true
+        }
+      });
+    } catch (error) {
+      console.log("1qrewrrewrerewrewrwfsdgfdgfdgfdgfdgdger");
+      
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async getById(transaction_id: number) {
     try {
       return await this.prisma.transaction.findUnique({

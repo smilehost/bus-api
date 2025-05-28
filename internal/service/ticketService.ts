@@ -63,7 +63,7 @@ export class TicketService {
     return ticket;
   }
 
-  async ticketReschedule(ticket_uuid:string,newDate:string,newTime:string){
+  async ticketReschedule(comId:number,ticket_uuid:string,newDate:string,newTime:string){
     const ticket = await this.ticketRepository.findByUUID(ticket_uuid)
     if (!ticket) {
       throw AppError.NotFound("Ticket not found");
@@ -85,6 +85,10 @@ export class TicketService {
     }
 
     const { ticket_id, ...newTicketData }: ticket = ticket;
+    newTicketData.ticket_date = newDate
+    newTicketData.ticket_time = newTime
+    const prefix = this.getPrefix(comId,newDate)
+    await this.ticketRepository.getLastByPrefix(prefix)
     
 
     const newTicket = await this.ticketRepository.createTicket(newTicketData)
@@ -119,6 +123,18 @@ export class TicketService {
       totalPages: Math.ceil(total / size),
       currentPage: page,
     };
+  }
+
+  private async generateUUID(com_id:number,date:string){
+    const prefix = this.getPrefix(com_id, date);
+    let nextSuffix = "0000"; // default starting point
+    const latestTicket = await this.ticketRepository.getLastByPrefix(prefix);
+    if (latestTicket && latestTicket.ticket_uuid) {
+      const parts = latestTicket.ticket_uuid.split("-");
+      if (parts.length > 2) {
+        nextSuffix = parts[parts.length - 1];
+      }
+    }
   }
 
   private getPrefix(com_id: number, travelDate: string): string {
