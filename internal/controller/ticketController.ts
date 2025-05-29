@@ -14,8 +14,6 @@ export class TicketController {
         {page: number; size: number; search: string, status: string }
       >(req, {query: true,});
 
-      console.log(query)
-
       const result = await this.ticketService.getByPagination(
         com_id,
         query.page,
@@ -24,9 +22,31 @@ export class TicketController {
         query.status
       )
 
-      console.log(result)
       res.status(200).json({
         message: "Tickets retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
+  async cancelTicket(req: Request, res: Response) {
+    try {
+      const { com_id, body} = Util.extractRequestContext<
+        {ticket_uuid:string,ticket_note:string}
+      >(req, {body:true});
+
+      const result = await this.ticketService.cancelTicket(body.ticket_uuid,body.ticket_note)
+      res.status(200).json({
+        message: "Tickets cancelled successfully",
         result,
       });
     } catch (error) {

@@ -25,6 +25,11 @@ export class TicketRoute {
       "/all",
       this.controller.getByPagination.bind(this.controller)
     );
+
+    this.router.patch(
+      "/cancel",
+      this.controller.cancelTicket.bind(this.controller)
+    );
   }
 
   public routing(): Router {

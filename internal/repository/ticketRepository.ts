@@ -47,6 +47,20 @@ export class TicketRepository {
     }
   }
 
+  async updateStatus(ticket_id:number,status:string,note:string){
+    try {
+      return await this.prisma.ticket.update({
+        where: { ticket_id },
+        data:{
+          ticket_status:status,
+          ticket_note:note
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async findById(ticket_id: number): Promise<ticket | null> {
     try {
       return await this.prisma.ticket.findUnique({
@@ -77,7 +91,6 @@ export class TicketRepository {
         : {}),
     };
 
-    console.log(whereCondition);
     if (!(status === "")) {
       whereCondition.ticket_status = status;
     }

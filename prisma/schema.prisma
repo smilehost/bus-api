@@ -64,21 +64,23 @@ model payment_method {
 }
 
 model route {
-  route_id      Int                  @id @default(autoincrement())
-  route_name_th String               @db.VarChar(300)
-  route_name_en String               @db.VarChar(300)
-  route_color   String               @db.VarChar(300)
-  route_status  Int
-  route_com_id  Int
-  route_date_id Int
-  route_time_id Int
-  route_array   String               @db.VarChar(300)
-  route_time    route_time           @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
-  route_date    route_date           @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
-  company       company              @relation(fields: [route_com_id], references: [com_id])
-  routeTickets  route_ticket[]
-  ticketPrices  route_ticket_price[]
-  transactions  transaction[]
+  route_id                Int                  @id @default(autoincrement())
+  route_name_th           String               @db.VarChar(300)
+  route_name_en           String               @db.VarChar(300)
+  route_color             String               @db.VarChar(300)
+  route_status            Int
+  route_com_id            Int
+  route_date_id           Int
+  route_time_id           Int
+  route_array             String               @db.VarChar(300)
+  route_ticket_url_header String               @db.VarChar(300)
+  route_ticket_url_footer String               @db.VarChar(300)
+  route_time              route_time           @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
+  route_date              route_date           @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
+  company                 company              @relation(fields: [route_com_id], references: [com_id])
+  routeTickets            route_ticket[]
+  ticketPrices            route_ticket_price[]
+  transactions            transaction[]
 
   @@index([route_time_id], map: "route_time_id")
   @@index([route_com_id], map: "route_com_id")
@@ -239,6 +241,7 @@ model ticket {
   ticket_location_stop   Int
   ticket_route_ticket_id Int
   ticket_discount_price  Float
+  ticket_note            String         @db.VarChar(300)
   startLocation          route_location @relation("StartLocation", fields: [ticket_location_start], references: [route_location_id])
   stopLocation           route_location @relation("StopLocation", fields: [ticket_location_stop], references: [route_location_id])
   route_ticket           route_ticket   @relation(fields: [ticket_route_ticket_id], references: [route_ticket_id])

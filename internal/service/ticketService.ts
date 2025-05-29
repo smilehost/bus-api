@@ -43,7 +43,7 @@ export class TicketService {
         nextSuffix = this.incrementAlphaNum(nextSuffix);
         const newTicketObject: Omit<ticket, "ticket_id"> = {
           ...ticketDto, // Spread all fields from CreateTicketDto
-          ticket_status: "active", // Override status
+          ticket_status: "INUSE", // Override status
           ticket_date: date, // Override date (date is string from ticketGroups)
           ticket_transaction_id: transactionId, // Set transaction_id
           ticket_uuid: `${prefix}-${nextSuffix}`, // Set UUID
@@ -63,11 +63,12 @@ export class TicketService {
     return ticket;
   }
 
-  async ticketReschedule(comId:number,ticket_uuid:string,newDate:string,newTime:string){
+  async cancelTicket(ticket_uuid:string,note:string){
     const ticket = await this.ticketRepository.findByUUID(ticket_uuid)
     if (!ticket) {
       throw AppError.NotFound("Ticket not found");
     }
+
     const oldSchedule:ShiftingRemainDto = {
       date:ticket.ticket_date,
       time:ticket.ticket_time,
@@ -75,24 +76,12 @@ export class TicketService {
       maxTicket:ticket.route_ticket.route_ticket_amount,
       amount:1
     }
-
-    const newSchedule:ShiftingRemainDto = {
-      date:newDate,
-      time:newTime,
-      routeTicketId:ticket.ticket_route_ticket_id,
-      maxTicket:ticket.route_ticket.route_ticket_amount,
-      amount:1
-    }
-
-    const { ticket_id, ...newTicketData }: ticket = ticket;
-    newTicketData.ticket_date = newDate
-    newTicketData.ticket_time = newTime
-    const prefix = this.getPrefix(comId,newDate)
-    await this.ticketRepository.getLastByPrefix(prefix)
-    
-
-    const newTicket = await this.ticketRepository.createTicket(newTicketData)
     await this.ticketRemainService.increaseTicketRemain(oldSchedule)
+    return await this.ticketRepository.updateStatus(
+      ticket.ticket_id,
+      "CANCELLED",
+      note
+    )
   }
 
   async getByPagination(
@@ -125,17 +114,6 @@ export class TicketService {
     };
   }
 
-  private async generateUUID(com_id:number,date:string){
-    const prefix = this.getPrefix(com_id, date);
-    let nextSuffix = "0000"; // default starting point
-    const latestTicket = await this.ticketRepository.getLastByPrefix(prefix);
-    if (latestTicket && latestTicket.ticket_uuid) {
-      const parts = latestTicket.ticket_uuid.split("-");
-      if (parts.length > 2) {
-        nextSuffix = parts[parts.length - 1];
-      }
-    }
-  }
 
   private getPrefix(com_id: number, travelDate: string): string {
     const date = new Date(travelDate);

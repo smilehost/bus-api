@@ -13,7 +13,6 @@ export class TransactionRepository {
     try {
       return await this.prisma.$transaction(async (tx) => {
         if (member) {
-          console.log(member)
           const { member_id, ...memberData } = member;
           const createdMember = await tx.member.create({
             data: memberData,
