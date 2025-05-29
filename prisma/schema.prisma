@@ -3,59 +3,82 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model account {
-  account_id       Int    @id @default(autoincrement())
-  account_username String @db.VarChar(300)
-  account_password String @db.VarChar(300)
-  account_name     String @db.VarChar(300)
+  account_id       Int     @id @default(autoincrement())
+  account_username String  @db.VarChar(300)
+  account_password String  @db.VarChar(300)
+  account_name     String  @db.VarChar(300)
   account_com_id   Int
-  account_menu     String @db.VarChar(300)
+  account_menu     String  @db.VarChar(300)
   account_status   Int
-  account_role     String @db.VarChar(300)
+  account_role     String  @db.VarChar(300)
+  company          company @relation(fields: [account_com_id], references: [com_id], onDelete: Cascade)
 
   @@index([account_com_id], map: "account_com_id")
 }
 
 model company {
-  com_id     Int    @id @default(autoincrement())
-  com_prefix String @db.VarChar(300)
-  com_name   String @db.VarChar(3000)
-  com_status Int
+  com_id         Int                       @id @default(autoincrement())
+  com_prefix     String                    @db.VarChar(300)
+  com_name       String                    @db.VarChar(3000)
+  com_status     Int
+  accounts       account[]
+  devices        device[]
+  members        member[]
+  paymentMethods payment_method[]
+  routes         route[]
+  routeDates     route_date[]
+  routeLocations route_location[]
+  priceTypes     route_ticket_price_type[]
+  routeTimes     route_time[]
+  transactions   transaction[]
 }
 
 model member {
-  member_id        Int      @id @default(autoincrement())
+  member_id        Int           @id @default(autoincrement())
   member_com_id    Int
-  member_phone     String   @db.VarChar(300)
-  member_date_time DateTime @db.Timestamp(0)
+  member_phone     String        @db.VarChar(300)
+  member_date_time DateTime      @default(now()) @db.Timestamp(0)
+  company          company       @relation(fields: [member_com_id], references: [com_id], onDelete: Cascade)
+  transactions     transaction[]
 
   @@index([member_com_id], map: "member_com_id")
 }
 
 model payment_method {
-  payment_method_id     Int    @id @default(autoincrement())
-  payment_method_name   String @db.VarChar(300)
+  payment_method_id     Int           @id @default(autoincrement())
+  payment_method_name   String        @db.VarChar(300)
   payment_method_status Int
-  payment_method_url    String @db.VarChar(300)
+  payment_method_url    String        @db.VarChar(300)
+  com_id                Int
+  payment_method_type   String        @db.VarChar(300)
+  payment_method_slip   Int
+  company               company       @relation(fields: [com_id], references: [com_id])
+  transactions          transaction[]
+
+  @@index([com_id], map: "payment_method_com_id")
 }
 
 model route {
-  route_id      Int        @id @default(autoincrement())
-  route_name_th String     @db.VarChar(300)
-  route_name_en String     @db.VarChar(300)
-  route_color   String     @db.VarChar(300)
+  route_id      Int                  @id @default(autoincrement())
+  route_name_th String               @db.VarChar(300)
+  route_name_en String               @db.VarChar(300)
+  route_color   String               @db.VarChar(300)
   route_status  Int
   route_com_id  Int
   route_date_id Int
   route_time_id Int
-  route_array   String     @db.VarChar(300)
-  route_time    route_time @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
-  route_date    route_date @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
+  route_array   String               @db.VarChar(300)
+  route_time    route_time           @relation(fields: [route_time_id], references: [route_time_id], onUpdate: Restrict, map: "route_ibfk_1")
+  route_date    route_date           @relation(fields: [route_date_id], references: [route_date_id], map: "route_ibfk_2")
+  company       company              @relation(fields: [route_com_id], references: [com_id])
+  routeTickets  route_ticket[]
+  ticketPrices  route_ticket_price[]
+  transactions  transaction[]
 
   @@index([route_time_id], map: "route_time_id")
   @@index([route_com_id], map: "route_com_id")
@@ -76,16 +99,20 @@ model route_date {
   route_date_sun    Int
   route_date_com_id Int
   routes            route[]
+  company           company @relation(fields: [route_date_com_id], references: [com_id])
 
   @@index([route_date_com_id], map: "route_date_com_id")
 }
 
 model route_location {
-  route_location_id     Int    @id @default(autoincrement())
-  route_location_name   String @db.VarChar(300)
-  route_location_lat    String @db.VarChar(300)
-  route_location_long   String @db.VarChar(300)
+  route_location_id     Int      @id @default(autoincrement())
+  route_location_name   String   @db.VarChar(300)
+  route_location_lat    String   @db.VarChar(300)
+  route_location_long   String   @db.VarChar(300)
   route_location_com_id Int
+  company               company  @relation(fields: [route_location_com_id], references: [com_id])
+  ticketsStart          ticket[] @relation("StartLocation")
+  ticketsStop           ticket[] @relation("StopLocation")
 
   @@index([route_location_com_id], map: "route_location_com_id")
 }
@@ -96,39 +123,52 @@ model route_time {
   route_time_array  String  @db.VarChar(300)
   route_time_com_id Int
   route             route[]
+  company           company @relation(fields: [route_time_com_id], references: [com_id])
 
   @@index([route_time_com_id], map: "route_time_com_id")
 }
 
 model transaction {
-  transaction_id                 Int      @id @default(autoincrement())
+  transaction_id                 Int              @id @default(autoincrement())
   transaction_com_id             Int
-  transaction_date_time          DateTime @db.Timestamp(0)
-  transaction_lat                String   @db.VarChar(300)
-  transaction_long               String   @db.VarChar(300)
+  transaction_date_time          DateTime         @default(now()) @db.Timestamp(0)
+  transaction_lat                String           @db.VarChar(300)
+  transaction_long               String           @db.VarChar(300)
   transaction_payment_method_id  Int
-  transaction_amount             String   @db.VarChar(300)
+  transaction_amount             String           @db.VarChar(300)
   transaction_pax                Int
   transaction_member_id          Int?
   transaction_route_id           Int
-  transaction_ticket_discount_id Int
-  transaction_status             String   @db.VarChar(300)
-  transaction_note               String   @db.VarChar(300)
+  transaction_ticket_discount_id Int?
+  transaction_status             String           @db.VarChar(300)
+  transaction_note               String           @db.VarChar(300)
   transaction_device_id          Int
+  tickets                        ticket[]
+  company                        company          @relation(fields: [transaction_com_id], references: [com_id])
+  device                         device           @relation(fields: [transaction_device_id], references: [device_id])
+  member                         member?          @relation(fields: [transaction_member_id], references: [member_id])
+  paymentMethod                  payment_method   @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
+  route                          route            @relation(fields: [transaction_route_id], references: [route_id])
+  ticketDiscount                 ticket_discount? @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id], onDelete: Restrict)
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
   @@index([transaction_route_id], map: "transaction_route_id")
   @@index([transaction_device_id], map: "transaction_device_id")
   @@index([transaction_member_id], map: "transaction_ibfk_3")
+  @@index([transaction_ticket_discount_id], map: "transaction_ticket_discount_id")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model ticket_discount {
-  ticket_discount_id    Int    @id @default(autoincrement())
-  ticket_discount_name  String @db.VarChar(300)
-  ticket_discount_type  Int
-  ticket_discount_value String @db.VarChar(300)
+  ticket_discount_id     Int           @id @default(autoincrement())
+  ticket_discount_name   String        @db.VarChar(300)
+  ticket_discount_type   Int
+  ticket_discount_status Int
+  ticket_discount_value  Float
+  ticket_discount_com_id Int
+  transactions           transaction[]
+
+  @@index([ticket_discount_com_id], map: "ticket_discount_com_id")
 }
 
 model route_ticket {
@@ -140,20 +180,25 @@ model route_ticket {
   route_ticket_route_id Int
   route_ticket_amount   Int
   route_ticket_type     String               @db.VarChar(300)
+  route                 route                @relation(fields: [route_ticket_route_id], references: [route_id])
   route_ticket_price    route_ticket_price[] @relation("TicketToPrices")
+  tickets               ticket[]
+  ticket_remains        ticket_remain[]
 
   @@index([route_ticket_route_id], map: "route_ticket_route_id")
 }
 
 model route_ticket_price {
-  route_ticket_price_id        Int          @id @default(autoincrement())
-  route_ticket_location_start  String       @db.VarChar(300)
-  route_ticket_location_stop   String       @db.VarChar(300)
-  price                        String       @db.VarChar(300)
+  route_ticket_price_id        Int                     @id @default(autoincrement())
+  route_ticket_location_start  String                  @db.VarChar(300)
+  route_ticket_location_stop   String                  @db.VarChar(300)
+  price                        String                  @db.VarChar(300)
   route_ticket_price_type_id   Int
   route_ticket_price_ticket_id Int
   route_ticket_price_route_id  Int
-  route_ticket                 route_ticket @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
+  route                        route                   @relation(fields: [route_ticket_price_route_id], references: [route_id])
+  route_ticket                 route_ticket            @relation("TicketToPrices", fields: [route_ticket_price_ticket_id], references: [route_ticket_id])
+  price_type                   route_ticket_price_type @relation(fields: [route_ticket_price_type_id], references: [route_ticket_price_type_id])
 
   @@index([route_ticket_price_route_id], map: "route_ticket_price_route_id")
   @@index([route_ticket_price_ticket_id], map: "route_ticket_price_ticket_id")
@@ -161,46 +206,57 @@ model route_ticket_price {
 }
 
 model route_ticket_price_type {
-  route_ticket_price_type_id     Int    @id @default(autoincrement())
-  route_ticket_price_type_name   String @db.VarChar(300)
+  route_ticket_price_type_id     Int                  @id @default(autoincrement())
+  route_ticket_price_type_name   String               @db.VarChar(300)
   route_ticket_price_type_com_id Int
+  route_ticket_prices            route_ticket_price[]
+  company                        company              @relation(fields: [route_ticket_price_type_com_id], references: [com_id])
 
   @@index([route_ticket_price_type_com_id], map: "route_ticket_price_type_com_id")
 }
 
 model ticket_remain {
-  ticket_remain_id              String @id @db.VarChar(300)
-  ticket_remain_date            String @db.VarChar(300)
-  ticket_remain_time            String @db.VarChar(300)
+  ticket_remain_id              String       @id @db.VarChar(300)
+  ticket_remain_date            String       @db.VarChar(300)
+  ticket_remain_time            String       @db.VarChar(300)
   ticket_remain_number          Int
   ticket_remain_route_ticket_id Int
+  route_ticket                  route_ticket @relation(fields: [ticket_remain_route_ticket_id], references: [route_ticket_id])
 
   @@index([ticket_remain_route_ticket_id], map: "ticket_remain_route_ticket_id")
 }
 
 model ticket {
-  ticket_id              Int    @id @default(autoincrement())
+  ticket_id              Int            @id @default(autoincrement())
   ticket_transaction_id  Int
-  ticket_date            String @db.VarChar(300)
-  ticket_time            String @db.VarChar(300)
-  ticket_type            String @db.VarChar(300)
-  ticket_price           String @db.VarChar(300)
-  ticket_status          String @db.VarChar(300)
-  ticket_uuid            String @db.VarChar(300)
+  ticket_date            String         @db.VarChar(300)
+  ticket_time            String         @db.VarChar(300)
+  ticket_type            String         @db.VarChar(300)
+  ticket_price           String         @db.VarChar(300)
+  ticket_status          String         @db.VarChar(300)
+  ticket_uuid            String         @db.VarChar(300)
   ticket_location_start  Int
   ticket_location_stop   Int
   ticket_route_ticket_id Int
-  ticket_discount_price  Float  @db.Float
+  ticket_discount_price  Float
+  startLocation          route_location @relation("StartLocation", fields: [ticket_location_start], references: [route_location_id])
+  stopLocation           route_location @relation("StopLocation", fields: [ticket_location_stop], references: [route_location_id])
+  route_ticket           route_ticket   @relation(fields: [ticket_route_ticket_id], references: [route_ticket_id])
+  transaction            transaction    @relation(fields: [ticket_transaction_id], references: [transaction_id])
 
   @@index([ticket_transaction_id], map: "ticket_transaction_id")
   @@index([ticket_route_ticket_id], map: "ticket_route_ticket_id")
+  @@index([ticket_location_start], map: "ticket_location_start")
+  @@index([ticket_location_stop], map: "ticket_location_stop")
 }
 
 model device {
-  device_id            Int    @id @default(autoincrement())
+  device_id            Int           @id @default(autoincrement())
   device_com_id        Int
-  device_serial_number String @db.VarChar(300)
+  device_serial_number String        @db.VarChar(300)
   device_status        Int
+  company              company       @relation(fields: [device_com_id], references: [com_id])
+  transactions         transaction[]
 
   @@index([device_com_id], map: "device_com_id")
 }

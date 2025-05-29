@@ -1,7 +1,6 @@
 import { PrismaClient, ticket_remain } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
-
 export class TicketRemainRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
@@ -84,10 +83,15 @@ export class TicketRemainRepository {
 
   async createRemain(data: ticket_remain) {
     try {
-      return await this.prisma.ticket_remain.create({
+      const remain = await this.prisma.ticket_remain.create({
         data,
       });
+
+      console.log("Creating ticket remain with data:", remain);
+      return remain;
     } catch (error) {
+      console.log("Error creating ticket remain:", error);
+
       throw AppError.fromPrismaError(error);
     }
   }

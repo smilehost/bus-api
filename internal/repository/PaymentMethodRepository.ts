@@ -14,9 +14,11 @@ export class PaymentMethodRepository {
     }
   }
 
-  async getAll() {
+  async getAll(com_id:number) {
     try {
-      return await this.prisma.payment_method.findMany();
+      return await this.prisma.payment_method.findMany({
+        where:{com_id:com_id}
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
@@ -32,15 +34,7 @@ export class PaymentMethodRepository {
     }
   }
 
-  async getActivePaymentMethods() {
-    try {
-      return await this.prisma.payment_method.findMany({
-        where: { payment_method_status: 1 },
-      });
-    } catch (error) {
-      throw AppError.fromPrismaError(error);
-    }
-  }
+  
 
   async update(payment_method_id: number, data: Partial<Omit<payment_method, 'payment_method_id'>>) {
     try {

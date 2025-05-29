@@ -13,9 +13,13 @@ import { RouteLocationRoutes } from "../routes/routeLocationRoute";
 import { RouteTicketRoutes } from "../routes/routeTicketRoute";
 import { TicketPriceTypeRoute } from "../routes/ticketPriceTypeRoute";
 import { TicketRemainRoute } from "../routes/ticketRemainRoute";
-import { TransactionRoute } from "../routes/transactionRoute";
 import { MemberRoute } from "../routes/memberRoute";
-// import { TransactionRoute } from "../routes/transactionRoute";
+import { TransactionRoute } from "../routes/transactionRoute";
+import { DiscountRoutes } from "../routes/discountRoute";
+import { PaymentMethodRoutes } from "../routes/paymentMethodRoute";
+import { TicketRoute } from "../routes/ticketRoute";
+import { DeviceRoutes } from "../routes/deviceRoute";
+
 
 export const Routes = (prisma: PrismaClient): Router => {
   const router = Router();
@@ -24,6 +28,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   // Auth & Account
   const authRoutes = new AuthRoutes(prisma);
   const accountRoutes = new AccountRoutes(prisma);
+  const deviceRoutes = new DeviceRoutes(prisma)
 
   // Company
   const companyRoutes = new CompanyRoutes(prisma);
@@ -34,14 +39,32 @@ export const Routes = (prisma: PrismaClient): Router => {
   const routeRoutes = new RouteRoutes(prisma, routeDateRoutes.repo);
 
   // Route submodules
-  const routeLocationRoutes = new RouteLocationRoutes(prisma, comRepo, routeRoutes.service);
+  const routeLocationRoutes = new RouteLocationRoutes(
+    prisma,
+    comRepo,
+    routeRoutes.service
+  );
   const ticketRemainRoute = new TicketRemainRoute(prisma, routeTimeRoutes.repo);
-  const routeTicketRoutes = new RouteTicketRoutes(prisma, routeRoutes.repo, routeRoutes.service, ticketRemainRoute);
+  const routeTicketRoutes = new RouteTicketRoutes(
+    prisma,
+    routeRoutes.repo,
+    routeRoutes.service,
+    ticketRemainRoute
+  );
   const ticketPriceTypeRoute = new TicketPriceTypeRoute(prisma);
 
   // Transaction
-  const memberRoutes = new MemberRoute(prisma,comRepo)
-  const transactionRoutes = new TransactionRoute(prisma, comRepo,memberRoutes.repo,ticketRemainRoute.service);
+  const memberRoutes = new MemberRoute(prisma, comRepo);
+  const discountRoutes = new DiscountRoutes(prisma)
+  const paymentMethodRoute = new PaymentMethodRoutes(prisma)
+  const ticketRoutes = new TicketRoute(prisma,ticketRemainRoute.service)
+  const transactionRoutes = new TransactionRoute(
+    prisma,
+    comRepo,
+    ticketRemainRoute.service,
+    paymentMethodRoute.service,
+    ticketRoutes.service
+  );
 
   // Mount routes
   router.use("/auth", authRoutes.routing());
@@ -56,7 +79,11 @@ export const Routes = (prisma: PrismaClient): Router => {
 
   router.use("/ticketRemain", ticketRemainRoute.routing());
   router.use("/ticketPriceType", ticketPriceTypeRoute.routing());
+  router.use("/paymentMethod", paymentMethodRoute.routing());
   router.use("/transaction", transactionRoutes.routing());
+  router.use("/ticket", ticketRoutes.routing()); // Added ticket route
+  router.use("/ticketdiscount", discountRoutes.routing());
+  router.use("/device", deviceRoutes.routing());
 
   return router;
 };

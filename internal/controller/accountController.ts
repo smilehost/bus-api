@@ -14,7 +14,7 @@ export class AccountController {
       const { com_id, query } = Util.extractRequestContext<
         void,
         void,
-        { page: number; size: number; search: string, status: number }
+        { page: number; size: number; search: string; status: number; }
       >(req, {
         query: true,
       });

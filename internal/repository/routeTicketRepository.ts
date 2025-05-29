@@ -32,6 +32,22 @@ export class RouteTicketRepository {
     }
   }
 
+  async getAllTicketsByRouteIdForGetTicketsByLocations(routeId: number) {
+    try {
+      return await this.prisma.route_ticket.findMany({
+        where: {
+          route_ticket_route_id: routeId,
+          route_ticket_status: 1,
+        },
+        orderBy: {
+          route_ticket_id: "desc",
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async getTicketPricingByLocation(
     ticketId: number,
     startId?: string,
@@ -50,23 +66,36 @@ export class RouteTicketRepository {
         query.route_ticket_location_stop = stopId;
       }
 
-      return await this.prisma.route_ticket_price.findMany({
+      const results = await this.prisma.route_ticket_price.findMany({
         where: query,
+        include: {
+          price_type: {
+            select: {
+              route_ticket_price_type_name: true,
+            },
+          },
+        },
       });
+
+      // Flatten `price_type.route_ticket_price_type_name` to top level
+      return results.map((item) => ({
+        ...item,
+        route_ticket_price_type_name:
+          item.price_type?.route_ticket_price_type_name ?? null,
+        price_type: undefined, // optional: remove nested object if not needed
+      }));
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
-
 
   async getPaginated(
     comId: number,
     skip: number,
     take: number,
     search: string,
-    status: number|null,
+    status: number | null
   ): Promise<[any[], number]> {
-
     try {
       const relatedRouteIds = (
         await this.prisma.route.findMany({
@@ -87,11 +116,8 @@ export class RouteTicketRepository {
               ],
             }
           : {}),
-          ...(typeof status === "number"
-            ? { route_ticket_status: status }
-          : {}),
+        ...(typeof status === "number" ? { route_ticket_status: status } : {}),
       };
-  
 
       const [data, total] = await this.prisma.$transaction([
         this.prisma.route_ticket.findMany({
@@ -108,6 +134,13 @@ export class RouteTicketRepository {
             route_ticket_route_id: true,
             route_ticket_amount: true,
             route_ticket_type: true,
+            route:{
+              select:{
+                route_name_th:true,
+                route_name_en:true,
+                route_status:true,
+              }
+            }
           },
         }),
         this.prisma.route_ticket.count({ where }),
@@ -243,7 +276,7 @@ export class RouteTicketRepository {
     }
   }
 
-  async updateStatus(id: number, status:number) {
+  async updateStatus(id: number, status: number) {
     try {
       return await this.prisma.route_ticket.update({
         where: { route_ticket_id: id },
@@ -275,5 +308,4 @@ export class RouteTicketRepository {
       throw AppError.fromPrismaError(error);
     }
   }
-
 }
