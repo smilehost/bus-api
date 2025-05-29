@@ -134,16 +134,7 @@ export class RouteRepository {
   async create(data: route) {
     try {
       return await this.prisma.route.create({
-        data: {
-          route_name_th: data.route_name_th,
-          route_name_en: data.route_name_en,
-          route_color: data.route_color,
-          route_status: data.route_status,
-          route_com_id: data.route_com_id,
-          route_date_id: data.route_date_id,
-          route_time_id: data.route_time_id,
-          route_array: data.route_array,
-        },
+        data,
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);
@@ -154,16 +145,7 @@ export class RouteRepository {
     try {
       return await this.prisma.route.update({
         where: { route_id: routeId },
-        data: {
-          route_name_th: data.route_name_th,
-          route_name_en: data.route_name_en,
-          route_color: data.route_color,
-          route_status: data.route_status,
-          route_com_id: data.route_com_id,
-          route_date_id: data.route_date_id,
-          route_time_id: data.route_time_id,
-          route_array: data.route_array,
-        },
+        data: data,
       });
     } catch (error) {
       throw AppError.fromPrismaError(error);

@@ -25,10 +25,8 @@ export class TicketRemainService {
     let ticketRemain = await this.ticketRemainRepository.getById(
       ticketRemainId
     );
-    console.log("ticketRemainId", ticketRemainId);
 
     if (ticketRemain !== null) {
-      console.log("ticketRemaidfsfdsffsdfn", ticketRemain);
 
       return ticketRemain;
     }
