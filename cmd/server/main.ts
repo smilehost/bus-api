@@ -7,10 +7,10 @@ import path from "path";
 const app = express();
 const port = process.env.PORT ?? 3000;
 const prisma = new PrismaClient();
-
 app.disable("x-powered-by");
 
-app.use(express.static(path.join(__dirname)));
+
+app.use("/api", express.static(path.join(__dirname, "public")));
 
 app.use(
   cors({
@@ -66,7 +66,7 @@ app.get("/qr", (_, res) => {
         </style>
       </head>
       <body>
-        <img src="./qr.jpg" alt="QR Code" />
+        <img src="/api/qrCode.jpg" alt="QR Code" />
       </body>
     </html>
   `);
