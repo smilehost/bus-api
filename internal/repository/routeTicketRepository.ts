@@ -305,6 +305,7 @@ export class RouteTicketRepository {
         });
       });
     } catch (error) {
+      console.log(error)
       throw AppError.fromPrismaError(error);
     }
   }

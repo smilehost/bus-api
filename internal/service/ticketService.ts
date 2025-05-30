@@ -72,8 +72,8 @@ export class TicketService {
     const oldSchedule:ShiftingRemainDto = {
       date:ticket.ticket_date,
       time:ticket.ticket_time,
-      routeTicketId:ticket.ticket_route_ticket_id,
-      maxTicket:ticket.route_ticket.route_ticket_amount,
+      routeTicketId:ticket.ticket_route_ticket_id!,
+      maxTicket:ticket.route_ticket!.route_ticket_amount,
       amount:1
     }
     await this.ticketRemainService.increaseTicketRemain(oldSchedule)

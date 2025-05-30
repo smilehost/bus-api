@@ -147,7 +147,7 @@ export class TransactionService {
   private async decreaseRemain(tickets: CreateTicketDto[]) {
     for (const ticket of tickets) {
       const routeTicket = await this.transactionRepository.getRouteTicketById(
-        ticket.ticket_route_ticket_id
+        ticket.ticket_route_ticket_id!
       );
       if (!routeTicket) throw AppError.NotFound("routeTicket Not fond");
 
