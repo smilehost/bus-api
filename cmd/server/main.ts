@@ -34,15 +34,6 @@ const choices = {
   "5": "เลือกวัน",
 };
 
-app.get("/areYouPay", (req, res) => {
-  const { money } = req.query as { money: string };
-
-  res.json({
-    message: `Pay Successfully`,
-    amount: money,
-  });
-});
-
 app.get("/api/areYouPay/:choice", (req, res) => {
   const { choice } = req.params as { choice: keyof typeof choices };
   const day = req.query.day;
