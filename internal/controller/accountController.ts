@@ -49,8 +49,14 @@ export class AccountController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const { com_id } = Util.extractRequestContext(req);
-      const result = await this.accountService.getAll(com_id);
+      const { com_id, query } = Util.extractRequestContext<
+      void,
+      void,
+      { com_id:number}
+    >(req, {
+      query: true,
+    });
+      const result = await this.accountService.getAll(query.com_id);
 
       res.status(200).json({
         message: "Accounts retrieved successfully",
