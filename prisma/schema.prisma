@@ -22,20 +22,21 @@ model account {
 }
 
 model company {
-  com_id         Int                       @id @default(autoincrement())
-  com_prefix     String                    @db.VarChar(300)
-  com_name       String                    @db.VarChar(3000)
-  com_status     Int
-  accounts       account[]
-  devices        device[]
-  members        member[]
-  paymentMethods payment_method[]
-  routes         route[]
-  routeDates     route_date[]
-  routeLocations route_location[]
-  priceTypes     route_ticket_price_type[]
-  routeTimes     route_time[]
-  transactions   transaction[]
+  com_id          Int                       @id @default(autoincrement())
+  com_prefix      String                    @db.VarChar(300)
+  com_name        String                    @db.VarChar(3000)
+  com_status      Int
+  accounts        account[]
+  devices         device[]
+  members         member[]
+  paymentMethods  payment_method[]
+  routes          route[]
+  routeDates      route_date[]
+  routeLocations  route_location[]
+  priceTypes      route_ticket_price_type[]
+  routeTimes      route_time[]
+  ticket_discount ticket_discount[]
+  transactions    transaction[]
 }
 
 model member {
@@ -168,6 +169,7 @@ model ticket_discount {
   ticket_discount_status Int
   ticket_discount_value  Float
   ticket_discount_com_id Int
+  company                company       @relation(fields: [ticket_discount_com_id], references: [com_id], onUpdate: Restrict, map: "ticket_discount_ibfk_1")
   transactions           transaction[]
 
   @@index([ticket_discount_com_id], map: "ticket_discount_com_id")
