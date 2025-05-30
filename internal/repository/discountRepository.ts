@@ -32,6 +32,7 @@ export class DiscountRepository {
         data,
       });
     } catch (error) {
+      console.log(error)
       throw AppError.fromPrismaError(error);
     }
   }
