@@ -46,7 +46,7 @@ export class AccountService {
     const account = await this.accountRepository.getById(accountId);
 
     if (!account) throw AppError.NotFound("Account not found");
-    this.requesterPermissionCheck(requester,account,true)
+    Util.requesterPermissionCheck(requester,account,"lowerOrSelf")
 
     return account;
   }
@@ -58,7 +58,7 @@ export class AccountService {
       throw AppError.NotFound("Account not found");
     }
 
-    this.requesterPermissionCheck(requester,existing,true)
+    Util.requesterPermissionCheck(requester,existing,"lowerOrSelf")
 
     // เช็คเฉพาะ field ที่ถูกเปลี่ยน และอยู่ในรายการต้องห้าม
     const forbiddenFields: (keyof account)[] = [
@@ -98,24 +98,8 @@ export class AccountService {
     if (!account) {
       throw AppError.NotFound("Account to delete not found");
     }
-    this.requesterPermissionCheck(requester,account,false)
+    Util.requesterPermissionCheck(requester,account,"lower")
 
     return this.accountRepository.delete(account_id);
-  }
-
-  private requesterPermissionCheck(requester:JwtPayloadUser,requested:account,allowedSame:boolean){
-    if (!Util.ValidCompany(requester.com_id, requested.account_com_id) && 
-        requester.account_role !== "1") {
-      throw AppError.Forbidden("Account: Company ID does not match");
-    }
-    if(allowedSame){
-      if (Number(requester.account_role)>Number(requested.account_role)) {
-        throw AppError.Forbidden("Account: Your role is lower than The Requested");
-      }
-    }else{
-      if (Number(requester.account_role)>=Number(requested.account_role)) {
-        throw AppError.Forbidden("Account: Your role is lower or same level with The Requested");
-      }
-    }
   }
 }

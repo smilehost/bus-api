@@ -5,7 +5,7 @@ import { hashPassword, comparePasswords } from "../utils/hashing";
 import { signJwt } from "../utils/jwt";
 import { Util } from "../utils/util";
 import { RegisterAccount } from "../controller/authController";
-import { JwtPayload } from "jsonwebtoken";
+import { JwtPayloadUser } from "../../cmd/dto";
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
@@ -67,23 +67,14 @@ export class AuthService {
     com_id: number,
     account_id: number,
     newPassword: string,
-    changer: { account_id: number; account_role: string }
+    requester:JwtPayloadUser
   ) {
     const user = await this.authRepository.getUserById(account_id);
     if (!user) {
       throw AppError.NotFound("User not found");
     }
 
-    if (!Util.ValidCompany(com_id, user.account_com_id)) {
-      throw AppError.Forbidden("Company ID does not match");
-    }
-
-    if (
-      user.account_id !== changer.account_id &&
-      user.account_role === "1"
-    ) {
-      throw AppError.Forbidden("can't change other admin password");
-    }
+    Util.requesterPermissionCheck(requester,user,"lowerOrSelf")
 
     const hashedPassword = await hashPassword(newPassword);
     return await this.authRepository.changePassword(
@@ -96,7 +87,7 @@ export class AuthService {
     com_id: number,
     account_id: number,
     newStatus: number,
-    changer: JwtPayload
+    requester: JwtPayloadUser
   ) {
     Util.isVaildStatus(newStatus)
     
@@ -105,21 +96,12 @@ export class AuthService {
       throw AppError.NotFound("User not found");
     }
 
-    if (!Util.ValidCompany(com_id, user.account_com_id)) {
-      throw AppError.Forbidden("Company ID does not match");
-    }
-
-    if (
-      user.account_id !== changer.account_id &&
-      user.account_role === "1"
-    ) {
-      throw AppError.Forbidden("can't change other admin status");
-    }
+    Util.requesterPermissionCheck(requester,user,"lower")
 
     return await this.authRepository.changeStatus(user.account_id, newStatus);
   }
 
-  async createAdmin(com_id: number, name: string, username: string) {
+  async createSuperAdmin(com_id: number, name: string, username: string) {
     const password = this.generatePassword();
 
     const newAdmin: RegisterAccount = {

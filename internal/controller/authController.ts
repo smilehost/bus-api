@@ -3,6 +3,7 @@ import { AppError } from "../utils/appError";
 import { ExceptionHandler } from "../utils/exception";
 import { Request, Response } from "express";
 import { Util } from "../utils/util";
+import { JwtPayloadUser } from "../../cmd/dto";
 
 export interface RegisterAccount {
   name: string;
@@ -73,21 +74,24 @@ export class AuthController {
 
   async register(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RegisterAccount>(
+      const { com_id, body } = Util.extractRequestContext<RegisterAccount & {com_id:number}>(
         req,{body: true,}
       );
-
+    
       if (!body.name || !body.password || !body.role || !body.username) {
         throw AppError.BadRequest(
           "Request these fied:name,password,role,username"
         );
       }
-
-      if (body.role === "1") {
-        throw AppError.Forbidden("Forbidden to create this user");
+      const user:JwtPayloadUser = (req as any).user;
+      if(Number(user.account_role)>=Number(body.role))
+        throw AppError.Forbidden("Your role is too low or same level to create this role");
+      let comId = com_id
+      if(user.account_role === "1"){
+        comId = body.com_id
       }
 
-      const data = await this.authService.register(com_id, body);
+      const data = await this.authService.register(comId, body);
       res.status(201).json({
         message: "User created successfully",
         result: data,
@@ -113,10 +117,6 @@ export class AuthController {
         body: true,
       });
       const changer = (req as any).user;
-
-      if (!body.userId || !body.newPassword) {
-        throw AppError.BadRequest("request id and password");
-      }
 
       const data = await this.authService.changePassword(
         com_id,
