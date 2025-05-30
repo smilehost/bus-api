@@ -6,7 +6,6 @@
     "start": "node dist/cmd/server/main.js",
     "dev": "nodemon",
     "build": "tsc",
-    "postbuild": "cp -r cmd/server/public dist/cmd/server/public",
     "test": "jest --coverage",
     "cli": "ts-node cmd/command.ts"
   },

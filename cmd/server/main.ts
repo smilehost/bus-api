@@ -2,15 +2,11 @@ import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { Routes } from "./routes";
-import path from "path";
 
 const app = express();
 const port = process.env.PORT ?? 3000;
 const prisma = new PrismaClient();
 app.disable("x-powered-by");
-
-
-app.use("/api", express.static(path.join(__dirname, "public")));
 
 app.use(
   cors({
@@ -37,40 +33,6 @@ const choices = {
   "4": "ปีนี้",
   "5": "เลือกวัน",
 };
-
-app.get("/qr", (_, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="th">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>QR Code</title>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f5f5f5;
-            font-family: sans-serif;
-          }
-          img {
-            width: 90%;
-            max-width: 350px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-          }
-        </style>
-      </head>
-      <body>
-        <img src="/api/qrCode.jpg" alt="QR Code" />
-      </body>
-    </html>
-  `);
-});
 
 app.get("/areYouPay", (req, res) => {
   const { money } = req.query as { money: string };
