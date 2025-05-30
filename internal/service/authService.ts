@@ -5,6 +5,7 @@ import { hashPassword, comparePasswords } from "../utils/hashing";
 import { signJwt } from "../utils/jwt";
 import { Util } from "../utils/util";
 import { RegisterAccount } from "../controller/authController";
+import { JwtPayload } from "jsonwebtoken";
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
@@ -95,7 +96,7 @@ export class AuthService {
     com_id: number,
     account_id: number,
     newStatus: number,
-    changer: { account_id: number; account_role: string }
+    changer: JwtPayload
   ) {
     Util.isVaildStatus(newStatus)
     

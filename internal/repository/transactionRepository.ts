@@ -43,11 +43,10 @@ export class TransactionRepository {
           transaction_long:true,
           transaction_route_id:true,
           transaction_amount:true,
-          transaction_payment_method_id:true
+          transaction_payment_method_id:true,
         }
       });
     } catch (error) {
-      console.log("1qrewrrewrerewrewrwfsdgfdgfdgfdgfdgdger");
       
       throw AppError.fromPrismaError(error);
     }

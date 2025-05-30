@@ -22,18 +22,18 @@ export class AccountRoutes {
   }
 
   private setupRoutes(): void {
-    this.router.get("/", this.controller.getByPagination.bind(this.controller));
-    this.router.get("/all", this.controller.getAll.bind(this.controller));
+    this.router.get("/", authorizeRoles("2","1"),this.controller.getByPagination.bind(this.controller));
+    this.router.get("/all",authorizeRoles("2"), this.controller.getAll.bind(this.controller));
     this.router.get(
-      "/:account_id",
+      "/:account_id",authorizeRoles("2","1"),
       this.controller.getById.bind(this.controller)
     );
     this.router.put(
-      "/:account_id",
+      "/:account_id",authorizeRoles("2","1"),
       this.controller.update.bind(this.controller)
     );
     this.router.delete(
-      "/:account_id",
+      "/:account_id",authorizeRoles("2","1"),
       this.controller.delete.bind(this.controller)
     );
   }

@@ -19,8 +19,12 @@ export class AccountController {
         query: true,
       });
 
+      const user:JwtPayloadUser = (req as any).user
+      console.log(user)
+
       const result = await this.accountService.getByPagination(
         com_id,
+        user.account_role,
         query.page,
         query.size,
         query.search,
@@ -72,9 +76,11 @@ export class AccountController {
       >(req, {
         params: true,
       });
+      const user:JwtPayloadUser = (req as any).user
 
       const result = await this.accountService.getById(
         com_id,
+        user,
         params.account_id
       );
       res.status(200).json({
@@ -103,8 +109,10 @@ export class AccountController {
         params: true,
       });
 
+      const user:JwtPayloadUser = (req as any).user
       const result = await this.accountService.update(
         com_id,
+        user,
         params.account_id,
         body
       );
@@ -138,7 +146,7 @@ export class AccountController {
 
       await this.accountService.delete(
         com_id,
-        user.account_id,
+        user,
         params.account_id
       );
 

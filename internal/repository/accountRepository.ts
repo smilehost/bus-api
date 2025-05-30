@@ -17,17 +17,15 @@ export class AccountRepository {
 
   async getPaginated(
     comId: number,
+    account_role:string,
     skip: number,
     take: number,
     search: string,
     status: number | null
   ): Promise<[account[], number]> {
     try {
-      const where = {
-        account_com_id: comId,
-        account_role: {
-          not: "1",
-        },
+      const where: any = {
+        ...(account_role === "2" && { account_com_id: comId }),
         ...(search.trim()
           ? {
               OR: [
@@ -40,6 +38,13 @@ export class AccountRepository {
           ? { account_status: status }
           : {}),
       };
+      if (account_role === "1") {
+        where.account_role = "2";
+      } else if (account_role === "2") {
+        where.account_role = {
+          notIn: ["1", "2"],
+        };
+      }
 
       const [data, total] = await this.prisma.$transaction([
         this.prisma.account.findMany({

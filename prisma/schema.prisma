@@ -22,20 +22,21 @@ model account {
 }
 
 model company {
-  com_id         Int                       @id @default(autoincrement())
-  com_prefix     String                    @db.VarChar(300)
-  com_name       String                    @db.VarChar(3000)
-  com_status     Int
-  accounts       account[]
-  devices        device[]
-  members        member[]
-  paymentMethods payment_method[]
-  routes         route[]
-  routeDates     route_date[]
-  routeLocations route_location[]
-  priceTypes     route_ticket_price_type[]
-  routeTimes     route_time[]
-  transactions   transaction[]
+  com_id          Int                       @id @default(autoincrement())
+  com_prefix      String                    @db.VarChar(300)
+  com_name        String                    @db.VarChar(3000)
+  com_status      Int
+  accounts        account[]
+  devices         device[]
+  members         member[]
+  paymentMethods  payment_method[]
+  routes          route[]
+  routeDates      route_date[]
+  routeLocations  route_location[]
+  priceTypes      route_ticket_price_type[]
+  routeTimes      route_time[]
+  ticket_discount ticket_discount[]
+  transactions    transaction[]
 }
 
 model member {
@@ -80,7 +81,7 @@ model route {
   company                 company              @relation(fields: [route_com_id], references: [com_id])
   routeTickets            route_ticket[]
   ticketPrices            route_ticket_price[]
-  transactions            transaction[]
+  transaction             transaction[]
 
   @@index([route_time_id], map: "route_time_id")
   @@index([route_com_id], map: "route_com_id")
@@ -140,25 +141,25 @@ model transaction {
   transaction_amount             String           @db.VarChar(300)
   transaction_pax                Int
   transaction_member_id          Int?
-  transaction_route_id           Int
+  transaction_route_id           Int?
   transaction_ticket_discount_id Int?
   transaction_status             String           @db.VarChar(300)
   transaction_note               String           @db.VarChar(300)
   transaction_device_id          Int
   tickets                        ticket[]
+  route                          route?           @relation(fields: [transaction_route_id], references: [route_id], map: "transaction_ibfk_1")
   company                        company          @relation(fields: [transaction_com_id], references: [com_id])
   device                         device           @relation(fields: [transaction_device_id], references: [device_id])
   member                         member?          @relation(fields: [transaction_member_id], references: [member_id])
   paymentMethod                  payment_method   @relation(fields: [transaction_payment_method_id], references: [payment_method_id])
-  route                          route            @relation(fields: [transaction_route_id], references: [route_id])
   ticketDiscount                 ticket_discount? @relation(fields: [transaction_ticket_discount_id], references: [ticket_discount_id], onDelete: Restrict)
 
   @@index([transaction_com_id], map: "transaction_com_id")
   @@index([transaction_payment_method_id], map: "transaction_payment_method_id")
-  @@index([transaction_route_id], map: "transaction_route_id")
   @@index([transaction_device_id], map: "transaction_device_id")
   @@index([transaction_member_id], map: "transaction_ibfk_3")
   @@index([transaction_ticket_discount_id], map: "transaction_ticket_discount_id")
+  @@index([transaction_route_id], map: "transaction_ibfk_1")
 }
 
 model ticket_discount {
@@ -168,6 +169,7 @@ model ticket_discount {
   ticket_discount_status Int
   ticket_discount_value  Float
   ticket_discount_com_id Int
+  company                company       @relation(fields: [ticket_discount_com_id], references: [com_id], onUpdate: Restrict, map: "ticket_discount_ibfk_1")
   transactions           transaction[]
 
   @@index([ticket_discount_com_id], map: "ticket_discount_com_id")

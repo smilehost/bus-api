@@ -1,4 +1,5 @@
 import { Express } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 import * as multer from 'multer';
 
 declare global {
