@@ -140,6 +140,11 @@ export class RouteTicketRepository {
                 route_name_en:true,
                 route_status:true,
               }
+            },
+            route_ticket_price: {
+              select: {
+                price: true,
+              },
             }
           },
         }),
