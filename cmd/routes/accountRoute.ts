@@ -22,8 +22,8 @@ export class AccountRoutes {
   }
 
   private setupRoutes(): void {
-    this.router.get("/", authorizeRoles("2","1"),this.controller.getByPagination.bind(this.controller));
-    this.router.get("/all",authorizeRoles("2"), this.controller.getAll.bind(this.controller));
+    this.router.get("/", authorizeRoles("1","2"),this.controller.getByPagination.bind(this.controller));
+    this.router.get("/all",authorizeRoles("1"), this.controller.getAll.bind(this.controller));
     this.router.get(
       "/:account_id",authorizeRoles("2","1"),
       this.controller.getById.bind(this.controller)
@@ -43,22 +43,4 @@ export class AccountRoutes {
   }
 }
 
-export const Account = (prisma: PrismaClient) => {
-  const router = Router();
 
-  const repo = new AccountRepository(prisma);
-  const service = new AccountService(repo);
-  const controller = new AccountController(service);
-
-  router.get("/all", controller.getAll.bind(controller));
-  router.get("/", controller.getByPagination.bind(controller));
-  router.get("/:account_id", controller.getById.bind(controller));
-  router.put("/:account_id", controller.update.bind(controller));
-  router.delete(
-    "/:account_id",
-    authorizeRoles("1"),
-    controller.delete.bind(controller)
-  );
-
-  return router;
-};

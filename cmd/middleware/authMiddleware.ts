@@ -16,8 +16,10 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
 
     try {
       const decoded = verifyJwt(token) as JwtPayloadUser;
+      console.log(decoded,allowedRoles)
 
       if (!allowedRoles.includes(decoded.account_role)) {
+        console.log(decoded.account_role)
         res.status(403).json({ message: "Access denied: insufficient role" });
         return;
       }

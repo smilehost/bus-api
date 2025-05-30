@@ -74,10 +74,7 @@ export class AuthController {
   async register(req: Request, res: Response) {
     try {
       const { com_id, body } = Util.extractRequestContext<RegisterAccount>(
-        req,
-        {
-          body: true,
-        }
+        req,{body: true,}
       );
 
       if (!body.name || !body.password || !body.role || !body.username) {
