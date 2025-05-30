@@ -13,7 +13,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     command: npm run start
     volumes:
-      - ./SilpImages:/app/SilpImages
+      - /root/SilpImages:/app/SilpImages
     networks:
       - bus-network
 
