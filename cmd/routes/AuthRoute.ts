@@ -25,17 +25,16 @@ export class AuthRoutes {
     this.router.post("/login", this.controller.login.bind(this.controller));
     this.router.post("/logout", this.controller.logout.bind(this.controller));
     this.router.post(
-      "/register",
+      "/register",authorizeRoles("1","2"),
       this.controller.register.bind(this.controller)
     );
     this.router.post(
-      "/changepassword",
-      authorizeRoles("1"),
+      "/changepassword",authorizeRoles("1","2","3"),
       this.controller.changePassword.bind(this.controller)
     );
     this.router.post(
       "/changeStatus",
-      authorizeRoles("1"),
+      authorizeRoles("1","2"),
       this.controller.changeStatus.bind(this.controller)
     );
   }

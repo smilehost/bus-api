@@ -44,7 +44,7 @@ export class Util {
         break;
   
       case "lowerOrSelf":
-        if (requesterRole < requestedRole &&requester.account_id !== requested.account_id) 
+        if (requesterRole > requestedRole &&requester.account_id !== requested.account_id) 
           throw AppError.Forbidden("Account: Only lower roles or yourself allowed");
         break;
       default:
