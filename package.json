@@ -6,7 +6,6 @@
     "start": "node dist/cmd/server/main.js",
     "dev": "nodemon",
     "build": "tsc",
-    "postbuild": "cp -r cmd/server/public dist/cmd/server/public",
     "test": "jest --coverage",
     "cli": "ts-node cmd/command.ts"
   },
@@ -21,6 +20,7 @@
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

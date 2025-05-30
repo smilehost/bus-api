@@ -19,6 +19,7 @@ import { DiscountRoutes } from "../routes/discountRoute";
 import { PaymentMethodRoutes } from "../routes/paymentMethodRoute";
 import { TicketRoute } from "../routes/ticketRoute";
 import { DeviceRoutes } from "../routes/deviceRoute";
+import { ReportRoutes } from "../routes/reportRoutes.ts";
 
 
 export const Routes = (prisma: PrismaClient): Router => {
@@ -66,6 +67,9 @@ export const Routes = (prisma: PrismaClient): Router => {
     ticketRoutes.service
   );
 
+  // Report
+  const reportRoutes = new ReportRoutes(prisma, comRepo);
+
   // Mount routes
   router.use("/auth", authRoutes.routing());
   router.use("/accounts", accountRoutes.routing());
@@ -84,6 +88,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   router.use("/ticket", ticketRoutes.routing()); // Added ticket route
   router.use("/ticketdiscount", discountRoutes.routing());
   router.use("/device", deviceRoutes.routing());
+  router.use("/report", reportRoutes.routing());
 
   return router;
 };
