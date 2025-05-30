@@ -12,10 +12,7 @@ export class ReportRoutes {
   public service: ReportService;
   public controller: ReportController;
 
-  constructor(
-    prisma: PrismaClient,
-    comRepo: CompanyRepository,
-  ) {
+  constructor(prisma: PrismaClient, comRepo: CompanyRepository) {
     this.router = Router();
 
     this.repo = new ReportRepository(prisma);
@@ -25,7 +22,7 @@ export class ReportRoutes {
   }
 
   private setupRoutes(): void {
-    this.router.get(
+    this.router.post(
       "/:choice",
       this.controller.getReport.bind(this.controller)
     );

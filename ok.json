@@ -1,0 +1,39 @@
+{
+  "total": {
+    "full_price": "43063",
+    "cancel_ticket": {
+      "amount": 0,
+      "total": "0"
+    },
+    "total_price": "43063"
+  },
+  "payment_method": [
+    {
+      "payment_method_name": "Cash",
+      "full_price": "37036",
+      "cancel_ticket": {
+        "amount": 0,
+        "total": "0"
+      },
+      "total_price": "37036"
+    },
+    {
+      "payment_method_name": "Card",
+      "full_price": "6027",
+      "cancel_ticket": {
+        "amount": 0,
+        "total": "0"
+      },
+      "total_price": "6027"
+    },
+    {
+      "payment_method_name": "Online",
+      "full_price": "0",
+      "cancel_ticket": {
+        "amount": 0,
+        "total": "0"
+      },
+      "total_price": "0"
+    }
+  ]
+}

@@ -11,11 +11,13 @@ export class ReportController {
     try {
       const { com_id, params, body } = Util.extractRequestContext<
         { date: string },
-        { choice: string }
+        { choice: number }
       >(req, {
         params: true,
         body: true,
       });
+      console.log("-----------1");
+      
 
       const result = await this.reportService.getPaymentReport(com_id, params.choice, body.date);
 
