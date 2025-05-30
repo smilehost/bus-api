@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { RouteDateService } from "../service/routeDateService";
-import { RouteDate } from "../../cmd/models";
 import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
+import { route_date } from "@prisma/client";
 
 export class DateController {
   constructor(private readonly routeDateService: RouteDateService) {}
@@ -24,8 +24,9 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
@@ -56,21 +57,25 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async getById(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        RouteDate,
+        route_date,
         { route_date_id: number }
       >(req, {
         params: true,
       });
 
-      const data = await this.routeDateService.getById(com_id, params.route_date_id);
+      const data = await this.routeDateService.getById(
+        com_id,
+        params.route_date_id
+      );
       if (!data) {
         res.status(404).json({ error: "Data not found" });
         return;
@@ -86,14 +91,15 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async create(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RouteDate>(req, {
+      const { com_id, body } = Util.extractRequestContext<route_date>(req, {
         body: true,
       });
 
@@ -109,15 +115,16 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async update(req: Request, res: Response) {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
-        RouteDate,
+        route_date,
         { route_date_id: number }
       >(req, {
         body: true,
@@ -140,15 +147,16 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async delete(req: Request, res: Response) {
     try {
       const { com_id, params } = Util.extractRequestContext<
-        RouteDate,
+        route_date,
         { route_date_id: number }
       >(req, {
         params: true,
@@ -165,8 +173,9 @@ export class DateController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }

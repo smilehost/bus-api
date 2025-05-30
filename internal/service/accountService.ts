@@ -1,39 +1,67 @@
+import { JwtPayloadUser } from "../../cmd/dto";
 import { AccountRepository } from "../repository/accountRepository";
-import { Account } from "../../cmd/models";
 import { AppError } from "../utils/appError";
 import { Util } from "../utils/util";
+import { account } from "@prisma/client";
 
 export class AccountService {
   constructor(private readonly accountRepository: AccountRepository) {}
 
-  async getAll(comId: number): Promise<Account[]> {
+  async getByPagination(
+    comId: number,
+    accountRole:string,
+    page: number,
+    size: number,
+    search: string,
+    status: number
+  ) {
+    search = search.toString();
+
+    const skip = (page - 1) * size;
+    const take = size;
+
+    const [data, total] = await this.accountRepository.getPaginated(
+      comId,
+      accountRole,
+      skip,
+      take,
+      search,
+      status
+    );
+
+    return {
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      data,
+    };
+  }
+
+  async getAll(comId: number): Promise<account[]> {
     return this.accountRepository.getAll(comId);
   }
 
-  async getById(comId: number, accountId: number) {
+  async getById(comId: number,requester:JwtPayloadUser, accountId: number) {
     const account = await this.accountRepository.getById(accountId);
 
     if (!account) throw AppError.NotFound("Account not found");
+    this.requesterPermissionCheck(requester,account,true)
 
-    if (!Util.ValidCompany(comId, account.account_com_id)) {
-      throw AppError.Forbidden("Account: Company ID does not match");
-    }
     return account;
   }
 
-  async update(comId: number, accountId: number, data: Account) {
+  async update(comId: number,requester:JwtPayloadUser, accountId: number, data: account) {
     const existing = await this.accountRepository.getById(accountId);
 
     if (!existing) {
       throw AppError.NotFound("Account not found");
     }
 
-    if (!Util.ValidCompany(comId, existing.account_com_id)) {
-      throw AppError.Forbidden("Account: Company ID does not match");
-    }
+    this.requesterPermissionCheck(requester,existing,true)
 
     // เช็คเฉพาะ field ที่ถูกเปลี่ยน และอยู่ในรายการต้องห้าม
-    const forbiddenFields: (keyof Account)[] = [
+    const forbiddenFields: (keyof account)[] = [
       "account_id",
       "account_username",
       "account_password",
@@ -51,12 +79,12 @@ export class AccountService {
     }
 
     if (data.account_role && data.account_role !== existing.account_role) {
-      if (data.account_role === "1") {
-        throw AppError.Forbidden("Account: Cannot change account role to '1'");
+      if (data.account_role === "1" || data.account_role === "2") {
+        throw AppError.Forbidden("Account: Cannot change account role");
       }
     }
 
-    const sanitized: Partial<Account> = {
+    const sanitized: Partial<account> = {
       account_name: data.account_name,
       account_role: data.account_role,
     };
@@ -64,35 +92,30 @@ export class AccountService {
     return this.accountRepository.update(accountId, sanitized);
   }
 
-  async delete(comId: number, account_id: number, accountId: number) {
-    const accountToDelete = await this.accountRepository.getById(accountId);
-    const requesterAccount = await this.accountRepository.getById(account_id);
-
-    if (!accountToDelete) {
+  async delete(comId: number, requester:JwtPayloadUser, account_id: number) {
+    const account = await this.accountRepository.getById(account_id);
+    
+    if (!account) {
       throw AppError.NotFound("Account to delete not found");
     }
+    this.requesterPermissionCheck(requester,account,false)
 
-    if (!requesterAccount) {
-      throw AppError.NotFound("Requester account not found");
-    }
+    return this.accountRepository.delete(account_id);
+  }
 
-    if (!Util.ValidCompany(comId, accountToDelete.account_com_id)) {
+  private requesterPermissionCheck(requester:JwtPayloadUser,requested:account,allowedSame:boolean){
+    if (!Util.ValidCompany(requester.com_id, requested.account_com_id) && 
+        requester.account_role !== "1") {
       throw AppError.Forbidden("Account: Company ID does not match");
     }
-
-    const requesterRole = parseInt(requesterAccount.account_role);
-    const targetRole = parseInt(accountToDelete.account_role);
-
-    if (isNaN(requesterRole) || isNaN(targetRole)) {
-      throw AppError.BadRequest("Invalid account role format");
+    if(allowedSame){
+      if (Number(requester.account_role)>Number(requested.account_role)) {
+        throw AppError.Forbidden("Account: Your role is lower than The Requested");
+      }
+    }else{
+      if (Number(requester.account_role)>=Number(requested.account_role)) {
+        throw AppError.Forbidden("Account: Your role is lower or same level with The Requested");
+      }
     }
-
-    if (requesterRole > targetRole) {
-      throw AppError.Forbidden(
-        "You do not have permission to delete this account"
-      );
-    }
-
-    return this.accountRepository.delete(accountId);
   }
 }

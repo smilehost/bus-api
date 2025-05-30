@@ -3,17 +3,33 @@ import { AccountService } from "../service/accountService";
 import { Util } from "../utils/util";
 import { ExceptionHandler } from "../utils/exception";
 import { AppError } from "../utils/appError";
-import { Account } from "../../cmd/models";
 import { JwtPayloadUser } from "../../cmd/dto";
-
+import { account } from "@prisma/client";
 
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  async getAll(req: Request, res: Response) {
+  async getByPagination(req: Request, res: Response) {
     try {
-      const { com_id } = Util.extractRequestContext(req);
-      const result = await this.accountService.getAll(com_id);
+      const { com_id, query } = Util.extractRequestContext<
+        void,
+        void,
+        { page: number; size: number; search: string; status: number; }
+      >(req, {
+        query: true,
+      });
+
+      const user:JwtPayloadUser = (req as any).user
+      console.log(user)
+
+      const result = await this.accountService.getByPagination(
+        com_id,
+        user.account_role,
+        query.page,
+        query.size,
+        query.search,
+        query.status
+      );
 
       res.status(200).json({
         message: "Accounts retrieved successfully",
@@ -25,8 +41,36 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
+    }
+  }
+
+  async getAll(req: Request, res: Response) {
+    try {
+      const { com_id, query } = Util.extractRequestContext<
+      void,
+      void,
+      { com_id:number}
+    >(req, {
+      query: true,
+    });
+      const result = await this.accountService.getAll(query.com_id);
+
+      res.status(200).json({
+        message: "Accounts retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
+      }
     }
   }
 
@@ -38,9 +82,11 @@ export class AccountController {
       >(req, {
         params: true,
       });
+      const user:JwtPayloadUser = (req as any).user
 
       const result = await this.accountService.getById(
         com_id,
+        user,
         params.account_id
       );
       res.status(200).json({
@@ -53,23 +99,26 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async update(req: Request, res: Response) {
     try {
       const { com_id, params, body } = Util.extractRequestContext<
-        Account,
+        account,
         { account_id: number }
       >(req, {
         body: true,
         params: true,
       });
 
+      const user:JwtPayloadUser = (req as any).user
       const result = await this.accountService.update(
         com_id,
+        user,
         params.account_id,
         body
       );
@@ -84,15 +133,14 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 
   async delete(req: Request, res: Response) {
     try {
-      console.log("-----------1");
-
       const { com_id, params } = Util.extractRequestContext<
         void,
         { account_id: number }
@@ -104,13 +152,12 @@ export class AccountController {
 
       await this.accountService.delete(
         com_id,
-        user.account_id,
+        user,
         params.account_id
       );
 
       res.status(200).json({
-        message: "Account deleted successfully",
-        body: req.body.user,
+        message: "Account deleted successfully"
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -118,8 +165,9 @@ export class AccountController {
           error: error.name,
           message: error.message,
         });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
       }
-      ExceptionHandler.internalServerError(res, error);
     }
   }
 }
