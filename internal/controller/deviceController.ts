@@ -18,6 +18,8 @@ export class DeviceController {
         query: true,
       });
 
+
+
       const result = await this.deviceService.getByPagination(
         query.com_id,
         query.page,

@@ -36,7 +36,8 @@ export class AuthService {
       },
       lifeTime
     );
-    return token;
+    const {account_password,...sendUser} = user 
+    return {token,sendUser};
   }
 
   async register(com_id: number, account: RegisterAccount) {

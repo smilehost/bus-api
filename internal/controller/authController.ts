@@ -25,7 +25,7 @@ export class AuthController {
         throw AppError.BadRequest("username and password can't be empty");
       }
 
-      const token = await this.authService.login(
+      const {token,sendUser} = await this.authService.login(
         body.username,
         body.password,
         LOGIN_LIFT_TIME
@@ -39,7 +39,10 @@ export class AuthController {
       //   sameSite: "none", // ✅ ต้องใช้คู่กับ secure สำหรับ cross-origin
       // });
 
-      res.status(200).json({ message: "Login successful" });
+      res.status(200).json({
+         message: "Login successful",
+         result:sendUser 
+        });
     } catch (error) {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({

@@ -27,6 +27,7 @@ model company {
   com_name        String                    @db.VarChar(3000)
   com_status      Int
   accounts        account[]
+  company_detail  company_detail[]
   devices         device[]
   members         member[]
   paymentMethods  payment_method[]
@@ -258,4 +259,14 @@ model device {
   transactions         transaction[]
 
   @@index([device_com_id], map: "device_com_id")
+}
+
+model company_detail {
+  company_detail_id         Int     @id @default(autoincrement())
+  company_detail_com_id     Int
+  company_detail_pin_device String  @db.VarChar(300)
+  company_detail_json       String  @db.VarChar(300)
+  company                   company @relation(fields: [company_detail_com_id], references: [com_id], onUpdate: Restrict, map: "company_detail_ibfk_1")
+
+  @@index([company_detail_com_id], map: "company_detail_com_id")
 }
