@@ -15,6 +15,8 @@ export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
         throw new AppError("Invalid or inactive device serial number.", 403);
       }
 
+      (req as any).device = device;
+
       next();
     } catch (error) {
       console.log(error);

@@ -101,6 +101,30 @@ export class DeviceController {
     }
   }
 
+  async getDeviceLoginData(req: Request, res: Response): Promise<void> {
+    try {
+      const { com_id,} = Util.extractRequestContext(req);
+
+      const device:device = (req as any).device
+
+      const result = await this.deviceService.getDeviceId(com_id,device);
+      
+      res.status(200).json({
+        message: "Device retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      } else {
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
+
   async update(req: Request, res: Response): Promise<void> {
     try {
       const { com_id, body, params } = Util.extractRequestContext<
@@ -188,4 +212,6 @@ export class DeviceController {
       }
     }
   }
+
+  
 }

@@ -38,6 +38,8 @@ export class CompanyController {
         }
     }
   }
+
+
   async create(req: Request, res: Response) {
     try {
       const body = req.body as company;

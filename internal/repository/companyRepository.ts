@@ -69,5 +69,5 @@ export class CompanyRepository {
       throw AppError.fromPrismaError(error);
     }
   }
+
 }
-//32

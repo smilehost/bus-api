@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import { DeviceRepository } from "../../internal/repository/deviceRepository";
 import { DeviceService } from "../../internal/service/deviceService";
 import { DeviceController } from "../../internal/controller/deviceController";
+import { authorizeRoles } from "../middleware/authMiddleware";
+import { verifyDevice } from "../middleware/deviceAuthMiddleware";
 
 export class DeviceRoutes {
   private readonly router: Router;
@@ -22,6 +24,10 @@ export class DeviceRoutes {
 
   private setupRoutes(): void {
     this.router.get("/", this.controller.getByPagination.bind(this.controller)); 
+    this.router.get("/devicedata",
+      authorizeRoles("1","2","3"),verifyDevice(this.service),
+      this.controller.getDeviceLoginData.bind(this.controller)); 
+      
     this.router.post("/", this.controller.create.bind(this.controller)); 
     this.router.get("/:device_id", this.controller.getById.bind(this.controller)); 
     this.router.put("/:device_id", this.controller.update.bind(this.controller)); 

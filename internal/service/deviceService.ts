@@ -101,4 +101,13 @@ export class DeviceService {
     }
     return device;
   }
+
+  async getDeviceId(com_id:number,device: device){
+
+    const pin = await this.deviceRepository.getCompanyDevicePin(com_id)
+    return {
+      device_id:device.device_id,
+      device_pin:pin
+    };
+  }
 }

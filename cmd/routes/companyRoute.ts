@@ -23,6 +23,8 @@ export class CompanyRoutes {
   private setupRoutes(): void {
     this.router.get("/all", this.controller.getAll.bind(this.controller));
     this.router.get("/:com_id", this.controller.getById.bind(this.controller));
+    
+    this.router.get("/:com_id", this.controller.getById.bind(this.controller));
     this.router.post("/", this.controller.create.bind(this.controller));
     this.router.put("/:com_id", this.controller.update.bind(this.controller));
     this.router.delete(

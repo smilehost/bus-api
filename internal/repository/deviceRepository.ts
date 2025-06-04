@@ -130,6 +130,19 @@ export class DeviceRepository {
     }
   }
 
+  async getCompanyDevicePin(com_id:number){
+    try {
+      return await this.prisma.company_detail.findFirst({
+        where: { company_detail_com_id:com_id },
+        select:{
+          company_detail_pin_device:true
+        }
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async changeStatus(deviceId: number, status: number) {
     try {
       return await this.prisma.device.update({
