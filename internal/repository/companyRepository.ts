@@ -37,13 +37,21 @@ export class CompanyRepository {
 
   async create(data: company) {
     try {
-      return await this.prisma.company.create({
+      const createdCompany = await this.prisma.company.create({
         data: {
           com_prefix: data.com_prefix,
           com_name: data.com_name,
           com_status: data.com_status,
         },
       });
+      // Create default price type "normal" after company creation
+      await this.prisma.route_ticket_price_type.create({
+        data: {
+          route_ticket_price_type_name: "normal",
+          route_ticket_price_type_com_id: createdCompany.com_id,
+        },
+      });
+      return createdCompany;
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }

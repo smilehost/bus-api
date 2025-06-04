@@ -144,6 +144,7 @@ export class RouteTicketRepository {
             route_ticket_price: {
               select: {
                 price: true,
+                route_ticket_price_type_id: true,
               },
             }
           },
