@@ -89,44 +89,108 @@ export class TicketController {
         }
       };
       
-      const viewsDir = path.join(__dirname, '..', 'views');
-      let ticketViewHtml = fs.readFileSync(path.join(viewsDir, 'ticketView.html'), 'utf-8');
+      const htmlResponse = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ข้อมูลตั๋ว</title>
+        <style>
+          body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh;}
+          .ticket-container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; width: 100%; }
+          h1 { color: #4CAF50; text-align: center; margin-bottom: 25px; font-size: 2em; }
+          .ticket-info p { font-size: 1.1em; margin: 12px 0; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+          .ticket-info p:last-child { border-bottom: none; }
+          .ticket-info strong { color: #555; min-width: 150px; display: inline-block; }
+          .status { font-weight: bold; }
+          .status-INUSE { color: #2196F3; } /* Blue */
+          .status-USED { color: #4CAF50; } /* Green */
+          .status-CANCELLED { color: #f44336; } /* Red */
+          .status-EXPIRED { color: #FF9800; } /* Orange */
+          @media (max-width: 600px) {
+            .ticket-container { margin: 10px; padding: 20px; }
+            h1 { font-size: 1.8em; }
+            .ticket-info p { font-size: 1em; }
+            .ticket-info strong { min-width: 120px; }
+          }
+        </style>
+        <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+      </head>
+      <body>
+        <div class="ticket-container">
+          <h1>รายละเอียดตั๋ว</h1>
+          <div class="ticket-info">
+            <p><strong>รหัสตั๋ว:</strong> ${ticketData.ticket_uuid}</p>
+            <p><strong>วันที่และเวลา:</strong> ${formatThaiDateTime(ticketData.ticket_date, ticketData.ticket_time)}</p>
+            <p><strong>ประเภทตั๋ว:</strong> ${ticketData.route_ticket_name_th || ticketData.ticket_type}</p>
+            <p><strong>ราคา (หลังหักส่วนลด):</strong> ${ticketData.ticket_discount_price.toFixed(2)} บาท</p>
+            <p><strong>สถานะ:</strong> <span class="status status-${ticketData.ticket_status}">${ticketData.ticket_status}</span></p>
+            <p><strong>เส้นทาง:</strong> ${ticketData.start_location_name || 'N/A'} - ${ticketData.stop_location_name || 'N/A'}</p>
+            <p><strong>สายรถ:</strong> ${ticketData.route_ticket?.route_ticket_name_th || 'N/A'}</p>
+            <p><strong>หมายเหตุ:</strong> ${ticketData.ticket_note || '-'}</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
 
-      ticketViewHtml = ticketViewHtml
-        .replace(/{{ticket_uuid}}/g, ticketData.ticket_uuid)
-        .replace(/{{ticket_datetime}}/g, formatThaiDateTime(ticketData.ticket_date, ticketData.ticket_time))
-        .replace(/{{ticket_type_name}}/g, ticketData.route_ticket_name_th || ticketData.ticket_type)
-        .replace(/{{ticket_price}}/g, ticketData.ticket_discount_price.toFixed(2))
-        .replace(/{{ticket_status_raw}}/g, ticketData.ticket_status)
-        .replace(/{{ticket_status}}/g, ticketData.ticket_status) // You might want a more user-friendly status name here
-        .replace(/{{ticket_route}}/g, `${ticketData.start_location_name || 'N/A'} - ${ticketData.stop_location_name || 'N/A'}`)
-        .replace(/{{ticket_route_name}}/g, ticketData.route_ticket?.route_ticket_name_th || 'N/A')
-        .replace(/{{ticket_note}}/g, ticketData.ticket_note || '-');
-
+    res.setHeader("Content-Type", "text/html");
+    res.status(200).send(htmlResponse);
+  } catch (error) {
+    if (error instanceof AppError) {
+      // Send a simple HTML error page for user-facing errors
+      const errorHtml = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>เกิดข้อผิดพลาด</title>
+        <style>
+          body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+          .error-container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+          h1 { color: #f44336; }
+        </style>
+         <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+      </head>
+      <body>
+        <div class="error-container">
+          <h1>เกิดข้อผิดพลาด</h1>
+          <p>${error.message}</p>
+          <p><a href="javascript:history.back()">กลับไปหน้าก่อนหน้า</a></p>
+        </div>
+      </body>
+      </html>`;
       res.setHeader("Content-Type", "text/html");
-      res.status(200).send(ticketViewHtml);
-    } catch (error) {
-      const viewsDir = path.join(__dirname, '..', 'views');
-      let errorViewHtml = fs.readFileSync(path.join(viewsDir, 'errorView.html'), 'utf-8');
-
-      if (error instanceof AppError) {
-        errorViewHtml = errorViewHtml
-          .replace(/{{error_title}}/g, 'เกิดข้อผิดพลาด')
-          .replace(/{{error_message}}/g, error.message)
-          .replace(/{{#if show_back_link}}[\s\S]*?{{\/if}}/g, '<p><a href="javascript:history.back()">กลับไปหน้าก่อนหน้า</a></p>'); // Simple replace for conditional block
-
-        res.setHeader("Content-Type", "text/html");
-        res.status(error.statusCode).send(errorViewHtml);
-      } else {
-        console.error("Internal Server Error:", error);
-        errorViewHtml = errorViewHtml
-          .replace(/{{error_title}}/g, 'เกิดข้อผิดพลาดภายในระบบ')
-          .replace(/{{error_message}}/g, 'ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้งในภายหลัง')
-          .replace(/{{#if show_back_link}}[\s\S]*?{{\/if}}/g, ''); // Remove back link for internal errors
-
-        res.setHeader("Content-Type", "text/html");
-        res.status(500).send(errorViewHtml);
-      }
+      res.status(error.statusCode).send(errorHtml);
+    } else {
+      // For internal server errors, log and send a generic HTML error
+      console.error("Internal Server Error:", error);
+      const internalErrorHtml = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>เกิดข้อผิดพลาด</title>
+         <style>
+          body { font-family: 'Sarabun', sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+          .error-container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+          h1 { color: #f44336; }
+        </style>
+        <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+      </head>
+      <body>
+        <div class="error-container">
+          <h1>เกิดข้อผิดพลาดภายในระบบ</h1>
+          <p>ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้งในภายหลัง</p>
+        </div>
+      </body>
+      </html>`;
+      res.setHeader("Content-Type", "text/html");
+      res.status(500).send(internalErrorHtml);
     }
   }
+}
 }
