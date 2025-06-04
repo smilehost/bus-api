@@ -8,6 +8,10 @@ import { TicketRemainService } from "../../internal/service/ticketRemainService"
 import { PaymentMethodService } from "../../internal/service/paymentMethodService";
 import { uploadSlipImage } from "../middleware/fileUploadMiddleware";
 import { TicketService } from "../../internal/service/ticketService";
+import { DeviceRepository } from "../../internal/repository/deviceRepository"; // Added import
+import { DeviceService } from "../../internal/service/deviceService"; // Added import
+import { verifyDevice } from "../middleware/deviceAuthMiddleware"; // Added import
+import { asyncHandler, authorizeRoles } from "../middleware/authMiddleware"; // Added import for asyncHandler
 
 export class TransactionRoute {
   private readonly router: Router;
@@ -15,6 +19,7 @@ export class TransactionRoute {
   public repo: TransactionRepository;
   public service: TransactionService;
   public controller: TransactionController;
+  public deviceService: DeviceService; // Added property
 
   constructor(
     prisma: PrismaClient,
@@ -25,6 +30,8 @@ export class TransactionRoute {
   ) {
     this.router = Router();
 
+    const deviceRepository = new DeviceRepository(prisma); // Instantiated
+    this.deviceService = new DeviceService(deviceRepository); // Instantiated
     this.repo = new TransactionRepository(prisma);
     this.service = new TransactionService(
       this.repo,
@@ -38,14 +45,18 @@ export class TransactionRoute {
   }
 
   private setupRoutes(): void {
-    this.router.post("/", this.controller.create.bind(this.controller));
+    //this.router.use(asyncHandler(verifyDevice(this.deviceService))); // Apply middleware to all routes in this router, wrapped with asyncHandler
+
+    this.router.post("/",
+      authorizeRoles("1","2","3"),verifyDevice(this.deviceService), 
+      this.controller.create.bind(this.controller));
     this.router.get(
       "/pollTransactionStatus/:transaction_id",
       this.controller.checkingByPolling.bind(this.controller)
     );
     this.router.post(
       "/confirmAndPrint/:transaction_id",
-      uploadSlipImage,
+      uploadSlipImage,authorizeRoles("1","2","3"),verifyDevice(this.deviceService),
       this.controller.confirmAndPrint.bind(this.controller)
     );
     this.router.post(
@@ -54,6 +65,7 @@ export class TransactionRoute {
     );
     this.router.post(
       "/callback/static",
+      authorizeRoles("1","2","3"),verifyDevice(this.deviceService),
       this.controller.transactionCallbackStatic.bind(this.controller)
     );
     this.router.get(

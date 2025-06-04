@@ -120,6 +120,16 @@ export class DeviceRepository {
     }
   }
 
+  async findBySerialNumber(serialNumber: string) {
+    try {
+      return await this.prisma.device.findUnique({ 
+        where: { device_serial_number: serialNumber },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
   async changeStatus(deviceId: number, status: number) {
     try {
       return await this.prisma.device.update({

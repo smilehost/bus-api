@@ -253,7 +253,7 @@ model ticket {
 model device {
   device_id            Int           @id @default(autoincrement())
   device_com_id        Int
-  device_serial_number String        @db.VarChar(300)
+  device_serial_number String        @unique(map: "device_serial_number_UNIQUE") @db.VarChar(300)
   device_status        Int
   company              company       @relation(fields: [device_com_id], references: [com_id])
   transactions         transaction[]

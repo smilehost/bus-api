@@ -3,7 +3,9 @@ import { PrismaClient } from "@prisma/client";
 import { AuthService } from "../../internal/service/authService";
 import { AuthRepository } from "../../internal/repository/authRespository";
 import { AuthController } from "../../internal/controller/authController";
-import { asyncHandler, authorizeRoles } from "../middleware/authMiddleware";
+import {authorizeRoles } from "../middleware/authMiddleware";
+import { DeviceRepository } from "../../internal/repository/deviceRepository"; // Added import
+import { DeviceService } from "../../internal/service/deviceService"; // Added import
 
 export class AuthRoutes {
   private readonly router: Router;
