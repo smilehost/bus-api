@@ -110,58 +110,85 @@ export class TicketController {
       font-family: 'Sarabun', sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
+      background-color: #f2f2f2;
       color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
+
     .ticket-container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 700px;
+      background-color: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      max-width: 720px;
       width: 100%;
     }
+
     h1 {
-      color: #4CAF50;
+      color: #2E7D32;
       text-align: center;
-      margin-bottom: 25px;
-      font-size: 2em;
+      margin-bottom: 32px;
+      font-size: 2.2em;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
     }
+
     td {
-      padding: 12px 8px;
+      padding: 14px 10px;
       vertical-align: top;
     }
+
     td.label {
-      font-weight: bold;
+      font-weight: 600;
       color: #555;
       width: 40%;
       white-space: nowrap;
     }
+
     td.value {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #e0e0e0;
     }
+
     tr:last-child td.value {
       border-bottom: none;
     }
+
     .status {
       font-weight: bold;
     }
-    .status-INUSE { color: #2196F3; }
-    .status-USED { color: #4CAF50; }
-    .status-CANCELLED { color: #f44336; }
-    .status-EXPIRED { color: #FF9800; }
+
+    .status-INUSE { color: #1976D2; }
+    .status-USED { color: #388E3C; }
+    .status-CANCELLED { color: #D32F2F; }
+    .status-EXPIRED { color: #F57C00; }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 0.95em;
+      color: #666;
+      text-align: right;
+      font-style: italic;
+    }
+
     @media (max-width: 600px) {
-      .ticket-container { margin: 10px; padding: 20px; }
-      h1 { font-size: 1.6em; }
-      td.label { width: 35%; }
+      .ticket-container {
+        padding: 20px;
+        margin: 12px;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+
+      td.label {
+        width: 35%;
+      }
     }
   </style>
 </head>
@@ -187,7 +214,7 @@ export class TicketController {
         }</td>
       </tr>
       <tr>
-        <td class="label">ราคา (หลังหักส่วนลด):</td>
+        <td class="label">ราคา:</td>
         <td class="value">${ticketData.ticket_discount_price.toFixed(
           2
         )} บาท</td>
@@ -215,6 +242,7 @@ export class TicketController {
         <td class="value">${ticketData.ticket_note || "-"}</td>
       </tr>
     </table>
+    <div class="footer-note">* ราคา = ราคาหลังหักส่วนลดแล้ว</div>
   </div>
 </body>
 </html>
