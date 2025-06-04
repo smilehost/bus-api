@@ -1,14 +1,23 @@
 // path: internal/service/ticketService.ts
 import { TicketRepository } from "../repository/ticketRepository";
+import { RouteLocationRepository } from "../repository/routeLocationRepository"; // Added
 import { AppError } from "../utils/appError";
-import { ticket } from "@prisma/client";
+import { ticket, route_location, route_ticket } from "@prisma/client"; // Added route_location and route_ticket
 import { CreateTicketDto, ShiftingRemainDto } from "../../cmd/dto";
 import { TicketRemainService } from "./ticketRemainService";
+
+export interface TicketViewData extends ticket {
+  start_location_name?: string;
+  stop_location_name?: string;
+  route_ticket_name_th?: string;
+  route_ticket: route_ticket | null; // Added this line
+}
 
 export class TicketService {
   constructor(
     private readonly ticketRepository: TicketRepository,
     private readonly ticketRemainService: TicketRemainService,
+    private readonly routeLocationRepository: RouteLocationRepository // Added
   ) {}
 
   async createTicketsForTransaction(
@@ -148,5 +157,40 @@ export class TicketService {
     }
     // If all chars rolled over, prepend the first char
     return chars[0] + arr.join("");
+  }
+
+  async getTicketForView(ticket_uuid: string): Promise<TicketViewData> {
+    const ticketData = await this.ticketRepository.findByUUID(ticket_uuid);
+
+    if (!ticketData) {
+      throw AppError.NotFound("Ticket not found");
+    }
+
+    let startLocationName: string | undefined = undefined;
+    let stopLocationName: string | undefined = undefined;
+
+    if (ticketData.ticket_location_start) {
+      const startLocation = await this.routeLocationRepository.getById(ticketData.ticket_location_start);
+      if (startLocation) {
+        startLocationName = startLocation.route_location_name;
+      }
+    }
+
+    if (ticketData.ticket_location_stop) {
+      const stopLocation = await this.routeLocationRepository.getById(ticketData.ticket_location_stop);
+      if (stopLocation) {
+        stopLocationName = stopLocation.route_location_name;
+      }
+    }
+    
+    const result: TicketViewData = {
+      ...ticketData,
+      start_location_name: startLocationName,
+      stop_location_name: stopLocationName,
+      route_ticket_name_th: ticketData.route_ticket?.route_ticket_name_th,
+      route_ticket: ticketData.route_ticket // Added this line
+    };
+
+    return result;
   }
 }

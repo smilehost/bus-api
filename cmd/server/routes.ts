@@ -58,7 +58,8 @@ export const Routes = (prisma: PrismaClient): Router => {
   const memberRoutes = new MemberRoute(prisma, comRepo);
   const discountRoutes = new DiscountRoutes(prisma)
   const paymentMethodRoute = new PaymentMethodRoutes(prisma)
-  const ticketRoutes = new TicketRoute(prisma,ticketRemainRoute.service)
+  // Updated TicketRoute instantiation
+  const ticketRoutes = new TicketRoute(prisma, ticketRemainRoute.service, routeLocationRoutes.repo) 
   const transactionRoutes = new TransactionRoute(
     prisma,
     comRepo,

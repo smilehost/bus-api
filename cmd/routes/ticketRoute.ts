@@ -5,6 +5,7 @@ import { TicketRepository } from "../../internal/repository/ticketRepository";
 import { TicketService } from "../../internal/service/ticketService";
 import { TicketController } from "../../internal/controller/ticketController";
 import { TicketRemainService } from "../../internal/service/ticketRemainService";
+import { RouteLocationRepository } from "../../internal/repository/routeLocationRepository"; // Added
 
 export class TicketRoute {
   private readonly router: Router;
@@ -12,10 +13,15 @@ export class TicketRoute {
   public service: TicketService;
   public controller: TicketController;
 
-  constructor(prisma: PrismaClient,ticketRemainService:TicketRemainService) {
+  constructor(
+    prisma: PrismaClient,
+    ticketRemainService: TicketRemainService,
+    routeLocationRepository: RouteLocationRepository // Added
+  ) {
     this.router = Router();
     this.repo = new TicketRepository(prisma);
-    this.service = new TicketService(this.repo,ticketRemainService);
+    // Updated TicketService instantiation
+    this.service = new TicketService(this.repo, ticketRemainService, routeLocationRepository); 
     this.controller = new TicketController(this.service);
     this.setupRoutes();
   }
@@ -30,10 +36,15 @@ export class TicketRoute {
       "/cancel",
       this.controller.cancelTicket.bind(this.controller)
     );
+
+    // Added new route
+    this.router.get(
+      "/viewticket/:ticket_uuid",
+      this.controller.viewTicketByUuid.bind(this.controller)
+    );
   }
 
   public routing(): Router {
     return this.router;
   }
 }
-

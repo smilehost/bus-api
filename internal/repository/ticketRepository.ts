@@ -1,5 +1,5 @@
 // path: internal/repository/ticketRepository.ts
-import { PrismaClient, ticket } from "@prisma/client";
+import { PrismaClient, ticket, route_ticket } from "@prisma/client";
 import { AppError } from "../utils/appError";
 
 export class TicketRepository {
@@ -26,6 +26,19 @@ export class TicketRepository {
       return await this.prisma.ticket.create({
         data:ticket
       })
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async findByUuidForView(ticket_uuid: string): Promise<(ticket & { route_ticket: route_ticket | null }) | null> {
+    try {
+      return await this.prisma.ticket.findFirst({
+        where: { ticket_uuid: ticket_uuid },
+        include: {
+          route_ticket: true,
+        }
+      });
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
