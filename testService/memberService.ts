@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { MemberRepository } from "../internal/repository/memberRepository";
-import { CompanyRepository } from "../internal/repository/companyRepository";
-import { MemberService } from "../internal/service/memberService";
+import { MemberService } from "../internal/domain/company/member/memberService";
+import { CompanyRepository } from "../internal/domain/company/company/companyRepository";
+import { MemberRepository } from "../internal/domain/company/member/memberRepository";
 
 // ✅ สร้าง Prisma instance
 const prisma = new PrismaClient();

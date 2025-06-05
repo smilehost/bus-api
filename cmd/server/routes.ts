@@ -1,25 +1,25 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 
-import { AuthRoutes } from "../routes/AuthRoute";
-import { AccountRoutes } from "../routes/accountRoute";
-import { CompanyRoutes } from "../routes/companyRoute";
-import { CompanyRepository } from "../../internal/repository/companyRepository";
+import { AuthRoutes } from "../../internal/domain/account/auth/AuthRoute";
+import { AccountRoutes } from "../../internal/domain/account/account/accountRoute";
+import { CompanyRoutes } from "../../internal/domain/company/company/companyRoute";
 
-import { RouteRoutes } from "../routes/routeRoutes";
-import { RouteDateRoutes } from "../routes/routeDateRoute";
-import { RouteTimeRoutes } from "../routes/routeTimeRoutes";
-import { RouteLocationRoutes } from "../routes/routeLocationRoute";
-import { RouteTicketRoutes } from "../routes/routeTicketRoute";
-import { TicketPriceTypeRoute } from "../routes/ticketPriceTypeRoute";
-import { TicketRemainRoute } from "../routes/ticketRemainRoute";
-import { MemberRoute } from "../routes/memberRoute";
-import { TransactionRoute } from "../routes/transactionRoute";
-import { DiscountRoutes } from "../routes/discountRoute";
-import { PaymentMethodRoutes } from "../routes/paymentMethodRoute";
-import { TicketRoute } from "../routes/ticketRoute";
-import { DeviceRoutes } from "../routes/deviceRoute";
-import { ReportRoutes } from "../routes/reportRoutes.ts";
+import { RouteRoutes } from "../../internal/domain/route/route/routeRoutes";
+import { RouteDateRoutes } from "../../internal/domain/route/routeDate/routeDateRoute";
+import { RouteTimeRoutes } from "../../internal/domain/route/routeTime/routeTimeRoutes";
+import { RouteLocationRoutes } from "../../internal/domain/route/routeLocation/routeLocationRoute";
+import { RouteTicketRoutes } from "../../internal/domain/routeTicket/routeTicket/routeTicketRoute";
+import { TicketPriceTypeRoute } from "../../internal/domain/routeTicket/ticketPriceType/ticketPriceTypeRoute";
+import { TicketRemainRoute } from "../../internal/domain/transaction/ticketRemain/ticketRemainRoute";
+import { MemberRoute } from "../../internal/domain/company/member/memberRoute";
+import { TransactionRoute } from "../../internal/domain/transaction/transaction/transactionRoute";
+import { DiscountRoutes } from "../../internal/domain/payment/discount/discountRoute";
+import { PaymentMethodRoutes } from "../../internal/domain/payment/payment/paymentMethodRoute";
+import { TicketRoute } from "../../internal/domain/transaction/ticket/ticketRoute";
+import { DeviceRoutes } from "../../internal/domain/company/device/deviceRoute";
+import { ReportRoutes } from "../../internal/domain/company/report/reportRoutes.ts";
+import { CompanyRepository } from "../../internal/domain/company/company/companyRepository";
 
 
 export const Routes = (prisma: PrismaClient): Router => {

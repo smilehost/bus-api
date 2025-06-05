@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { DeviceService } from "../../internal/service/deviceService";
+import { DeviceService } from "../../internal/domain/company/device/deviceService";
 import { AppError } from "../../internal/utils/appError";
 
 export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
