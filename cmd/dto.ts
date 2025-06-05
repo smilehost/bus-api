@@ -33,7 +33,7 @@ export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transact
 export interface CreateTransactionTicketsDto extends CreateTransactionDto {
   route_ticket_id:number;
   ticket_date:string;
-  tikcet_time:string;
+  ticket_time:string;
   member_phone?:string;
 }
 

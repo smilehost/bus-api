@@ -21,12 +21,6 @@ export class TicketRemainService {
   decodeTicketRemainId(data: string): ShiftingRemainDto {
     const parts = data.split("_");
 
-    if (parts.length !== 3) {
-      throw AppError.BadRequest(
-        "Invalid ticketRemainId format: Expected Date_Time_RouteTicketId"
-      );
-    }
-
     const date = parts[0];
     const time = parts[1];
     const routeTicketIdString = parts[2];

@@ -37,7 +37,7 @@ export class TransactionService {
 
     const remain:ShiftingRemainDto = {
       date: payload.ticket_date,
-      time: payload.tikcet_time,
+      time: payload.ticket_time,
       routeTicketId: routeTicket.route_ticket_id,
       maxTicket: routeTicket.route_ticket_amount,
       amount: payload.transaction_pax,
@@ -160,7 +160,9 @@ export class TransactionService {
 
       const timeDiff = Math.abs(now.getTime() - start.getTime()); // in ms
 
-      if (timeDiff <= timeout) continue
+      if (timeDiff <= timeout) {
+        continue
+      }
 
       await this.cancelTransaction(transaction.transaction_id)
     }
@@ -169,6 +171,7 @@ export class TransactionService {
   async cancelTransaction(transaction_id:number){
     const transaction = await this.transactionRepository.getById(transaction_id)
 
+    console.log(transaction!.transaction_ticket_remain_id!)
     const remain = this.ticketRemainService.decodeTicketRemainId(transaction!.transaction_ticket_remain_id!)
     const routeTicket = await this.transactionRepository.getRouteTicketById(remain.routeTicketId)
 
