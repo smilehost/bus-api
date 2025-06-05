@@ -1,8 +1,9 @@
-import { DeviceRepository } from "./deviceRepository";
-import { AppError } from "../../../utils/appError";
-import { Util } from "../../../utils/util"; // Added import for Util
 import { device } from "@prisma/client"; // Added import for device type
+import { AppError } from "../../../utils/appError";
+import { DeviceRepository } from "./deviceRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class DeviceService {
   constructor(private readonly deviceRepository: DeviceRepository) {}
 

@@ -8,7 +8,9 @@ import { Util } from "../../../utils/util";
 import { RouteRepository } from "../../route/route/routeRepository";
 import { RouteService } from "../../route/route/routeService";
 import { RouteTicketRepository } from "./routeTicketRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteTicketService {
   constructor(
     private readonly routeTicketRepository: RouteTicketRepository,

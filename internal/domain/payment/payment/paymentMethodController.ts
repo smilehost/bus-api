@@ -4,7 +4,9 @@ import { PaymentMethodService } from "./paymentMethodService";
 import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class PaymentMethodController {
   constructor(private readonly paymentMethodService: PaymentMethodService) {}
 

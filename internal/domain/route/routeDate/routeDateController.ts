@@ -5,7 +5,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { RouteDateService } from "./routeDateService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class DateController {
   constructor(private readonly routeDateService: RouteDateService) {}
 

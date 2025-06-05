@@ -3,7 +3,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { ReportService } from "./reportService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 

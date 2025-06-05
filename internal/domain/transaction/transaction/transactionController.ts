@@ -4,7 +4,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { TransactionService } from "./transactionService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 

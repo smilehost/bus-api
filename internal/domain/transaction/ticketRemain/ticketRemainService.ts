@@ -7,11 +7,15 @@ import {
 import { ticket_remain } from "@prisma/client";
 import { RouteTimeRepository } from "../../route/routeTime/routeTimeRepository";
 import { TicketRemainRepository } from "./ticketRemainRepository";
+import { TransactionRepository } from "../transaction/transactionRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TicketRemainService {
   constructor(
     private readonly ticketRemainRepository: TicketRemainRepository,
-    private readonly timeRepository: RouteTimeRepository
+    private readonly timeRepository: RouteTimeRepository,
+    private readonly transactionRepository: TransactionRepository
   ) {}
 
   endcodeTicketRemainId(data: ShiftingRemainDto): string {
@@ -52,7 +56,6 @@ export class TicketRemainService {
     );
 
     if (ticketRemain !== null) {
-
       return ticketRemain;
     }
 
@@ -67,13 +70,40 @@ export class TicketRemainService {
     return ticketRemain;
   }
 
-  async getById(comId: number, ticket_remain_id: string) {
+  async getById(
+    comId: number,
+    ticket_remain_id: string
+  ): Promise<ticket_remain> {
     const ticketRemain = await this.ticketRemainRepository.getById(
       ticket_remain_id
     );
 
     if (!ticketRemain) {
-      throw AppError.NotFound("Ticket remain not found");
+      const routeTicketIdString = ticket_remain_id.split("_")[2];
+      const routeTicketId = parseInt(routeTicketIdString, 10);
+      if (isNaN(routeTicketId)) {
+        throw AppError.BadRequest(
+          "Invalid ticket_remain_id format: RouteTicketId must be a number"
+        );
+      }
+
+      const routeTicket = (await this.transactionRepository.getRouteTicketById(
+        routeTicketId
+      )) as { route_ticket_amount: number } | null;
+
+      if (!routeTicket) {
+        throw AppError.NotFound(
+          "Ticket remain not found for this route ticket"
+        );
+      }
+
+      return {
+        ticket_remain_id: "",
+        ticket_remain_date: "",
+        ticket_remain_time: "",
+        ticket_remain_number: routeTicket.route_ticket_amount,
+        ticket_remain_route_ticket_id: routeTicketId,
+      };
     }
 
     return ticketRemain;

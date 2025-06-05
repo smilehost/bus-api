@@ -5,7 +5,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { RouteService } from "./routeService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
 

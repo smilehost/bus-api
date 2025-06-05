@@ -1,6 +1,8 @@
 import { account, PrismaClient } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

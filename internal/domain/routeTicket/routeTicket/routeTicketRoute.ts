@@ -1,35 +1,15 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { RouteRepository } from "../../route/route/routeRepository";
-import { RouteService } from "../../route/route/routeService";
-import { TicketRemainRoute } from "../../transaction/ticketRemain/ticketRemainRoute";
 import { RouteTicketController } from "./routeTicketController";
-import { RouteTicketRepository } from "./routeTicketRepository";
-import { RouteTicketService } from "./routeTicketService";
+import { container } from "tsyringe";
 
 export class RouteTicketRoutes {
   private readonly router: Router;
+  private readonly controller: RouteTicketController;
 
-  public repo: RouteTicketRepository;
-  public service: RouteTicketService;
-  public controller: RouteTicketController;
-
-  constructor(
-    prisma: PrismaClient,
-    routeRepo: RouteRepository,
-    routeService: RouteService,
-    ticketRemain: TicketRemainRoute
-  ) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new RouteTicketRepository(prisma);
-    this.service = new RouteTicketService(
-      this.repo,
-      routeRepo,
-      routeService,
-      ticketRemain.service
-    );
-    this.controller = new RouteTicketController(this.service);
+    this.controller = container.resolve(RouteTicketController);
     this.setupRoutes();
   }
 
@@ -61,7 +41,6 @@ export class RouteTicketRoutes {
       "/:route_ticket_id",
       this.controller.delete.bind(this.controller)
     );
-
 
     this.router.post(
       "/getRouteTicketsByLocations",

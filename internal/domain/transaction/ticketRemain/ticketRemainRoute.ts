@@ -1,23 +1,14 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { RouteTimeRepository } from "../../route/routeTime/routeTimeRepository";
 import { TicketRemainController } from "./ticketRemainController";
-import { TicketRemainRepository } from "./ticketRemainRepository";
-import { TicketRemainService } from "./ticketRemainService";
+import { container } from "tsyringe";
 
 export class TicketRemainRoute {
   private readonly router: Router;
-
-  public repo: TicketRemainRepository;
-  public service: TicketRemainService;
   public controller: TicketRemainController;
 
-  constructor(prisma: PrismaClient, timeRepo: RouteTimeRepository) {
+  constructor() {
     this.router = Router();
-
-    this.repo = new TicketRemainRepository(prisma);
-    this.service = new TicketRemainService(this.repo, timeRepo);
-    this.controller = new TicketRemainController(this.service);
+    this.controller = container.resolve(TicketRemainController);
     this.setupRoutes();
   }
 

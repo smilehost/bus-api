@@ -1,6 +1,8 @@
 import { PrismaClient, route_location } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteLocationRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

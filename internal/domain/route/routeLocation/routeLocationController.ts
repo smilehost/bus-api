@@ -4,7 +4,9 @@ import { RouteLocationService } from "./routeLocationService";
 import { Util } from "../../../utils/util";
 import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class LocationController {
   constructor(private readonly routeLocationService: RouteLocationService) {}
 

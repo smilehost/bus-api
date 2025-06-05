@@ -1,6 +1,8 @@
 import { PrismaClient, route_time } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteTimeRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

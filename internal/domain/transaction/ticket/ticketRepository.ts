@@ -1,7 +1,9 @@
 // path: internal/repository/ticketRepository.ts
 import { PrismaClient, ticket, route_ticket } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

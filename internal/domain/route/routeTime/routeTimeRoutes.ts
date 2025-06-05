@@ -1,23 +1,15 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { CompanyRepository } from "../../company/company/companyRepository";
 import { TimeController } from "./routeTimeController";
-import { RouteTimeRepository } from "./routeTimeRepository";
-import { RouteTimeService } from "./routeTimeService";
+import { container } from "tsyringe";
 
 export class RouteTimeRoutes {
   private readonly router: Router;
-
-  public repo: RouteTimeRepository;
-  public service: RouteTimeService;
   public controller: TimeController;
 
-  constructor(prisma: PrismaClient, comRepo: CompanyRepository) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new RouteTimeRepository(prisma);
-    this.service = new RouteTimeService(this.repo, comRepo);
-    this.controller = new TimeController(this.service);
+    this.controller = container.resolve(TimeController);
     this.setupRoutes();
   }
 

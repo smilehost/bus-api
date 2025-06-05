@@ -1,6 +1,8 @@
 import { PrismaClient, company, device } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class DeviceRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

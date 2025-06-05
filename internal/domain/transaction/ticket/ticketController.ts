@@ -1,13 +1,13 @@
 // path: internal/controller/ticketController.ts
 import { Request, Response } from "express";
-import * as fs from 'fs';
-import * as path from 'path';
-import { TicketService } from "./ticketService";
+import { autoInjectable } from "tsyringe";
 import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
+import { TicketService } from "./ticketService";
 
 
+@autoInjectable()
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 

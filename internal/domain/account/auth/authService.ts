@@ -6,7 +6,9 @@ import { Util } from "../../../utils/util";
 import { JwtPayloadUser } from "../../../../cmd/dto";
 import { RegisterAccount } from "./authController";
 import { AuthRepository } from "./authRespository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
