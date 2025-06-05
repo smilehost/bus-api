@@ -32,6 +32,17 @@ export class TransactionService {
       if(discount<0) discount = null
     } 
 
+    const routeTicket = await this.transactionRepository.getRouteTicketById(payload.route_ticket_id)
+    if (!routeTicket) throw AppError.NotFound("route ticket not found");
+
+    const remain:ShiftingRemainDto = {
+      date: payload.ticket_date,
+      time: payload.tikcet_time,
+      routeTicketId: routeTicket.route_ticket_id,
+      maxTicket: routeTicket.route_ticket_amount,
+      amount: payload.transaction_pax,
+    } 
+
     const newTransaction: CreateTransactionDto = {
       transaction_lat: payload.transaction_lat,
       transaction_long: payload.transaction_long,
@@ -46,6 +57,7 @@ export class TransactionService {
       transaction_com_id: 1,
       transaction_status: "PENDING",
       transaction_date_time: new Date(),
+      transaction_ticket_remain_id: this.ticketRemainService.endcodeTicketRemainId(remain)
     };
 
     let newMember: member | null = null;
@@ -69,6 +81,8 @@ export class TransactionService {
       Number(transaction.transaction_amount)
     );
 
+    await this.ticketRemainService.decreaseTicketRemain(remain);
+
     return {
       ...transaction,
       url_web_view: urlWebView,
@@ -91,7 +105,6 @@ export class TransactionService {
       newTickets
     );
 
-    await this.decreaseRemain(newTickets);
     return createdTickets;
   }
 
@@ -127,10 +140,7 @@ export class TransactionService {
 
   private async transactionCallback(transaction_id: number, status: string) {
     if (status === "CANCELLED") {
-      await this.transactionRepository.changeStatusById(
-        transaction_id,
-        "CANCELLED"
-      );
+      await this.cancelTransaction(transaction_id)
     }
 
     if (status === "SUCCESS") {
@@ -141,25 +151,39 @@ export class TransactionService {
     }
   }
 
-  async getTransactionPositions(comId:number){
-    return await this.transactionRepository.getTransactionPositions(comId)
+  async checkTransactionsTimeout(){
+    const timeout = 5 * 60 * 1000
+    const transactions = await this.transactionRepository.getTransactionsByStatus("PENDING")
+    for (const transaction of transactions){
+      const now = new Date();
+      const start = new Date(transaction.transaction_date_time);
+
+      const timeDiff = Math.abs(now.getTime() - start.getTime()); // in ms
+
+      if (timeDiff <= timeout) continue
+
+      await this.cancelTransaction(transaction.transaction_id)
+    }
   }
 
-  private async decreaseRemain(tickets: CreateTicketDto[]) {
-    for (const ticket of tickets) {
-      const routeTicket = await this.transactionRepository.getRouteTicketById(
-        ticket.ticket_route_ticket_id!
-      );
-      if (!routeTicket) throw AppError.NotFound("routeTicket Not fond");
+  async cancelTransaction(transaction_id:number){
+    const transaction = await this.transactionRepository.getById(transaction_id)
 
-      await this.ticketRemainService.decreaseTicketRemain({
-        date: ticket.ticket_date,
-        time: ticket.ticket_time,
-        routeTicketId: routeTicket.route_ticket_id,
-        maxTicket: routeTicket.route_ticket_amount,
-        amount: 1,
-      } as ShiftingRemainDto);
-    }
+    const remain = this.ticketRemainService.decodeTicketRemainId(transaction!.transaction_ticket_remain_id!)
+    const routeTicket = await this.transactionRepository.getRouteTicketById(remain.routeTicketId)
+
+    remain.amount = transaction!.transaction_pax
+    remain.maxTicket = routeTicket!.route_ticket_amount
+    await this.ticketRemainService.increaseTicketRemain(remain)
+
+    await this.transactionRepository.changeStatusById(
+      transaction_id,
+      "CANCELLED"
+    );
+  }
+
+  async getTransactionPositions(comId:number){
+    return await this.transactionRepository.getTransactionPositions(comId)
   }
 
   private async saveSilp(comId: number, slipImage: any, transactionId: number) {

@@ -20,6 +20,7 @@ import { TicketRoute } from "../../internal/domain/transaction/ticket/ticketRout
 import { DeviceRoutes } from "../../internal/domain/company/device/deviceRoute";
 import { ReportRoutes } from "../../internal/domain/company/report/reportRoutes.ts";
 import { CompanyRepository } from "../../internal/domain/company/company/companyRepository";
+import { TransactionTimeoutJob } from "../crons/transactionCron";
 
 
 export const Routes = (prisma: PrismaClient): Router => {
@@ -70,6 +71,9 @@ export const Routes = (prisma: PrismaClient): Router => {
 
   // Report
   const reportRoutes = new ReportRoutes(prisma, comRepo);
+
+  //cron jobs
+  TransactionTimeoutJob(transactionRoutes.service)
 
   // Mount routes
   router.use("/auth", authRoutes.routing());

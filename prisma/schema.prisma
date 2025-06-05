@@ -145,6 +145,7 @@ model transaction {
   transaction_status             String           @db.VarChar(300)
   transaction_note               String           @db.VarChar(300)
   transaction_device_id          Int
+  transaction_ticket_remain_id   String?          @db.VarChar(300)
   tickets                        ticket[]
   route                          route?           @relation(fields: [transaction_route_id], references: [route_id], map: "transaction_ibfk_1")
   company                        company          @relation(fields: [transaction_com_id], references: [com_id])

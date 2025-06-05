@@ -57,7 +57,21 @@ export class TransactionRepository {
       return await this.prisma.transaction.findUnique({
         where: {
           transaction_id: transaction_id,
-        },
+        }
+      });
+    } catch (error) {
+      console.log("1qrewrrewrerewrewrwfsdgfdgfdgfdgfdgdger");
+      
+      throw AppError.fromPrismaError(error);
+    }
+  }
+
+  async getTransactionsByStatus(status:string){
+    try {
+      return await this.prisma.transaction.findMany({
+        where: {
+          transaction_status:status,
+        }
       });
     } catch (error) {
       console.log("1qrewrrewrerewrewrwfsdgfdgfdgfdgfdgdger");

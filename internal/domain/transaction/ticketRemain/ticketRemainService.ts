@@ -14,8 +14,39 @@ export class TicketRemainService {
     private readonly timeRepository: RouteTimeRepository
   ) {}
 
-  private generateTicketRemainId(data: ShiftingRemainDto): string {
+  endcodeTicketRemainId(data: ShiftingRemainDto): string {
     return `${data.date}_${data.time}_${data.routeTicketId}`;
+  }
+
+  decodeTicketRemainId(data: string): ShiftingRemainDto {
+    const parts = data.split("_");
+
+    if (parts.length !== 3) {
+      throw AppError.BadRequest(
+        "Invalid ticketRemainId format: Expected Date_Time_RouteTicketId"
+      );
+    }
+
+    const date = parts[0];
+    const time = parts[1];
+    const routeTicketIdString = parts[2];
+
+    const routeTicketId = parseInt(routeTicketIdString, 10);
+    if (isNaN(routeTicketId)) {
+      throw AppError.BadRequest(
+        "Invalid ticketRemainId format: RouteTicketId must be a number"
+      );
+    }
+    const maxTicket = 0;
+    const amount = 0;
+
+    return {
+      date,
+      time,
+      routeTicketId,
+      maxTicket,
+      amount,
+    };
   }
 
   private async getOrcreateTicket(
@@ -114,7 +145,7 @@ export class TicketRemainService {
   async increaseTicketRemain(
     increase: ShiftingRemainDto
   ): Promise<ticket_remain> {
-    const ticketRemainId = this.generateTicketRemainId(increase);
+    const ticketRemainId = this.endcodeTicketRemainId(increase);
     const ticketRemain = await this.getOrcreateTicket(ticketRemainId, increase);
 
     if (
@@ -136,7 +167,7 @@ export class TicketRemainService {
   async decreaseTicketRemain(
     decrease: ShiftingRemainDto
   ): Promise<ticket_remain> {
-    const ticketRemainId = this.generateTicketRemainId(decrease);
+    const ticketRemainId = this.endcodeTicketRemainId(decrease);
     const ticketRemain = await this.getOrcreateTicket(ticketRemainId, decrease);
 
     if (ticketRemain.ticket_remain_number < decrease.amount) {
