@@ -107,7 +107,8 @@ export class DeviceService {
     const pin = await this.deviceRepository.getCompanyDevicePin(com_id)
     return {
       device_id:device.device_id,
-      device_pin:pin
+      // device_pin:pin
+      device_pin: "123456" // Mock ตัวใหญ่ๆ ----------------------------------------------------------------------------------------------
     };
   }
 }
