@@ -1,28 +1,15 @@
 // path: cmd/routes/ticketRoute.ts
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { RouteLocationRepository } from "../../route/routeLocation/routeLocationRepository";
-import { TicketRemainService } from "../ticketRemain/ticketRemainService";
+import { container } from "tsyringe";
 import { TicketController } from "./ticketController";
-import { TicketRepository } from "./ticketRepository";
-import { TicketService } from "./ticketService";
 
 export class TicketRoute {
   private readonly router: Router;
-  public repo: TicketRepository;
-  public service: TicketService;
   public controller: TicketController;
 
-  constructor(
-    prisma: PrismaClient,
-    ticketRemainService: TicketRemainService,
-    routeLocationRepository: RouteLocationRepository // Added
-  ) {
+  constructor() {
     this.router = Router();
-    this.repo = new TicketRepository(prisma);
-    // Updated TicketService instantiation
-    this.service = new TicketService(this.repo, ticketRemainService, routeLocationRepository); 
-    this.controller = new TicketController(this.service);
+    this.controller = container.resolve(TicketController);
     this.setupRoutes();
   }
 

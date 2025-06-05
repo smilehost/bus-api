@@ -1,10 +1,12 @@
+import { device } from "@prisma/client";
 import { Request, Response } from "express";
+import { autoInjectable } from "tsyringe";
 import { AppError } from "../../../utils/appError";
-import { DeviceService } from "./deviceService";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
-import { device } from "@prisma/client"; 
+import { DeviceService } from "./deviceService";
 
+@autoInjectable()
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 

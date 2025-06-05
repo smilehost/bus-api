@@ -1,7 +1,9 @@
 import { PrismaClient, route_ticket_price_type } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
 
+@autoInjectable()
 export class TicketPriceTypeRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

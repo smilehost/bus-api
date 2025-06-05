@@ -1,8 +1,10 @@
 import { PrismaClient, route_ticket_price_type } from "@prisma/client";
 import { RouteTicketWithPrices } from "../../../../cmd/request";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
 
+@autoInjectable()
 export class RouteTicketRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

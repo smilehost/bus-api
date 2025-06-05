@@ -1,23 +1,15 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { CompanyRepository } from "../company/companyRepository";
+import { container } from "tsyringe";
 import { MemberController } from "./memberController";
-import { MemberRepository } from "./memberRepository";
-import { MemberService } from "./memberService";
 
 export class MemberRoute {
   private readonly router: Router;
-
-  public repo: MemberRepository;
-  public service: MemberService;
   public controller: MemberController;
 
-  constructor(prisma: PrismaClient, comRepo: CompanyRepository) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new MemberRepository(prisma);
-    this.service = new MemberService(this.repo, comRepo);
-    this.controller = new MemberController(this.service);
+    this.controller = container.resolve(MemberController);
     this.setupRoutes();
   }
 

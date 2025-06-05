@@ -1,23 +1,16 @@
 // path: internal/routes/discountRoutes.ts
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { container } from "tsyringe";
 import { DiscountController } from "./discountController";
-import { DiscountRepository } from "./discountRepository";
-import { DiscountService } from "./discountService";
 
 export class DiscountRoutes {
   private readonly router: Router;
-
-  public repo: DiscountRepository;
-  public service: DiscountService;
   public controller: DiscountController;
 
-  constructor(prisma: PrismaClient) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new DiscountRepository(prisma);
-    this.service = new DiscountService(this.repo);
-    this.controller = new DiscountController(this.service);
+    this.controller = container.resolve(DiscountController);
 
     this.setupRoutes();
   }

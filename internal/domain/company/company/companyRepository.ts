@@ -1,7 +1,9 @@
 // path: internal/repository/companyRepository.ts
 import { company, PrismaClient } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class CompanyRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

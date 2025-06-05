@@ -3,7 +3,9 @@ import { AppError } from "../../../utils/appError";
 import { Util } from "../../../utils/util";
 import { CompanyRepository } from "../company/companyRepository";
 import { MemberRepository } from "./memberRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class MemberService {
   constructor(
     private readonly memberRepository: MemberRepository,

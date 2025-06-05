@@ -2,7 +2,9 @@
 import { member, PrismaClient, ticket } from "@prisma/client";
 import { CreateTransactionDto } from "../../../../cmd/dto";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TransactionRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

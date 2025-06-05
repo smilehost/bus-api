@@ -4,7 +4,9 @@ import { CompanyRepository } from "../company/companyRepository";
 import { ReportController } from "./reportController";
 import { ReportRepository } from "./reportRepository";
 import { ReportService } from "./reportService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class ReportRoutes {
   private readonly router: Router;
 

@@ -1,6 +1,8 @@
 import { PrismaClient, ticket_remain } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TicketRemainRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

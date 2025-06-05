@@ -5,7 +5,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { AccountService } from "./accountService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 

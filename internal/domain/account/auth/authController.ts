@@ -4,6 +4,7 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { AuthService } from "./authService";
+import { autoInjectable } from "tsyringe";
 
 export interface RegisterAccount {
   name: string;
@@ -14,6 +15,7 @@ export interface RegisterAccount {
 
 const LOGIN_LIFT_TIME = Number(process.env.LOGIN_LIFT_TIME) || 168;
 
+@autoInjectable()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -25,7 +27,7 @@ export class AuthController {
         throw AppError.BadRequest("username and password can't be empty");
       }
 
-      const {token,sendUser} = await this.authService.login(
+      const { token, sendUser } = await this.authService.login(
         body.username,
         body.password,
         LOGIN_LIFT_TIME
@@ -40,16 +42,16 @@ export class AuthController {
       // });
 
       res.status(200).json({
-         message: "Login successful",
-         result:sendUser 
-        });
+        message: "Login successful",
+        result: sendUser,
+      });
     } catch (error) {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           error: error.name,
           message: error.message,
         });
-      }else{
+      } else {
         ExceptionHandler.internalServerError(res, error);
       }
     }
@@ -69,7 +71,7 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
-      }else{
+      } else {
         ExceptionHandler.internalServerError(res, error);
       }
     }
@@ -77,21 +79,23 @@ export class AuthController {
 
   async register(req: Request, res: Response) {
     try {
-      const { com_id, body } = Util.extractRequestContext<RegisterAccount & {com_id:number}>(
-        req,{body: true,}
-      );
-    
+      const { com_id, body } = Util.extractRequestContext<
+        RegisterAccount & { com_id: number }
+      >(req, { body: true });
+
       if (!body.name || !body.password || !body.role || !body.username) {
         throw AppError.BadRequest(
           "Request these fied:name,password,role,username"
         );
       }
-      const user:JwtPayloadUser = (req as any).user;
-      if(Number(user.account_role)>=Number(body.role))
-        throw AppError.Forbidden("Your role is too low or same level to create this role");
-      let comId = com_id
-      if(user.account_role === "1"){
-        comId = body.com_id
+      const user: JwtPayloadUser = (req as any).user;
+      if (Number(user.account_role) >= Number(body.role))
+        throw AppError.Forbidden(
+          "Your role is too low or same level to create this role"
+        );
+      let comId = com_id;
+      if (user.account_role === "1") {
+        comId = body.com_id;
       }
 
       const data = await this.authService.register(comId, body);
@@ -105,7 +109,7 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
-      }else{
+      } else {
         ExceptionHandler.internalServerError(res, error);
       }
     }
@@ -138,10 +142,9 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
-      }else{
+      } else {
         ExceptionHandler.internalServerError(res, error);
       }
-      
     }
   }
 
@@ -173,7 +176,7 @@ export class AuthController {
           error: error.name,
           message: error.message,
         });
-      }else{
+      } else {
         ExceptionHandler.internalServerError(res, error);
       }
     }

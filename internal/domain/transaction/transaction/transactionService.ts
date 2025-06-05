@@ -13,7 +13,9 @@ import { TicketService } from "../ticket/ticketService"; // Added TicketService 
 import { CompanyRepository } from "../../company/company/companyRepository";
 import { TransactionRepository } from "./transactionRepository";
 import { PaymentMethodService } from "../../payment/payment/paymentMethodService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TransactionService {
   constructor(
     private readonly transactionRepository: TransactionRepository,

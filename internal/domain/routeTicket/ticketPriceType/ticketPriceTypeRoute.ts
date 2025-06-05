@@ -1,22 +1,15 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { TicketPriceTypeRepository } from "./TicketPriceTypeRespository";
 import { TicketPriceTypeController } from "./TicketPriceTypeController";
-import { TicketPriceTypeService } from "./TicketPriceTypeService";
+import { container } from "tsyringe";
 
 export class TicketPriceTypeRoute {
   private readonly router: Router;
-
-  public repo: TicketPriceTypeRepository;
-  public service: TicketPriceTypeService;
   public controller: TicketPriceTypeController;
 
-  constructor(prisma: PrismaClient) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new TicketPriceTypeRepository(prisma);
-    this.service = new TicketPriceTypeService(this.repo);
-    this.controller = new TicketPriceTypeController(this.service);
+    this.controller = container.resolve(TicketPriceTypeController);
     this.setupRoutes();
   }
 

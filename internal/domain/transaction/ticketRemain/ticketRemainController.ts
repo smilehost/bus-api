@@ -3,7 +3,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { TicketRemainService } from "./ticketRemainService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TicketRemainController {
   constructor(private readonly ticketRemainService: TicketRemainService) {}
 

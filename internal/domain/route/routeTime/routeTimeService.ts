@@ -4,7 +4,9 @@ import { RouteTimeRequest } from "../../../../cmd/request";
 import { route_time } from "@prisma/client";
 import { CompanyRepository } from "../../company/company/companyRepository";
 import { RouteTimeRepository } from "./routeTimeRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteTimeService {
   constructor(
     private readonly routeTimeRepository: RouteTimeRepository,

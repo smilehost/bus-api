@@ -5,7 +5,9 @@ import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { company } from "@prisma/client";
 import { CompanyService } from "./companyService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
