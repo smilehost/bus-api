@@ -1,3 +1,5 @@
+import { account } from "@prisma/client";
+import { JwtPayloadUser } from "../../cmd/dto";
 import { AppError } from "./appError";
 import { Request } from "express";
 
@@ -17,6 +19,37 @@ export class Util {
       return false;
     }
     return com_id1 === com_id2;
+  }
+
+  static requesterPermissionCheck(
+    requester:JwtPayloadUser,
+    requested:account,
+    mode: "lower" | "lowerOrSame" | "lowerOrSelf"
+  ){
+    if (!Util.ValidCompany(requester.com_id, requested.account_com_id) && 
+        requester.account_role !== "1") {
+      throw AppError.Forbidden("Account: Company ID does not match");
+    }
+
+    const requesterRole = Number(requester.account_role);
+    const requestedRole = Number(requested.account_role);
+    switch (mode) {
+      case "lower":
+        if (requesterRole >= requestedRole) 
+          throw AppError.Forbidden("Account: Your role must be higher than the requested");
+        break;
+      case "lowerOrSame":
+        if (requesterRole > requestedRole) 
+          throw AppError.Forbidden("Account: Your role must be equal or higher than the requested");
+        break;
+  
+      case "lowerOrSelf":
+        if (requesterRole > requestedRole &&requester.account_id !== requested.account_id) 
+          throw AppError.Forbidden("Account: Only lower roles or yourself allowed");
+        break;
+      default:
+        throw AppError.BadRequest("Invalid permission check mode");
+    }
   }
 
   static parseId(input: unknown, label = "com_id"): number {

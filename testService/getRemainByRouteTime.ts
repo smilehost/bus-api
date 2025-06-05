@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { TicketRemainRepository } from "../internal/repository/ticketRemainRepository";
-import { TicketRemainService } from "../internal/service/ticketRemainService";
 import { GetRemainByRouteTimeDTO } from "../cmd/dto";
-import { RouteTimeRepository } from "../internal/repository/routeTimeRepository";
+import { RouteTimeRepository } from "../internal/domain/route/routeTime/routeTimeRepository";
+import { TicketRemainRepository } from "../internal/domain/transaction/ticketRemain/ticketRemainRepository";
+import { TicketRemainService } from "../internal/domain/transaction/ticketRemain/ticketRemainService";
+
 
 // 1. สร้าง Prisma instance
 const prisma = new PrismaClient();

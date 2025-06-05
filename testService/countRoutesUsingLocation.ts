@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { RouteRepository } from "../internal/repository/routeRepository";
-import { RouteService } from "../internal/service/routeService";
-import { RouteDateRepository } from "../internal/repository/routeDateRepository";
-import { RouteTimeRepository } from "../internal/repository/routeTimeRepository";
-import { RouteLocationRepository } from "../internal/repository/routeLocationRepository";
+import { RouteRepository } from "../internal/domain/route/route/routeRepository";
+import { RouteService } from "../internal/domain/route/route/routeService";
+import { RouteDateRepository } from "../internal/domain/route/routeDate/routeDateRepository";
+import { RouteLocationRepository } from "../internal/domain/route/routeLocation/routeLocationRepository";
+import { RouteTimeRepository } from "../internal/domain/route/routeTime/routeTimeRepository";
 
 // 1. สร้าง Prisma instance
 const prisma = new PrismaClient();
