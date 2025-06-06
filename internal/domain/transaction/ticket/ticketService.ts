@@ -1,9 +1,10 @@
 
-import { AppError } from "../../../utils/appError";
-import { ticket, route_location, route_ticket } from "@prisma/client"; // Added route_location and route_ticket
+import { route_ticket, ticket } from "@prisma/client"; // Added route_location and route_ticket
+import { autoInjectable } from "tsyringe";
 import { CreateTicketDto, ShiftingRemainDto } from "../../../../cmd/dto";
-import { TicketRemainService } from "../ticketRemain/ticketRemainService";
+import { AppError } from "../../../utils/appError";
 import { RouteLocationRepository } from "../../route/routeLocation/routeLocationRepository";
+import { TicketRemainService } from "../ticketRemain/ticketRemainService";
 import { TicketRepository } from "./ticketRepository";
 
 export interface TicketViewData extends ticket {
@@ -13,6 +14,7 @@ export interface TicketViewData extends ticket {
   route_ticket: route_ticket | null; // Added this line
 }
 
+@autoInjectable()
 export class TicketService {
   constructor(
     private readonly ticketRepository: TicketRepository,

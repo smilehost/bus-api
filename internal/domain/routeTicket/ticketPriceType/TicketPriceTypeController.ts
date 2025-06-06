@@ -4,8 +4,10 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { TicketPriceTypeService } from "./TicketPriceTypeService";
+import { autoInjectable } from "tsyringe";
 
 
+@autoInjectable()
 export class TicketPriceTypeController {
   constructor(private readonly ticketPriceTypeService: TicketPriceTypeService) {}
 

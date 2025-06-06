@@ -2,7 +2,9 @@ import { route_date } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
 import { Util } from "../../../utils/util";
 import { RouteDateRepository } from "./routeDateRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteDateService {
   constructor(private readonly routeDateRepository: RouteDateRepository) {}
 

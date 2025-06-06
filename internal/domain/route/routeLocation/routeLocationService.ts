@@ -5,7 +5,9 @@ import { Util } from "../../../utils/util";
 import { CompanyRepository } from "../../company/company/companyRepository";
 import { RouteService } from "../route/routeService";
 import { RouteLocationRepository } from "./routeLocationRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class RouteLocationService {
   constructor(
     private readonly routeLocationRepository: RouteLocationRepository,

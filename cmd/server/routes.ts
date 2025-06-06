@@ -1,10 +1,11 @@
+// src/routes/index.ts
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { container } from "tsyringe";
 
+// ✅ import class route ทั้งหมด
 import { AuthRoutes } from "../../internal/domain/account/auth/AuthRoute";
 import { AccountRoutes } from "../../internal/domain/account/account/accountRoute";
 import { CompanyRoutes } from "../../internal/domain/company/company/companyRoute";
-
 import { RouteRoutes } from "../../internal/domain/route/route/routeRoutes";
 import { RouteDateRoutes } from "../../internal/domain/route/routeDate/routeDateRoute";
 import { RouteTimeRoutes } from "../../internal/domain/route/routeTime/routeTimeRoutes";
@@ -19,78 +20,46 @@ import { PaymentMethodRoutes } from "../../internal/domain/payment/payment/payme
 import { TicketRoute } from "../../internal/domain/transaction/ticket/ticketRoute";
 import { DeviceRoutes } from "../../internal/domain/company/device/deviceRoute";
 import { ReportRoutes } from "../../internal/domain/company/report/reportRoutes.ts";
-import { CompanyRepository } from "../../internal/domain/company/company/companyRepository";
 import { TransactionTimeoutJob } from "../crons/transactionCron";
 
-
-export const Routes = (prisma: PrismaClient): Router => {
+export const Routes = (): Router => {
   const router = Router();
-  const comRepo = new CompanyRepository(prisma);
 
-  // Auth & Account
-  const authRoutes = new AuthRoutes(prisma);
-  const accountRoutes = new AccountRoutes(prisma);
-  const deviceRoutes = new DeviceRoutes(prisma)
+  // ✅ resolve ด้วย container
+  const authRoutes = container.resolve(AuthRoutes);
+  const accountRoutes = container.resolve(AccountRoutes);
+  const companyRoutes = container.resolve(CompanyRoutes);
+  const routeRoutes = container.resolve(RouteRoutes);
+  const routeDateRoutes = container.resolve(RouteDateRoutes);
+  const routeTimeRoutes = container.resolve(RouteTimeRoutes);
+  const routeLocationRoutes = container.resolve(RouteLocationRoutes);
+  const routeTicketRoutes = container.resolve(RouteTicketRoutes);
+  const ticketRemainRoute = container.resolve(TicketRemainRoute);
+  const ticketPriceTypeRoute = container.resolve(TicketPriceTypeRoute);
+  const memberRoutes = container.resolve(MemberRoute);
+  const discountRoutes = container.resolve(DiscountRoutes);
+  const paymentMethodRoute = container.resolve(PaymentMethodRoutes);
+  const ticketRoutes = container.resolve(TicketRoute);
+  const transactionRoutes = container.resolve(TransactionRoute);
+  const deviceRoutes = container.resolve(DeviceRoutes);
+  const reportRoutes = container.resolve(ReportRoutes);
 
-  // Company
-  const companyRoutes = new CompanyRoutes(prisma);
+  TransactionTimeoutJob(transactionRoutes.service); // ✅ ยังใช้ได้เหมือนเดิม
 
-  // Route core
-  const routeDateRoutes = new RouteDateRoutes(prisma);
-  const routeTimeRoutes = new RouteTimeRoutes(prisma, comRepo);
-  const routeRoutes = new RouteRoutes(prisma, routeDateRoutes.repo);
-
-  // Route submodules
-  const routeLocationRoutes = new RouteLocationRoutes(
-    prisma,
-    comRepo,
-    routeRoutes.service
-  );
-  const ticketRemainRoute = new TicketRemainRoute(prisma, routeTimeRoutes.repo);
-  const routeTicketRoutes = new RouteTicketRoutes(
-    prisma,
-    routeRoutes.repo,
-    routeRoutes.service,
-    ticketRemainRoute
-  );
-  const ticketPriceTypeRoute = new TicketPriceTypeRoute(prisma);
-
-  // Transaction
-  const memberRoutes = new MemberRoute(prisma, comRepo);
-  const discountRoutes = new DiscountRoutes(prisma)
-  const paymentMethodRoute = new PaymentMethodRoutes(prisma)
-  // Updated TicketRoute instantiation
-  const ticketRoutes = new TicketRoute(prisma, ticketRemainRoute.service, routeLocationRoutes.repo) 
-  const transactionRoutes = new TransactionRoute(
-    prisma,
-    comRepo,
-    ticketRemainRoute.service,
-    paymentMethodRoute.service,
-    ticketRoutes.service
-  );
-
-  // Report
-  const reportRoutes = new ReportRoutes(prisma, comRepo);
-
-  //cron jobs
-  //TransactionTimeoutJob(transactionRoutes.service)
-
-  // Mount routes
+  // ✅ use route
   router.use("/auth", authRoutes.routing());
   router.use("/accounts", accountRoutes.routing());
   router.use("/company", companyRoutes.routing());
-
   router.use("/route", routeRoutes.routing());
   router.use("/routeDates", routeDateRoutes.routing());
   router.use("/routeTimes", routeTimeRoutes.routing());
   router.use("/routeLocations", routeLocationRoutes.routing());
   router.use("/routeTicket", routeTicketRoutes.routing());
-
   router.use("/ticketRemain", ticketRemainRoute.routing());
   router.use("/ticketPriceType", ticketPriceTypeRoute.routing());
   router.use("/paymentMethod", paymentMethodRoute.routing());
   router.use("/transaction", transactionRoutes.routing());
-  router.use("/ticket", ticketRoutes.routing()); // Added ticket route
+  router.use("/ticket", ticketRoutes.routing());
   router.use("/ticketdiscount", discountRoutes.routing());
   router.use("/device", deviceRoutes.routing());
   router.use("/report", reportRoutes.routing());

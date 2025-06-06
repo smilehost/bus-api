@@ -1,28 +1,14 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { CompanyRepository } from "../../company/company/companyRepository";
-import { RouteService } from "../route/routeService";
 import { LocationController } from "./routeLocationController";
-import { RouteLocationRepository } from "./routeLocationRepository";
-import { RouteLocationService } from "./routeLocationService";
+import { container } from "tsyringe";
 
 export class RouteLocationRoutes {
   private readonly router: Router;
-
-  public repo: RouteLocationRepository;
-  public service: RouteLocationService;
   public controller: LocationController;
 
-  constructor(
-    prisma: PrismaClient,
-    comRepo: CompanyRepository,
-    routeService: RouteService
-  ) {
+  constructor() {
     this.router = Router();
-
-    this.repo = new RouteLocationRepository(prisma);
-    this.service = new RouteLocationService(this.repo, comRepo, routeService);
-    this.controller = new LocationController(this.service);
+    this.controller = container.resolve(LocationController);
     this.setupRoutes();
   }
 

@@ -2,7 +2,9 @@
 import { company } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
 import { CompanyRepository } from "./companyRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class CompanyService {
   constructor(private readonly companyRepository: CompanyRepository) {}
 

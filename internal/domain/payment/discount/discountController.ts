@@ -6,7 +6,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { DiscountService } from "./discountService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class DiscountController {
   constructor(private readonly discountService: DiscountService) {}
 

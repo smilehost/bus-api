@@ -1,7 +1,9 @@
-import { PrismaClient, payment_method } from "@prisma/client";
+import { payment_method } from "@prisma/client";
+import { autoInjectable } from "tsyringe";
 import { AppError } from "../../../utils/appError";
 import { PaymentMethodRepository } from "./PaymentMethodRepository";
 
+@autoInjectable()
 export class PaymentMethodService {
   constructor(
     private readonly paymentMethodRepository: PaymentMethodRepository

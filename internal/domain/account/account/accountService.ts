@@ -3,7 +3,9 @@ import { JwtPayloadUser } from "../../../../cmd/dto";
 import { AppError } from "../../../utils/appError";
 import { Util } from "../../../utils/util";
 import { AccountRepository } from "./accountRepository";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class AccountService {
   constructor(private readonly accountRepository: AccountRepository) {}
 

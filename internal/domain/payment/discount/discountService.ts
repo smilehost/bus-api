@@ -5,8 +5,10 @@ import { createDiscountDto } from "../../../../cmd/dto";
 import { AppError } from "../../../utils/appError";
 import { Util } from "../../../utils/util";
 import { DiscountRepository } from "./discountRepository";
+import { autoInjectable } from "tsyringe";
 
 
+@autoInjectable()
 export class DiscountService {
   constructor(private readonly discountRepository: DiscountRepository) {}
 

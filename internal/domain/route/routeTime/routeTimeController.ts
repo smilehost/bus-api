@@ -5,7 +5,9 @@ import { AppError } from "../../../utils/appError";
 import { ExceptionHandler } from "../../../utils/exception";
 import { Util } from "../../../utils/util";
 import { RouteTimeService } from "./routeTimeService";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class TimeController {
   constructor(private readonly routeTimeService: RouteTimeService) {}
 

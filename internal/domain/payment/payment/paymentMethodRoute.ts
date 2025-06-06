@@ -1,22 +1,15 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { container } from "tsyringe";
 import { PaymentMethodController } from "./paymentMethodController";
-import { PaymentMethodRepository } from "./PaymentMethodRepository";
-import { PaymentMethodService } from "./paymentMethodService";
 
 export class PaymentMethodRoutes {
   private readonly router: Router;
-
-  public repo: PaymentMethodRepository;
-  public service: PaymentMethodService;
   public controller: PaymentMethodController;
 
-  constructor(prisma: PrismaClient) {
+  constructor() {
     this.router = Router();
 
-    this.repo = new PaymentMethodRepository(prisma);
-    this.service = new PaymentMethodService(this.repo);
-    this.controller = new PaymentMethodController(this.service);
+    this.controller = container.resolve(PaymentMethodController);
     this.setupRoutes();
   }
 

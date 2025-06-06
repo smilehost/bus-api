@@ -2,7 +2,9 @@
 import { ticket_discount, PrismaClient } from "@prisma/client";
 import { createDiscountDto } from "../../../../cmd/dto";
 import { AppError } from "../../../utils/appError";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class DiscountRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
