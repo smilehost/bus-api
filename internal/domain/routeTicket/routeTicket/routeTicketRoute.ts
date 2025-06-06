@@ -38,10 +38,10 @@ export class RouteTicketRoutes {
       "/:route_ticket_id",authorizeRoles("2"),
       this.controller.delete.bind(this.controller));
     this.router.post(
-      "/getRouteTicketsByLocations",authorizeRoles("2"),
+      "/getRouteTicketsByLocations",authorizeRoles("2","3"),
       this.controller.getRouteTicketsByLocations.bind(this.controller));
     this.router.post(
-      "/getPricebylocation",authorizeRoles("2"),
+      "/getPricebylocation",authorizeRoles("2","3"),
       this.controller.getTicketPriceByLocation.bind(this.controller));
   }
 
