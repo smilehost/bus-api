@@ -87,6 +87,24 @@ export class RouteTicketService {
   }
 
   async create(comId: number, data: RouteTicketWithPrices) {
+    const route = await this.routeRepository.getById(data.route_ticket_route_id);
+    if (!route) {
+      throw AppError.NotFound("Route not found");
+    }
+    if (!Util.ValidCompany(comId, route.route_com_id)) {
+      throw AppError.Forbidden("Route ticket: Company ID does not match");
+    }
+
+    if (data.route_ticket_type==="fix"){
+      const locations = await this.routeService.getStartEndLocation(route);
+
+      data.route_ticket_price = data.route_ticket_price.filter((price) => {
+        return (
+          price.route_ticket_location_start === locations.startLocation.route_location_id &&
+          price.route_ticket_location_stop === locations.stopLocation.route_location_id
+        );
+      });      
+    }
     return this.routeTicketRepository.create(data);
   }
 
