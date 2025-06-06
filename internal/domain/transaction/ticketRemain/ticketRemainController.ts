@@ -52,6 +52,9 @@ export class TicketRemainController {
         body
       );
 
+      console.log("Retrieved ticket remains:", result);
+      
+
       res.status(200).json({
         message: "Ticket remains retrieved successfully",
         result,
