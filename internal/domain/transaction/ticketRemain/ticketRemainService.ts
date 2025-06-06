@@ -204,4 +204,62 @@ export class TicketRemainService {
       decrease.amount
     );
   }
+
+  async getAll(ticket_remain_ids: string[]): Promise<ticket_remain[]> {
+    if (!ticket_remain_ids || ticket_remain_ids.length === 0) {
+      throw AppError.BadRequest("Ticket remain IDs are required");
+    }
+
+    // 1. ดึงรายการที่มีอยู่แล้วจาก DB
+    const ticketRemainMany = await this.ticketRemainRepository.getAll(
+      ticket_remain_ids
+    );
+
+    // 2. เปลี่ยนเป็น Map เพื่อเข้าถึงเร็ว
+    const existingMap = new Map<string, ticket_remain>();
+    for (const remain of ticketRemainMany) {
+      existingMap.set(remain.ticket_remain_id, remain);
+    }
+
+    const result: ticket_remain[] = [];
+
+    // 3. loop ตามลำดับ input
+    for (const id of ticket_remain_ids) {
+      const existing = existingMap.get(id);
+      if (existing) {
+        result.push(existing);
+        continue;
+      }
+
+      // แยกและตรวจ ID
+      const parts = id.split("_");
+      const [date, time, routeTicketIdString] = parts;
+      const routeTicketId = parseInt(routeTicketIdString, 10);
+
+      if (!date || !time || isNaN(routeTicketId)) {
+        throw AppError.BadRequest(`Invalid ticket_remain_id format: ${id}`);
+      }
+
+      // ดึง route ticket
+      const routeTicket = await this.transactionRepository.getRouteTicketById(
+        routeTicketId
+      );
+      if (!routeTicket) {
+        throw AppError.NotFound(
+          `Route ticket not found for ID: ${routeTicketId}`
+        );
+      }
+
+      // สร้าง object ใหม่
+      result.push({
+        ticket_remain_id: "",
+        ticket_remain_date: "",
+        ticket_remain_time: "",
+        ticket_remain_number: routeTicket.route_ticket_amount,
+        ticket_remain_route_ticket_id: routeTicketId,
+      });
+    }
+
+    return result;
+  }
 }

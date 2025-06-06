@@ -17,6 +17,7 @@ export class TicketRemainRoute {
       "/:ticket_remain_id",
       this.controller.getById.bind(this.controller)
     );
+    this.router.post("/all", this.controller.getAll.bind(this.controller));
   }
 
   public routing(): Router {
