@@ -216,7 +216,7 @@ export class TicketController {
       </tr>
       <tr>
         <td class="label">ราคา:</td>
-        <td class="value">${ticketData.ticket_price} บาท</td>
+        <td class="value">${Number(ticketData.ticket_price)-ticketData.ticket_discount_price} บาท</td>
       </tr>
       <tr>
         <td class="label">สถานะ:</td>
