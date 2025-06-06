@@ -18,10 +18,10 @@ export class DiscountRoutes {
 
   private setupRoutes(): void {
     this.router.get(
-      "/all", authorizeRoles("2"),
+      "/all", authorizeRoles("2","3"),
       this.controller.getAll.bind(this.controller));
     this.router.get(
-      "/:ticket_discount_id",authorizeRoles("1","2","3"),
+      "/:ticket_discount_id",authorizeRoles("2","3"),
       this.controller.getById.bind(this.controller)
     );
     this.router.post(

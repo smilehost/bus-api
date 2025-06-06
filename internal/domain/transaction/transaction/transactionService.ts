@@ -154,7 +154,7 @@ export class TransactionService {
   }
 
   async checkTransactionsTimeout(){
-    const timeout = 5 * 60 * 1000
+    const timeout = 1 * 60 * 1000
     const transactions = await this.transactionRepository.getTransactionsByStatus("PENDING")
     for (const transaction of transactions){
       const now = new Date();
