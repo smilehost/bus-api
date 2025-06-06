@@ -12,6 +12,8 @@ export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
 
       const device = await deviceService.verifyDeviceBySerialNumber(serialNumber);
 
+      console.log((req as any).user,"xxxxxxxxxx")
+
       if(!device!.device_com_id !== (req as any).user.com_id){
         throw new AppError("Not allowed in other company", 403);
       }
