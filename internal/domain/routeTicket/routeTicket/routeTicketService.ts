@@ -156,6 +156,7 @@ export class RouteTicketService {
     );
 
     const getPrices = async (ticketId: number, ticketType: string) => {
+      console.log(ticketType,"xxxxxxxxxxxxxxxxxxxxxxxxx",ticketId)
       if (ticketType !== "tier") {
         const fixTicket =
           await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
@@ -164,10 +165,10 @@ export class RouteTicketService {
           ticket.route_ticket_location_start = String(startId);
           ticket.route_ticket_location_stop = String(stopId);
         });
-
+        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         return fixTicket;
       }
-
+      console.log(startId,stopId,)
       return await this.routeTicketRepository.getTicketPricingByLocation(
         ticketId,
         String(startId),

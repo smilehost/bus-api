@@ -73,7 +73,7 @@ export const Routes = (prisma: PrismaClient): Router => {
   const reportRoutes = new ReportRoutes(prisma, comRepo);
 
   //cron jobs
-  TransactionTimeoutJob(transactionRoutes.service)
+  //TransactionTimeoutJob(transactionRoutes.service)
 
   // Mount routes
   router.use("/auth", authRoutes.routing());
