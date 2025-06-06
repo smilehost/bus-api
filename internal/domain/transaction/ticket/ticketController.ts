@@ -216,9 +216,7 @@ export class TicketController {
       </tr>
       <tr>
         <td class="label">ราคา:</td>
-        <td class="value">${ticketData.ticket_discount_price.toFixed(
-          2
-        )} บาท</td>
+        <td class="value">${ticketData.ticket_price} บาท</td>
       </tr>
       <tr>
         <td class="label">สถานะ:</td>
