@@ -11,6 +11,10 @@ export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
       }
 
       const device = await deviceService.verifyDeviceBySerialNumber(serialNumber);
+
+      if(!device!.device_com_id !== (req as any).user.com_id){
+        throw new AppError("Not allowed in other company", 403);
+      }
       if (!device) {
         throw new AppError("Invalid or inactive device serial number.", 403);
       }
