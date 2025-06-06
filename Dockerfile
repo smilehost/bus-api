@@ -16,6 +16,10 @@ FROM node:22-slim
 
 WORKDIR /app
 
+# ✅ Set Timezone to Asia/Bangkok
+ENV TZ=Asia/Bangkok
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # ✅ ติดตั้ง Neovim จาก binary + LazyVim dependencies
 RUN apt-get update && apt-get install -y \
     git curl unzip ripgrep fd-find \
