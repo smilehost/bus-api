@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { RouteTicketController } from "./routeTicketController";
 import { container } from "tsyringe";
+import { authorizeRoles } from "../../../../cmd/middleware/authMiddleware";
 
 
 export class RouteTicketRoutes {
@@ -16,42 +17,32 @@ export class RouteTicketRoutes {
 
   private setupRoutes(): void {
     this.router.get(
-      "/route/:route_id",
-      this.controller.getAllTicketsByRouteId.bind(this.controller)
-    );
+      "/route/:route_id",authorizeRoles("2","3"),
+      this.controller.getAllTicketsByRouteId.bind(this.controller));
     this.router.get(
-      "/all",
-      this.controller.getByPagination.bind(this.controller)
-    );
+      "/all",authorizeRoles("2","3"),
+      this.controller.getByPagination.bind(this.controller));
     this.router.get(
-      "/ticket/:route_ticket_id",
-      this.controller.getTicketPricing.bind(this.controller)
-    );
-
-    this.router.post("/create", this.controller.create.bind(this.controller));
+      "/ticket/:route_ticket_id",authorizeRoles("2","3"),
+      this.controller.getTicketPricing.bind(this.controller));
+    this.router.post(
+      "/create",authorizeRoles("2"), 
+      this.controller.create.bind(this.controller));
     this.router.put(
-      "/:route_ticket_id",
-      this.controller.update.bind(this.controller)
-    );
+      "/:route_ticket_id", authorizeRoles("2"),
+      this.controller.update.bind(this.controller));
     this.router.put(
-      "/:route_ticket_id/status",
-      this.controller.updateStatus.bind(this.controller)
-    );
-
+      "/:route_ticket_id/status",authorizeRoles("2"),
+      this.controller.updateStatus.bind(this.controller));
     this.router.delete(
-      "/:route_ticket_id",
-      this.controller.delete.bind(this.controller)
-    );
-
+      "/:route_ticket_id",authorizeRoles("2"),
+      this.controller.delete.bind(this.controller));
     this.router.post(
-      "/getRouteTicketsByLocations",
-      this.controller.getRouteTicketsByLocations.bind(this.controller)
-    );
-
+      "/getRouteTicketsByLocations",authorizeRoles("2"),
+      this.controller.getRouteTicketsByLocations.bind(this.controller));
     this.router.post(
-      "/getPricebylocation",
-      this.controller.getTicketPriceByLocation.bind(this.controller)
-    );
+      "/getPricebylocation",authorizeRoles("2"),
+      this.controller.getTicketPriceByLocation.bind(this.controller));
   }
 
   public routing(): Router {

@@ -42,10 +42,12 @@ export class RouteTicketService {
     search: string,
     status: number
   ) {
+    // คำนวณการข้ามและจำนวนข้อมูลที่จะดึง
     const skip = (page - 1) * size;
     const take = size;
     search = search.toString();
 
+    // ดึงข้อมูลแบบแบ่งหน้าจาก repository
     const [data, total] = await this.routeTicketRepository.getPaginated(
       comId,
       skip,
@@ -54,6 +56,7 @@ export class RouteTicketService {
       status
     );
 
+    // คืนค่าข้อมูลพร้อมรายละเอียดการแบ่งหน้า
     return {
       page,
       size,
@@ -64,12 +67,14 @@ export class RouteTicketService {
   }
 
   async getById(comId: number, ticketId: number) {
+    // ค้นหาตั๋วตาม ID
     const ticket = await this.routeTicketRepository.getById(ticketId);
 
     if (!ticket) {
       throw AppError.NotFound("Route ticket not found");
     }
 
+    // ค้นหาเส้นทางของตั๋ว
     const route = await this.routeRepository.getById(
       ticket.route_ticket_route_id
     );
@@ -78,10 +83,12 @@ export class RouteTicketService {
       throw AppError.NotFound("Route not found");
     }
 
+    // ตรวจสอบสิทธิ์ของบริษัท
     if (!Util.ValidCompany(comId, route.route_com_id)) {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
+    // ดึงข้อมูลราคาของตั๋ว
     const prices = await this.routeTicketRepository.getTicketPrices(ticketId);
     return { ticket, prices };
   }
@@ -95,16 +102,20 @@ export class RouteTicketService {
       throw AppError.Forbidden("Route ticket: Company ID does not match");
     }
 
-    if (data.route_ticket_type==="fix"){
+    // หากเป็นตั๋วประเภท "fix" จะกรองราคาให้เหลือเฉพาะต้นทางและปลายทางของเส้นทาง
+    if (data.route_ticket_type === "fix") {
       const locations = await this.routeService.getStartEndLocation(route);
 
       data.route_ticket_price = data.route_ticket_price.filter((price) => {
         return (
-          price.route_ticket_location_start === locations.startLocation.route_location_id &&
-          price.route_ticket_location_stop === locations.stopLocation.route_location_id
+          price.route_ticket_location_start ===
+            locations.startLocation.route_location_id &&
+          price.route_ticket_location_stop ===
+            locations.stopLocation.route_location_id
         );
-      });      
+      });
     }
+    // สร้างตั๋วใน repository
     return this.routeTicketRepository.create(data);
   }
 
@@ -168,6 +179,7 @@ export class RouteTicketService {
     stopId: number,
     date: string
   ) {
+    // ค้นหาเส้นทางทั้งหมดที่ผ่านสถานที่ต้นทางและปลายทางที่กำหนด
     const routes = await this.routeService.getRouteByLocations(
       com_id,
       startId,
@@ -175,30 +187,35 @@ export class RouteTicketService {
       date
     );
 
+    // ดึงข้อมูลตั๋วสำหรับแต่ละเส้นทางพร้อมกัน
     const ticketWithPrices = await Promise.all(
       routes.map(async (route) => {
-        const tickets = await this.findRouteTicket(route,route.route_time);
+        const tickets = await this.findRouteTicket(route, route.route_time);
         return tickets;
       })
     );
 
+    // รวมผลลัพธ์จากทุกเส้นทางให้เป็น array เดียว
     return ticketWithPrices.flat();
   }
 
-  private async findRouteTicket(route: route,times:route_time): Promise<route_ticket[]>{
-    const tickets =
-      await this.routeTicketRepository.findTicketsByRouteId(
+  private async findRouteTicket(
+    route: route,
+    times: route_time
+  ): Promise<route_ticket[]> {
+    // ค้นหาตั๋วทั้งหมดในเส้นทาง
+    const tickets = await this.routeTicketRepository.findTicketsByRouteId(
       route.route_id
-      );
-    if (!tickets.length) return [];
+    );
     if (!tickets.length) return [];
 
+    // เพิ่มข้อมูลเส้นทางและสถานที่เริ่มต้น-สิ้นสุดให้กับแต่ละตั๋ว
     const ticketsdata = await Promise.all(
       tickets.map(async (ticket) => ({
         ...ticket,
-        route:{
-          route_name:route.route_name_th,
-          route_time:times
+        route: {
+          route_name: route.route_name_th,
+          route_time: times,
         },
         locations: await this.routeService.getStartEndLocation(route),
       }))
@@ -207,13 +224,19 @@ export class RouteTicketService {
     return ticketsdata;
   }
 
-  async getPriceByRouteTicket(ticketId: number,startId:number,stopId:number){
-    const ticket = await this.routeTicketRepository.getById(ticketId)
+  async getPriceByRouteTicket(
+    ticketId: number,
+    startId: number,
+    stopId: number
+  ) {
+    const ticket = await this.routeTicketRepository.getById(ticketId);
+    // ตรวจสอบประเภทของตั๋ว ถ้าไม่ใช่ "tier" ให้ดึงราคาแบบ fix
     if (ticket?.route_ticket_type !== "tier") {
       const fixTicket =
         await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
       return fixTicket;
     }
+    // ดึงราคาตั๋วตามสถานที่เริ่มต้นและสิ้นสุดสำหรับตั๋วประเภท "tier"
     return await this.routeTicketRepository.getTicketPricingByLocation(
       ticketId,
       String(startId),

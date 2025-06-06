@@ -5,6 +5,7 @@ import { ReportController } from "./reportController";
 import { ReportRepository } from "./reportRepository";
 import { ReportService } from "./reportService";
 import { autoInjectable, container } from "tsyringe";
+import { authorizeRoles } from "../../../../cmd/middleware/authMiddleware";
 
 @autoInjectable()
 export class ReportRoutes {
@@ -19,7 +20,7 @@ export class ReportRoutes {
 
   private setupRoutes(): void {
     this.router.post(
-      "/:choice",
+      "/:choice",authorizeRoles("2","3"),
       this.controller.getReport.bind(this.controller)
     );
   }
