@@ -194,14 +194,8 @@ export class RouteTicketService {
     if (ticket?.route_ticket_type !== "tier") {
       const fixTicket =
         await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
-
-      fixTicket.forEach((ticket) => {
-        ticket.route_ticket_location_start = String(startId);
-        ticket.route_ticket_location_stop = String(stopId);
-      });
       return fixTicket;
     }
-    console.log(startId,stopId,)
     return await this.routeTicketRepository.getTicketPricingByLocation(
       ticketId,
       String(startId),

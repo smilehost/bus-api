@@ -2,6 +2,7 @@ import { Router } from "express";
 import { RouteTicketController } from "./routeTicketController";
 import { container } from "tsyringe";
 
+
 export class RouteTicketRoutes {
   private readonly router: Router;
   private readonly controller: RouteTicketController;
@@ -45,6 +46,11 @@ export class RouteTicketRoutes {
     this.router.post(
       "/getRouteTicketsByLocations",
       this.controller.getRouteTicketsByLocations.bind(this.controller)
+    );
+
+    this.router.post(
+      "/getPricebylocation",
+      this.controller.getTicketPriceByLocation.bind(this.controller)
     );
   }
 
