@@ -26,7 +26,7 @@ export class TransactionRoute {
   private setupRoutes(): void {
     this.router.post(
       "/",
-      authorizeRoles("1", "2", "3"),
+      authorizeRoles("2", "3"),
       verifyDevice(this.deviceService),
       this.controller.create.bind(this.controller)
     );
@@ -39,7 +39,7 @@ export class TransactionRoute {
     this.router.post(
       "/confirmAndPrint/:transaction_id",
       uploadSlipImage,
-      authorizeRoles("1", "2", "3"),
+      authorizeRoles("2", "3"),
       verifyDevice(this.deviceService),
       this.controller.confirmAndPrint.bind(this.controller)
     );
@@ -51,7 +51,7 @@ export class TransactionRoute {
 
     this.router.post(
       "/callback/static",
-      authorizeRoles("1", "2", "3"),
+      authorizeRoles("2", "3"),
       verifyDevice(this.deviceService),
       this.controller.transactionCallbackStatic.bind(this.controller)
     );

@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { container } from "tsyringe";
 import { TicketController } from "./ticketController";
+import { authorizeRoles } from "../../../../cmd/middleware/authMiddleware";
 
 export class TicketRoute {
   private readonly router: Router;
@@ -15,12 +16,12 @@ export class TicketRoute {
 
   private setupRoutes(): void {
     this.router.get(
-      "/all",
+      "/all",authorizeRoles("2","3"),
       this.controller.getByPagination.bind(this.controller)
     );
 
     this.router.patch(
-      "/cancel",
+      "/cancel",authorizeRoles("2","3"),
       this.controller.cancelTicket.bind(this.controller)
     );
 

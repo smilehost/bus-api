@@ -28,21 +28,21 @@ export class DeviceRoutes {
       this.controller.getDeviceLoginData.bind(this.controller)
     );
 
-    this.router.post("/", this.controller.create.bind(this.controller));
+    this.router.post("/",authorizeRoles("1"), this.controller.create.bind(this.controller));
     this.router.get(
-      "/:device_id",
+      "/:device_id",authorizeRoles("1","2","3"),
       this.controller.getById.bind(this.controller)
     );
     this.router.put(
-      "/:device_id",
+      "/:device_id",authorizeRoles("1"),
       this.controller.update.bind(this.controller)
     );
     this.router.delete(
-      "/:device_id",
+      "/:device_id",authorizeRoles("1"),
       this.controller.delete.bind(this.controller)
     );
     this.router.patch(
-      "/:device_id/status",
+      "/:device_id/status",authorizeRoles("1"),
       this.controller.changeStatus.bind(this.controller)
     );
   }
