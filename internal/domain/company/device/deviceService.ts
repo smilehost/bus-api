@@ -90,15 +90,17 @@ export class DeviceService {
     return this.deviceRepository.changeStatus(deviceId, status);
   }
 
-  async verifyDeviceBySerialNumber(serialNumber: string): Promise<device | null> {
+  async verifyDeviceBySerialNumber(com_id:number,serialNumber: string): Promise<device | null> {
     const device = await this.deviceRepository.findBySerialNumber(serialNumber);
     if (!device) {
       return null;
     }
     if (device.device_status !== 1) {
-      // You might want to throw a specific error or return a different indicator
-      // For now, returning null if not active, as the middleware will handle the error response
       return null; 
+    }
+
+    if (device.device_com_id !== Number(com_id)){
+      return null
     }
     return device;
   }

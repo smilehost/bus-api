@@ -10,18 +10,12 @@ export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
         throw new AppError("Device serial number not provided.", 400);
       }
 
-      const device = await deviceService.verifyDeviceBySerialNumber(serialNumber);
-      if(!device){
-        throw new AppError("Not found device", 403);
-      }
+      const device = await deviceService.verifyDeviceBySerialNumber((req as any).user.com_id,serialNumber);
 
       console.log((req as any).user,"xxxxxxxxxx")
       console.log(!device!.device_com_id !== (req as any).user.com_id)
       console.log(!device)
 
-      if(!device!.device_com_id !== (req as any).user.com_id){
-        throw new AppError("Not allowed in other company", 403);
-      }
       if (!device) {
         throw new AppError("Invalid or inactive device serial number.", 403);
       }
