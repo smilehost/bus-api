@@ -11,8 +11,13 @@ export const verifyDevice = (deviceService: DeviceService): RequestHandler => {
       }
 
       const device = await deviceService.verifyDeviceBySerialNumber(serialNumber);
+      if(!device){
+        throw new AppError("Not found device", 403);
+      }
 
       console.log((req as any).user,"xxxxxxxxxx")
+      console.log(!device!.device_com_id !== (req as any).user.com_id)
+      console.log(!device)
 
       if(!device!.device_com_id !== (req as any).user.com_id){
         throw new AppError("Not allowed in other company", 403);
