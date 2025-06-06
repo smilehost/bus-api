@@ -166,7 +166,12 @@ export class TransactionService {
         continue
       }
 
-      await this.cancelTransaction(transaction.transaction_id)
+      try {
+        await this.cancelTransaction(transaction.transaction_id)
+      } catch(err){
+        console.log("Can't cancel transaction :",transaction)
+        console.log(err)
+      }
     }
   }
 

@@ -2,7 +2,7 @@ import { RouteTicketWithPrices } from "../../../../cmd/request";
 
 import { TicketRemainService } from "../../transaction/ticketRemain/ticketRemainService";
 import { GetRemainByRouteTimeDTO } from "../../../../cmd/dto";
-import { route, route_ticket } from "@prisma/client";
+import { route, route_ticket, route_time } from "@prisma/client";
 import { AppError } from "../../../utils/appError";
 import { Util } from "../../../utils/util";
 import { RouteRepository } from "../../route/route/routeRepository";
@@ -178,47 +178,45 @@ export class RouteTicketService {
       );
     };
 
-    const getRemaining = async (ticket: route_ticket, routeTimeId: number) => {
-      const ticketTime: GetRemainByRouteTimeDTO = {
-        ticket_id: ticket.route_ticket_id,
-        ticket_remain_date: date,
-        route_time_id: routeTimeId,
-      };
-      const remaining = await this.ticketRemainService.getRemainByRouteTime(
-        ticketTime
-      );
-      return remaining;
-    };
-
-    const processRoute = async (route: route): Promise<route_ticket[]> => {
-      const tickets =
-        await this.routeTicketRepository.getAllTicketsByRouteIdForGetTicketsByLocations(
-          route.route_id
-        );
-      if (!tickets.length) return [];
-
-      const ticketsWithPrices = await Promise.all(
-        tickets.map(async (ticket) => ({
-          ...ticket,
-          locations: await this.routeService.getStartEndLocation(route),
-          prices: await getPrices(
-            ticket.route_ticket_id,
-            ticket.route_ticket_type
-          ),
-          ticket_remain: await getRemaining(ticket, route.route_time_id),
-        }))
-      );
-
-      return ticketsWithPrices;
-    };
-
     const ticketWithPrices = await Promise.all(
       routes.map(async (route) => {
-        const tickets = await processRoute(route);
+        const tickets = await this.findRouteTicket(route,route.route_time);
         return tickets;
       })
     );
 
     return ticketWithPrices.flat();
   }
+
+  private async findRouteTicket(route: route,times:route_time): Promise<route_ticket[]>{
+    const tickets =
+      await this.routeTicketRepository.findTicketsByRouteId(
+      route.route_id
+      );
+    if (!tickets.length) return [];
+    if (!tickets.length) return [];
+
+    const ticketsdata = await Promise.all(
+      tickets.map(async (ticket) => ({
+        ...ticket,
+        route:{
+          route_name:route.route_name_th,
+          route_time:times
+        },
+        locations: await this.routeService.getStartEndLocation(route),
+      }))
+    );
+
+    return ticketsdata;
+  }
+
+  // private async getPriceByRouteTicket(ticket:route_ticket){
+  //   {
+  //     ...ticket,
+  //     locations: await this.routeService.getStartEndLocation(route),
+  //     prices: await getPrices(
+  //       ticket.route_ticket_id,
+  //       ticket.route_ticket_type
+  //     )
+  // }
 }

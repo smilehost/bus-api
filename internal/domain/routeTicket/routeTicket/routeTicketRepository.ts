@@ -35,7 +35,7 @@ export class RouteTicketRepository {
     }
   }
 
-  async getAllTicketsByRouteIdForGetTicketsByLocations(routeId: number) {
+  async findTicketsByRouteId(routeId: number) {
     try {
       return await this.prisma.route_ticket.findMany({
         where: {
