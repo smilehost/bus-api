@@ -260,4 +260,37 @@ export class RouteTicketController {
       }
     }
   }
+
+  async getTicketPriceByLocation(req: Request, res: Response){
+    try {
+      console.log(req.body)
+      const { com_id, body } = Util.extractRequestContext<{
+        start_location_id: number;
+        end_location_id: number;
+        route_ticket_id: number;
+      }>(req, {
+        body: true,
+      });
+
+      const result = await this.routeTicketService.getPriceByRouteTicket(
+        body.route_ticket_id,
+        body.start_location_id,
+        body.end_location_id
+      )
+
+      res.status(200).json({
+        message: "Routes retrieved successfully",
+        result,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          error: error.name,
+          message: error.message,
+        });
+      }else{
+        ExceptionHandler.internalServerError(res, error);
+      }
+    }
+  }
 }

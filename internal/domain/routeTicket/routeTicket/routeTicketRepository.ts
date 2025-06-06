@@ -35,7 +35,7 @@ export class RouteTicketRepository {
     }
   }
 
-  async getAllTicketsByRouteIdForGetTicketsByLocations(routeId: number) {
+  async findTicketsByRouteId(routeId: number) {
     try {
       return await this.prisma.route_ticket.findMany({
         where: {
@@ -51,26 +51,27 @@ export class RouteTicketRepository {
     }
   }
 
+
   async getTicketPricingByLocation(
     ticketId: number,
     startId?: string,
     stopId?: string
   ) {
     try {
-      const query: any = {
+      const whereClause: any = {
         route_ticket_price_ticket_id: ticketId,
       };
-
+  
       if (startId) {
-        query.route_ticket_location_start = startId;
+        whereClause.route_ticket_location_start = startId;
       }
-
+  
       if (stopId) {
-        query.route_ticket_location_stop = stopId;
+        whereClause.route_ticket_location_stop = stopId;
       }
-
+  
       const results = await this.prisma.route_ticket_price.findMany({
-        where: query,
+        where: whereClause,
         include: {
           price_type: {
             select: {
@@ -79,18 +80,18 @@ export class RouteTicketRepository {
           },
         },
       });
-
-      // Flatten `price_type.route_ticket_price_type_name` to top level
+  
       return results.map((item) => ({
         ...item,
         route_ticket_price_type_name:
           item.price_type?.route_ticket_price_type_name ?? null,
-        price_type: undefined, // optional: remove nested object if not needed
+        price_type: undefined,
       }));
     } catch (error) {
       throw AppError.fromPrismaError(error);
     }
   }
+  
 
   async getPaginated(
     comId: number,
