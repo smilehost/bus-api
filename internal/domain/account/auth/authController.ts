@@ -95,6 +95,7 @@ export class AuthController {
         );
       let comId = com_id;
       if (user.account_role === "1") {
+        if (body.role !== "2") throw AppError.Forbidden("You are allowed to create only admin");
         comId = body.com_id;
       }
 
