@@ -1,14 +1,10 @@
-import "dotenv/config";
 import { Request, Response, NextFunction } from "express";
 import { verifyJwt } from "../../internal/utils/jwt";
-
-interface JwtPayload {
-  account_id: number;
-  account_role: string;
-}
+import { JwtPayloadUser } from "../dto";
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith("Bearer ")) {
@@ -19,23 +15,35 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
     const token = authHeader.split(" ")[1];
 
     try {
-      const decoded = verifyJwt(token) as JwtPayload;
+      const decoded = verifyJwt(token) as JwtPayloadUser;
+      console.log(decoded,allowedRoles)
 
       if (!allowedRoles.includes(decoded.account_role)) {
+        console.log(decoded.account_role)
         res.status(403).json({ message: "Access denied: insufficient role" });
         return;
       }
 
       (req as any).user = decoded;
-
-      // how to use this
-      // const user = (req as any).user;
-
       next();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       res.status(403).json({ message: "Forbidden" });
       return;
     }
   };
 };
+
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    Promise.resolve(fn(req, res, next))
+      .catch((error) => {
+        console.error("Error in controller:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Internal server error" });
+        }
+      });
+  };
+};
+
+

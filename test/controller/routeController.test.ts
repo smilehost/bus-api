@@ -1,5 +1,5 @@
 import { RouteController } from "../../internal/controller/routeController";
-import { RouteService } from "../../internal/service/routeService";
+import { RouteService } from "../../internal/domain/route/routeService";
 import { Request, Response } from "express";
 import { Util } from "../../internal/utils/util";
 import { AppError } from "../../internal/utils//appError";

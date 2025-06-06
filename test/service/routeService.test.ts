@@ -1,5 +1,3 @@
-import { Route } from "../../cmd/models";
-import { RouteService } from "../../internal/service/routeService";
 import { AppError } from "../../internal/utils/appError";
 import { Util } from "../../internal/utils/util";
 
@@ -21,7 +19,7 @@ const mockTimeRepository = {
 
 jest.mock("../../internal/utils/util");
 
-const routeService = new RouteService(
+const routeService = new routeService(
   mockRouteRepository as any,
   mockDateRepository as any,
   mockTimeRepository as any

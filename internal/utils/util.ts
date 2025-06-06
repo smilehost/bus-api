@@ -1,3 +1,5 @@
+import { account } from "@prisma/client";
+import { JwtPayloadUser } from "../../cmd/dto";
 import { AppError } from "./appError";
 import { Request } from "express";
 
@@ -19,6 +21,37 @@ export class Util {
     return com_id1 === com_id2;
   }
 
+  static requesterPermissionCheck(
+    requester:JwtPayloadUser,
+    requested:account,
+    mode: "lower" | "lowerOrSame" | "lowerOrSelf"
+  ){
+    if (!Util.ValidCompany(requester.com_id, requested.account_com_id) && 
+        requester.account_role !== "1") {
+      throw AppError.Forbidden("Account: Company ID does not match");
+    }
+
+    const requesterRole = Number(requester.account_role);
+    const requestedRole = Number(requested.account_role);
+    switch (mode) {
+      case "lower":
+        if (requesterRole >= requestedRole) 
+          throw AppError.Forbidden("Account: Your role must be higher than the requested");
+        break;
+      case "lowerOrSame":
+        if (requesterRole > requestedRole) 
+          throw AppError.Forbidden("Account: Your role must be equal or higher than the requested");
+        break;
+  
+      case "lowerOrSelf":
+        if (requesterRole > requestedRole &&requester.account_id !== requested.account_id) 
+          throw AppError.Forbidden("Account: Only lower roles or yourself allowed");
+        break;
+      default:
+        throw AppError.BadRequest("Invalid permission check mode");
+    }
+  }
+
   static parseId(input: unknown, label = "com_id"): number {
     if (input === null || input === undefined) {
       throw AppError.BadRequest(`Missing ${label}`);
@@ -29,7 +62,9 @@ export class Util {
     }
 
     if (typeof input === "number") {
-      if (isNaN(input)) throw AppError.BadRequest(`Invalid ${label} (NaN)`);
+      if (!Number.isInteger(input)) {
+        throw AppError.BadRequest(`Invalid ${label} (not an integer)`);
+      }
       return input;
     }
 
@@ -37,11 +72,13 @@ export class Util {
       const trimmed = input.trim();
       if (trimmed === "") throw AppError.BadRequest(`Empty ${label} value`);
 
-      const parsed = parseInt(trimmed, 10);
-      if (isNaN(parsed)) {
-        throw AppError.BadRequest(`Invalid ${label} (not a number)`);
+      if (!/^\d+$/.test(trimmed)) {
+        throw AppError.BadRequest(
+          `Invalid ${label} (not a pure number string)`
+        );
       }
-      return parsed;
+
+      return parseInt(trimmed, 10);
     }
 
     throw AppError.BadRequest(`Invalid ${label} format`);
@@ -108,6 +145,7 @@ export class Util {
       if (!req.params || Object.keys(req.params).length === 0) {
         throw AppError.BadRequest("Missing required params");
       }
+
       const check = Util.checkObjectHasMissingFields(req.params);
       if (!check.valid) {
         throw AppError.BadRequest(
@@ -134,4 +172,28 @@ export class Util {
 
     return result;
   }
+
+  static isVaildStatus(status:number){
+    if (!(status === 0 || status===1)){
+      throw AppError.BadRequest("status must be 0 or 1")
+    }
+  }
+}
+
+export function parseIntOrThrow(value: string | undefined | null, fieldName: string): number {
+  if (value === undefined || value === null || value.trim() === "") {
+    throw AppError.BadRequest(`${fieldName} is required and cannot be empty.`);
+  }
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) {
+    throw AppError.BadRequest(`Invalid ${fieldName}: not a number.`);
+  }
+  return parsed;
+}
+
+export function parseStringOrThrow(value: string | undefined | null, fieldName: string): string {
+  if (value === undefined || value === null || value.trim() === "") {
+    throw AppError.BadRequest(`${fieldName} is required and cannot be empty.`);
+  }
+  return value.trim();
 }

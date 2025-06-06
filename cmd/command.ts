@@ -1,9 +1,8 @@
-import "dotenv/config";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PrismaClient } from "@prisma/client";
-import { AuthRepository } from "../internal/repository/authRespository";
-import { AuthService } from "../internal/service/authService";
+import { AuthService } from "../internal/domain/account/auth/authService";
+import { AuthRepository } from "../internal/domain/account/auth/authRespository";
 
 const prisma = new PrismaClient();
 
@@ -33,8 +32,7 @@ yargs(hideBin(process.argv))
       const service = new AuthService(repo);
 
       try {
-        
-        const { password, admin } = await service.createAdmin(
+        const { password, admin } = await service.createSuperAdmin(
           argv.comid,
           argv.name,
           argv.username

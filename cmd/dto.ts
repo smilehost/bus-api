@@ -1,3 +1,5 @@
+import { ticket, ticket_discount, transaction } from "@prisma/client";
+
 export interface JwtPayloadUser {
   account_id: number;
   account_role: string;
@@ -7,8 +9,40 @@ export interface JwtPayloadUser {
   exp: number;
 }
 
-export interface TicketRemainDTO {
+export interface GetRemainNumberDTO {
   ticket_remain_date: string;
   ticket_remain_time: string;
   ticket_remain_route_ticket_id: number;
 }
+
+export interface GetRemainByRouteTimeDTO {
+  ticket_id: number;
+  ticket_remain_date: string;
+  route_time_id: number;
+}
+
+export type CreateTicketDto = Omit<ticket,'ticket_id'|'ticket_transaction_id'> & {
+  ticket_transaction_id:number|null
+}
+
+export type CreateTransactionDto = Omit<transaction, 'transaction_id'| 'transaction_member_id'|"transaction_ticket_discount_id"> & {
+  transaction_ticket_discount_id:number|null
+  transaction_member_id:number|null
+};
+
+export interface CreateTransactionTicketsDto extends CreateTransactionDto {
+  route_ticket_id:number;
+  ticket_date:string;
+  ticket_time:string;
+  member_phone?:string;
+}
+
+export interface ShiftingRemainDto {
+  date: string;
+  time: string;
+  routeTicketId: number; 
+  maxTicket:number;
+  amount: number;
+}
+
+export type createDiscountDto = Omit<ticket_discount,"ticket_discount_id">
