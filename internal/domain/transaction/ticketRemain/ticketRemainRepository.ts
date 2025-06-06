@@ -97,4 +97,18 @@ export class TicketRemainRepository {
       throw AppError.fromPrismaError(error);
     }
   }
+
+  async getAll(ticket_remain_ids: string[]) {
+    try {
+      return await this.prisma.ticket_remain.findMany({
+        where: {
+          ticket_remain_id: {
+            in: ticket_remain_ids,
+          },
+        },
+      });
+    } catch (error) {
+      throw AppError.fromPrismaError(error);
+    }
+  }
 }
