@@ -157,27 +157,6 @@ export class RouteTicketService {
       date
     );
 
-    const getPrices = async (ticketId: number, ticketType: string) => {
-      console.log(ticketType,"xxxxxxxxxxxxxxxxxxxxxxxxx",ticketId)
-      if (ticketType !== "tier") {
-        const fixTicket =
-          await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
-
-        fixTicket.forEach((ticket) => {
-          ticket.route_ticket_location_start = String(startId);
-          ticket.route_ticket_location_stop = String(stopId);
-        });
-        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-        return fixTicket;
-      }
-      console.log(startId,stopId,)
-      return await this.routeTicketRepository.getTicketPricingByLocation(
-        ticketId,
-        String(startId),
-        String(stopId)
-      );
-    };
-
     const ticketWithPrices = await Promise.all(
       routes.map(async (route) => {
         const tickets = await this.findRouteTicket(route,route.route_time);
@@ -210,13 +189,23 @@ export class RouteTicketService {
     return ticketsdata;
   }
 
-  // private async getPriceByRouteTicket(ticket:route_ticket){
-  //   {
-  //     ...ticket,
-  //     locations: await this.routeService.getStartEndLocation(route),
-  //     prices: await getPrices(
-  //       ticket.route_ticket_id,
-  //       ticket.route_ticket_type
-  //     )
-  // }
+  async getPriceByRouteTicket(ticketId: number,startId:number,stopId:number){
+    const ticket = await this.routeTicketRepository.getById(ticketId)
+    if (ticket?.route_ticket_type !== "tier") {
+      const fixTicket =
+        await this.routeTicketRepository.getTicketPricingByLocation(ticketId);
+
+      fixTicket.forEach((ticket) => {
+        ticket.route_ticket_location_start = String(startId);
+        ticket.route_ticket_location_stop = String(stopId);
+      });
+      return fixTicket;
+    }
+    console.log(startId,stopId,)
+    return await this.routeTicketRepository.getTicketPricingByLocation(
+      ticketId,
+      String(startId),
+      String(stopId)
+    );
+  }
 }
