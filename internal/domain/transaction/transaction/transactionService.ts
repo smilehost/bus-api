@@ -1,19 +1,19 @@
 
 
+import { member } from "@prisma/client"; // Removed 'ticket'
+import { autoInjectable } from "tsyringe";
 import {
-  CreateTicketDto,
-  CreateTransactionDto,
-  CreateTransactionTicketsDto,
-  ShiftingRemainDto,
+    CreateTicketDto,
+    CreateTransactionDto,
+    CreateTransactionTicketsDto,
+    ShiftingRemainDto,
 } from "../../../../cmd/dto";
 import { AppError } from "../../../utils/appError";
-import { member, route_ticket, transaction } from "@prisma/client"; // Removed 'ticket'
-import { TicketRemainService } from "../ticketRemain/ticketRemainService";
-import { TicketService } from "../ticket/ticketService"; // Added TicketService import
 import { CompanyRepository } from "../../company/company/companyRepository";
-import { TransactionRepository } from "./transactionRepository";
 import { PaymentMethodService } from "../../payment/payment/paymentMethodService";
-import { autoInjectable } from "tsyringe";
+import { TicketService } from "../ticket/ticketService"; // Added TicketService import
+import { TicketRemainService } from "../ticketRemain/ticketRemainService";
+import { TransactionRepository } from "./transactionRepository";
 
 @autoInjectable()
 export class TransactionService {

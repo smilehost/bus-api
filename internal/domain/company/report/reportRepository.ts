@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import { autoInjectable } from "tsyringe";
 
+@autoInjectable()
 export class ReportRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

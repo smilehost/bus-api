@@ -4,22 +4,16 @@ import { CompanyRepository } from "../company/companyRepository";
 import { ReportController } from "./reportController";
 import { ReportRepository } from "./reportRepository";
 import { ReportService } from "./reportService";
-import { autoInjectable } from "tsyringe";
+import { autoInjectable, container } from "tsyringe";
 
 @autoInjectable()
 export class ReportRoutes {
   private readonly router: Router;
-
-  public repo: ReportRepository;
-  public service: ReportService;
   public controller: ReportController;
 
-  constructor(prisma: PrismaClient, comRepo: CompanyRepository) {
+  constructor() {
     this.router = Router();
-
-    this.repo = new ReportRepository(prisma);
-    this.service = new ReportService(this.repo, comRepo);
-    this.controller = new ReportController(this.service);
+    this.controller = container.resolve(ReportController);
     this.setupRoutes();
   }
 

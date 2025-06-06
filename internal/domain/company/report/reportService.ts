@@ -1,8 +1,10 @@
 
 import dayjs from "dayjs";
+import { autoInjectable } from "tsyringe";
 import { CompanyRepository } from "../company/companyRepository";
 import { ReportRepository } from "./reportRepository";
 
+@autoInjectable()
 export class ReportService {
   constructor(
     private readonly reportRepository: ReportRepository,
